@@ -1,8 +1,11 @@
 package main
 
-import "github.com/yukitaka/longlong/internal/cmd"
+import (
+	"github.com/yukitaka/longlong/internal/cli"
+	"github.com/yukitaka/longlong/internal/cmd"
+)
 
 func main() {
 	command := cmd.NewLlctlCommand()
-	command.Execute()
+	cli.Run(command)
 }
