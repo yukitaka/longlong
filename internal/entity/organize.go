@@ -5,3 +5,7 @@ type Organize struct {
 	ID       int64
 	Name     string
 }
+
+func NewOrganize(parentId, id int64, name string) *Organize {
+	return &Organize{ParentID: parentId, ID: id, Name: name}
+}
