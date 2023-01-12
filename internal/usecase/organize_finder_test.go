@@ -12,7 +12,7 @@ func TestNewOrganizeFinder(t *testing.T) {
 	defer ctrl.Finish()
 
 	rep := mock_repository.NewMockOrganizes(ctrl)
-	rep.EXPECT().Find(int64(1)).Return(&entity.Organize{ID: 1, Name: "Test"}, nil)
+	rep.EXPECT().Find(1).Return(&entity.Organize{ID: 1, Name: "Test"}, nil)
 
 	finder := NewOrganizeFinder(rep)
 	o, _ := finder.FindById(1)

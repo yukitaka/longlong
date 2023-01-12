@@ -35,10 +35,10 @@ func (m *MockOrganizes) EXPECT() *MockOrganizesMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockOrganizes) Create(name string) int64 {
+func (m *MockOrganizes) Create(name string) int {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", name)
-	ret0, _ := ret[0].(int64)
+	ret0, _ := ret[0].(int)
 	return ret0
 }
 
@@ -49,7 +49,7 @@ func (mr *MockOrganizesMockRecorder) Create(name interface{}) *gomock.Call {
 }
 
 // Find mocks base method.
-func (m *MockOrganizes) Find(arg0 int64) (*entity.Organize, error) {
+func (m *MockOrganizes) Find(arg0 int) (*entity.Organize, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Find", arg0)
 	ret0, _ := ret[0].(*entity.Organize)

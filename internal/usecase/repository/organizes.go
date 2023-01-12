@@ -4,6 +4,6 @@ package repository
 import "github.com/yukitaka/longlong/internal/entity"
 
 type Organizes interface {
-	Create(name string) int64
-	Find(int64) (*entity.Organize, error)
+	Create(name string) int
+	Find(int) (*entity.Organize, error)
 }

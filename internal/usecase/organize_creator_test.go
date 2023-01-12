@@ -11,7 +11,7 @@ func TestNewOrganizeCreator(t *testing.T) {
 	defer ctrl.Finish()
 
 	rep := mock_repository.NewMockOrganizes(ctrl)
-	rep.EXPECT().Create("Test").Return(int64(1))
+	rep.EXPECT().Create("Test").Return(1)
 
 	finder := NewOrganizeCreator(rep)
 	id := finder.Create("Test")
