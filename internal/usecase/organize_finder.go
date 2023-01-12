@@ -13,6 +13,6 @@ func NewOrganizeFinder(organizes repository.Organizes) *OrganizeFinder {
 	return &OrganizeFinder{Organizes: organizes}
 }
 
-func (it *OrganizeFinder) FindById(id int64) (*entity.Organize, error) {
+func (it *OrganizeFinder) FindById(id int) (*entity.Organize, error) {
 	return it.Organizes.Find(id)
 }
