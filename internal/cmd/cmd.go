@@ -8,7 +8,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/yukitaka/longlong/internal/cli"
-	"github.com/yukitaka/longlong/internal/cmd/organize"
+	"github.com/yukitaka/longlong/internal/cmd/get"
 )
 
 type LlctlOptions struct {
@@ -39,26 +39,29 @@ llctl controls the LongLong manager.
 Find more information at:
 https://github.com/yukitaka/longlong/`,
 	}
+	cmds.AddCommand(get.NewCmdGet("llctl"))
 
 	if len(o.Arguments) > 1 {
 		cmdArgs := o.Arguments[1:]
-		var cmdName string
-		for _, arg := range cmdArgs {
-			if !strings.HasPrefix(arg, "-") {
-				cmdName = arg
-				break
+		if _, _, err := cmds.Find(cmdArgs); err != nil {
+			var cmdName string
+			for _, arg := range cmdArgs {
+				if !strings.HasPrefix(arg, "-") {
+					cmdName = arg
+					break
+				}
 			}
-		}
-		switch cmdName {
-		case "help", cobra.ShellCompRequestCmd, cobra.ShellCompNoDescRequestCmd:
-		default:
-			if err := HandleCommand(o.CmdHandler, cmdArgs); err != nil {
-				fmt.Fprintf(o.IOStream.ErrOut, "Error: %v\n", cmdName)
-				os.Exit(1)
+
+			switch cmdName {
+			case "help", cobra.ShellCompRequestCmd, cobra.ShellCompNoDescRequestCmd:
+			default:
+				if err := HandleCommand(o.CmdHandler, cmdArgs); err != nil {
+					fmt.Fprintf(o.IOStream.ErrOut, "Error: %v\n", cmdName)
+					os.Exit(1)
+				}
 			}
 		}
 	}
-	cmds.AddCommand(organize.NewCmdOrganize(o.IOStream))
 
 	return cmds
 }
@@ -80,7 +83,6 @@ func NewDefaultHandler(validPrefixes []string) *DefaultHandler {
 
 func (h *DefaultHandler) Lookup(filename string) (string, bool) {
 	for _, prefix := range h.ValidPrefixes {
-		fmt.Println(prefix, filename)
 		path, err := exec.LookPath(fmt.Sprintf("%s-%s", prefix, filename))
 		fmt.Println(err)
 		if len(path) == 0 {
