@@ -18,7 +18,8 @@ func NewGetOptions(parent string) *GetOptions {
 
 func NewCmdGet(parent string) *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "get",
+		Use:   "get",
+		Short: "Display one or many resources",
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Println(args)
 		},
