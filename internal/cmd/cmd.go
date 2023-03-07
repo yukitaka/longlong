@@ -39,7 +39,7 @@ llctl controls the LongLong manager.
 Find more information at:
 https://github.com/yukitaka/longlong/`,
 	}
-	cmds.AddCommand(get.NewCmdGet("llctl"))
+	cmds.AddCommand(get.NewCmdGet("llctl", o.IOStream))
 
 	if len(o.Arguments) > 1 {
 		cmdArgs := o.Arguments[1:]
