@@ -33,3 +33,7 @@ func NewCmdGet(parent string, streams cli.IOStream) *cobra.Command {
 
 	return cmd
 }
+
+func checkErr(err error) {
+	return
+}
