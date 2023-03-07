@@ -20,14 +20,13 @@ func NewGetOptions(parent string, streams cli.IOStream) *GetOptions {
 }
 
 func NewCmdGet(parent string, streams cli.IOStream) *cobra.Command {
-	_ = NewGetOptions(parent, streams)
+	o := NewGetOptions(parent, streams)
 
 	cmd := &cobra.Command{
 		Use:   "get",
 		Short: "Display one or many resources",
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("in run")
-			fmt.Println(args)
+			checkErr(o.Complete(cmd, args))
 		},
 	}
 
@@ -36,4 +35,9 @@ func NewCmdGet(parent string, streams cli.IOStream) *cobra.Command {
 
 func checkErr(err error) {
 	return
+}
+
+func (o *GetOptions) Complete(cmd *cobra.Command, args []string) error {
+	fmt.Printf("Args is %v.", args)
+	return nil
 }
