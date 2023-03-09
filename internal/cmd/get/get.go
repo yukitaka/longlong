@@ -26,9 +26,18 @@ func NewCmdGet(parent string, streams cli.IOStream) *cobra.Command {
 		Use:   "get",
 		Short: "Display one or many resources",
 		Run: func(cmd *cobra.Command, args []string) {
-			checkErr(o.Complete(cmd, args))
+			checkErr(o.Run(cmd, args))
 		},
 	}
+
+	cmd.AddCommand(&cobra.Command{
+		Use:     "organization",
+		Aliases: []string{"organ"},
+		Short:   "Display one or many organizations",
+		Run: func(cmd *cobra.Command, args []string) {
+			checkErr(o.Organization(cmd, args))
+		},
+	})
 
 	return cmd
 }
@@ -37,7 +46,12 @@ func checkErr(err error) {
 	return
 }
 
-func (o *GetOptions) Complete(cmd *cobra.Command, args []string) error {
+func (o *GetOptions) Run(cmd *cobra.Command, args []string) error {
 	fmt.Printf("Args is %v.", args)
+	return nil
+}
+
+func (o *GetOptions) Organization(cmd *cobra.Command, args []string) error {
+	fmt.Printf("Organization args is %v.", args)
 	return nil
 }
