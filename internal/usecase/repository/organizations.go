@@ -3,7 +3,7 @@ package repository
 
 import "github.com/yukitaka/longlong/internal/entity"
 
-type Organizes interface {
+type Organizations interface {
 	Create(name string) int
-	Find(int) (*entity.Organize, error)
+	Find(int) (*entity.Organization, error)
 }
