@@ -8,6 +8,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/yukitaka/longlong/internal/cli"
+	"github.com/yukitaka/longlong/internal/cmd/create"
 	"github.com/yukitaka/longlong/internal/cmd/get"
 )
 
@@ -40,6 +41,7 @@ Find more information at:
 https://github.com/yukitaka/longlong/`,
 	}
 	cmds.AddCommand(get.NewCmdGet("llctl", o.IOStream))
+	cmds.AddCommand(create.NewCmdCreate("llctl", o.IOStream))
 
 	if len(o.Arguments) > 1 {
 		cmdArgs := o.Arguments[1:]
