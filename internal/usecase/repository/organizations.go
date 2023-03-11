@@ -5,5 +5,5 @@ import "github.com/yukitaka/longlong/internal/entity"
 
 type Organizations interface {
 	Create(name string) int
-	Find(int) (*entity.Organization, error)
+	Find(id int) (*entity.Organization, error)
 }

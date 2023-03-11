@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/yukitaka/longlong/internal/cli"
+	"github.com/yukitaka/longlong/internal/interface/repository"
+	"github.com/yukitaka/longlong/internal/usecase"
 )
 
 type Options struct {
@@ -52,6 +54,10 @@ func (o *Options) Run(cmd *cobra.Command, args []string) error {
 }
 
 func (o *Options) Organization(cmd *cobra.Command, args []string) error {
+	rep := repository.NewOrganizationsRepository()
+	itr := usecase.NewOrganizationCreator(rep)
+	itr.Create(args[0])
 	fmt.Printf("Organization args is %v.", args)
+
 	return nil
 }
