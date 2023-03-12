@@ -1,10 +1,10 @@
 package usecase
 
 import (
+	"github.com/yukitaka/longlong/internal/domain/entity"
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/yukitaka/longlong/internal/entity"
 	mock_repository "github.com/yukitaka/longlong/mock/repository"
 )
 
