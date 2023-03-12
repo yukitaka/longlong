@@ -3,8 +3,7 @@ package usecase
 import (
 	"errors"
 	"fmt"
-
-	"github.com/yukitaka/longlong/internal/usecase/repository"
+	"github.com/yukitaka/longlong/internal/domain/usecase/repository"
 )
 
 type OrganizationCreator struct {

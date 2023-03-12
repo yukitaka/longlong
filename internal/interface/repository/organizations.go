@@ -2,8 +2,8 @@ package repository
 
 import (
 	"fmt"
-	"github.com/yukitaka/longlong/internal/entity"
-	rep "github.com/yukitaka/longlong/internal/usecase/repository"
+	"github.com/yukitaka/longlong/internal/domain/entity"
+	rep "github.com/yukitaka/longlong/internal/domain/usecase/repository"
 )
 
 type Organizations struct {
