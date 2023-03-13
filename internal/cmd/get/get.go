@@ -2,6 +2,9 @@ package get
 
 import (
 	"fmt"
+	"github.com/yukitaka/longlong/internal/domain/usecase"
+	"github.com/yukitaka/longlong/internal/interface/repository"
+	"strconv"
 
 	"github.com/spf13/cobra"
 	"github.com/yukitaka/longlong/internal/cli"
@@ -23,8 +26,9 @@ func NewCmdGet(parent string, streams cli.IOStream) *cobra.Command {
 	o := NewGetOptions(parent, streams)
 
 	cmd := &cobra.Command{
-		Use:   "get",
-		Short: "Display one or many resources",
+		Use:     "get",
+		Aliases: []string{"g"},
+		Short:   "Display one or many resources",
 		Run: func(cmd *cobra.Command, args []string) {
 			checkErr(o.Run(cmd, args))
 		},
@@ -52,6 +56,13 @@ func (o *GetOptions) Run(cmd *cobra.Command, args []string) error {
 }
 
 func (o *GetOptions) Organization(cmd *cobra.Command, args []string) error {
-	fmt.Printf("Organization args is %v.", args)
+	rep := repository.NewOrganizationsRepository()
+	itr := usecase.NewOrganizationFinder(rep)
+	id, err := strconv.Atoi(args[0])
+	if err != nil {
+		return err
+	}
+	itr.Find(id)
+
 	return nil
 }
