@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"fmt"
 	"github.com/yukitaka/longlong/internal/domain/entity"
 	rep "github.com/yukitaka/longlong/internal/domain/usecase/repository"
@@ -35,9 +36,10 @@ func (o *Organizations) Create(name string) int {
 }
 
 func (o *Organizations) Find(id int) (*entity.Organization, error) {
-	o.organizations[id] = &entity.Organization{
-		Name: "example",
+	if organization, ok := o.organizations[id]; ok {
+		return organization, nil
 	}
+	fmt.Printf("Call to find Organization id by %d.\n", id)
 
-	return o.organizations[id], nil
+	return nil, errors.New(fmt.Sprintf("%d is not found.", id))
 }
