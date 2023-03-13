@@ -17,12 +17,21 @@ func NewOrganizationsRepository() rep.Organizations {
 }
 
 func (o *Organizations) Create(name string) int {
-	o.organizations[0] = &entity.Organization{
+	id := 0
+	for key := range o.organizations {
+		fmt.Println(key)
+		if key > id {
+			id = key
+		}
+	}
+	id++
+
+	o.organizations[id] = &entity.Organization{
 		Name: name,
 	}
-	fmt.Printf("Call to create Organization name by %s.\n", name)
+	fmt.Printf("Call to create Organization name by %s %d.\n", name, id)
 
-	return 0
+	return id
 }
 
 func (o *Organizations) Find(id int) (*entity.Organization, error) {
