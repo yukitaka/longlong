@@ -52,9 +52,9 @@ func (o *Options) Run(cmd *cobra.Command, args []string) error {
 
 func (o *Options) Organization(cmd *cobra.Command, args []string) error {
 	rep := repository.NewOrganizationsRepository()
+	defer rep.Close()
 	itr := usecase.NewOrganizationCreator(rep)
 	itr.Create(args[0])
-	fmt.Printf("Organization args is %v.", args)
 
 	return nil
 }

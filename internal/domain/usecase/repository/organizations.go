@@ -8,4 +8,5 @@ import (
 type Organizations interface {
 	Create(name string) int
 	Find(id int) (*entity.Organization, error)
+	Close()
 }

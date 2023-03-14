@@ -1,36 +1,57 @@
 package repository
 
 import (
+	"database/sql"
 	"errors"
 	"fmt"
 	"github.com/yukitaka/longlong/internal/domain/entity"
 	rep "github.com/yukitaka/longlong/internal/domain/usecase/repository"
+	"github.com/yukitaka/longlong/internal/util"
 )
 
 type Organizations struct {
 	organizations map[int]*entity.Organization
+	sql.DB
 }
 
 func NewOrganizationsRepository() rep.Organizations {
+	con, err := sql.Open("sqlite3", "./longlong.db")
+	if err != nil {
+		util.CheckErr(err)
+	}
+
 	return &Organizations{
 		organizations: make(map[int]*entity.Organization),
+		DB:            *con,
 	}
 }
 
-func (o *Organizations) Create(name string) int {
-	id := 0
-	for key := range o.organizations {
-		fmt.Println(key)
-		if key > id {
-			id = key
-		}
-	}
-	id++
+func (o *Organizations) Close() {
+	o.DB.Close()
+}
 
-	o.organizations[id] = &entity.Organization{
-		Name: name,
+func (o *Organizations) Create(name string) int {
+	query := "select max(id) from organizations"
+	row := o.DB.QueryRow(query)
+	var nullableId sql.NullInt64
+	err := row.Scan(&nullableId)
+	if err != nil {
+		util.CheckErr(err)
+		return -1
 	}
-	fmt.Printf("Call to create Organization name by %s %d.\n", name, id)
+	id := 0
+	if nullableId.Valid {
+		id = int(nullableId.Int64)
+		id++
+	}
+
+	query = "insert into organizations (id, name) values (?, ?)"
+	_, err = o.DB.Exec(query, id, name)
+	if err != nil {
+		util.CheckErr(err)
+		return -1
+	}
+	fmt.Printf("Create Organization %s id %d.\n", name, id)
 
 	return id
 }
