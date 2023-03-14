@@ -6,6 +6,7 @@ import (
 	"github.com/yukitaka/longlong/internal/cli"
 	"github.com/yukitaka/longlong/internal/domain/usecase"
 	"github.com/yukitaka/longlong/internal/interface/repository"
+	"github.com/yukitaka/longlong/internal/util"
 )
 
 type Options struct {
@@ -28,7 +29,7 @@ func NewCmdCreate(parent string, streams cli.IOStream) *cobra.Command {
 		Aliases: []string{"c"},
 		Short:   "Create one resource",
 		Run: func(cmd *cobra.Command, args []string) {
-			checkErr(o.Run(cmd, args))
+			util.CheckErr(o.Run(cmd, args))
 		},
 	}
 
@@ -37,15 +38,11 @@ func NewCmdCreate(parent string, streams cli.IOStream) *cobra.Command {
 		Aliases: []string{"organ"},
 		Short:   "Create one organization",
 		Run: func(cmd *cobra.Command, args []string) {
-			checkErr(o.Organization(cmd, args))
+			util.CheckErr(o.Organization(cmd, args))
 		},
 	})
 
 	return cmd
-}
-
-func checkErr(err error) {
-	return
 }
 
 func (o *Options) Run(cmd *cobra.Command, args []string) error {

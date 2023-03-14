@@ -8,15 +8,16 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/yukitaka/longlong/internal/cli"
+	"github.com/yukitaka/longlong/internal/util"
 )
 
-type GetOptions struct {
+type Options struct {
 	CmdParent string
 	cli.IOStream
 }
 
-func NewGetOptions(parent string, streams cli.IOStream) *GetOptions {
-	return &GetOptions{
+func NewGetOptions(parent string, streams cli.IOStream) *Options {
+	return &Options{
 		CmdParent: parent,
 		IOStream:  streams,
 	}
@@ -30,7 +31,7 @@ func NewCmdGet(parent string, streams cli.IOStream) *cobra.Command {
 		Aliases: []string{"g"},
 		Short:   "Display one or many resources",
 		Run: func(cmd *cobra.Command, args []string) {
-			checkErr(o.Run(cmd, args))
+			util.CheckErr(o.Run(cmd, args))
 		},
 	}
 
@@ -39,23 +40,19 @@ func NewCmdGet(parent string, streams cli.IOStream) *cobra.Command {
 		Aliases: []string{"organ"},
 		Short:   "Display one or many organizations",
 		Run: func(cmd *cobra.Command, args []string) {
-			checkErr(o.Organization(cmd, args))
+			util.CheckErr(o.Organization(cmd, args))
 		},
 	})
 
 	return cmd
 }
 
-func checkErr(err error) {
-	return
-}
-
-func (o *GetOptions) Run(cmd *cobra.Command, args []string) error {
+func (o *Options) Run(cmd *cobra.Command, args []string) error {
 	fmt.Printf("Args is %v.", args)
 	return nil
 }
 
-func (o *GetOptions) Organization(cmd *cobra.Command, args []string) error {
+func (o *Options) Organization(cmd *cobra.Command, args []string) error {
 	rep := repository.NewOrganizationsRepository()
 	itr := usecase.NewOrganizationFinder(rep)
 	id, err := strconv.Atoi(args[0])
