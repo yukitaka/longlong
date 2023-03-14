@@ -29,7 +29,7 @@ func NewCmdCreate(parent string, streams cli.IOStream) *cobra.Command {
 		Aliases: []string{"c"},
 		Short:   "Create one resource",
 		Run: func(cmd *cobra.Command, args []string) {
-			util.CheckErr(o.Run(cmd, args))
+			fmt.Println("Error: must also specify a resource like an organization")
 		},
 	}
 
@@ -45,12 +45,11 @@ func NewCmdCreate(parent string, streams cli.IOStream) *cobra.Command {
 	return cmd
 }
 
-func (o *Options) Run(cmd *cobra.Command, args []string) error {
-	fmt.Printf("Args is %v.", args)
-	return nil
-}
-
 func (o *Options) Organization(cmd *cobra.Command, args []string) error {
+	if len(args) != 1 {
+		fmt.Println("Error: must also specify a name")
+		return nil
+	}
 	rep := repository.NewOrganizationsRepository()
 	defer rep.Close()
 	itr := usecase.NewOrganizationCreator(rep)
