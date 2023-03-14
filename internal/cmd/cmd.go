@@ -10,6 +10,7 @@ import (
 	"github.com/yukitaka/longlong/internal/cli"
 	"github.com/yukitaka/longlong/internal/cmd/create"
 	"github.com/yukitaka/longlong/internal/cmd/get"
+	initialize "github.com/yukitaka/longlong/internal/cmd/init"
 )
 
 type LlctlOptions struct {
@@ -40,6 +41,7 @@ llctl controls the LongLong manager.
 Find more information at:
 https://github.com/yukitaka/longlong/`,
 	}
+	cmds.AddCommand(initialize.NewCmdInit("llctl", o.IOStream))
 	cmds.AddCommand(get.NewCmdGet("llctl", o.IOStream))
 	cmds.AddCommand(create.NewCmdCreate("llctl", o.IOStream))
 
