@@ -8,6 +8,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/yukitaka/longlong/internal/cli"
+	"github.com/yukitaka/longlong/internal/util"
 )
 
 type Options struct {
@@ -30,7 +31,7 @@ func NewCmdGet(parent string, streams cli.IOStream) *cobra.Command {
 		Aliases: []string{"g"},
 		Short:   "Display one or many resources",
 		Run: func(cmd *cobra.Command, args []string) {
-			checkErr(o.Run(cmd, args))
+			util.CheckErr(o.Run(cmd, args))
 		},
 	}
 
@@ -39,15 +40,11 @@ func NewCmdGet(parent string, streams cli.IOStream) *cobra.Command {
 		Aliases: []string{"organ"},
 		Short:   "Display one or many organizations",
 		Run: func(cmd *cobra.Command, args []string) {
-			checkErr(o.Organization(cmd, args))
+			util.CheckErr(o.Organization(cmd, args))
 		},
 	})
 
 	return cmd
-}
-
-func checkErr(err error) {
-	return
 }
 
 func (o *Options) Run(cmd *cobra.Command, args []string) error {

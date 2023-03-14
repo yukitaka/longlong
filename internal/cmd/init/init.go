@@ -6,7 +6,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/spf13/cobra"
 	"github.com/yukitaka/longlong/internal/cli"
-	"log"
+	"github.com/yukitaka/longlong/internal/util"
 	"os"
 )
 
@@ -29,7 +29,7 @@ func NewCmdInit(parent string, streams cli.IOStream) *cobra.Command {
 		Use:   "init",
 		Short: "Display one or many resources",
 		Run: func(cmd *cobra.Command, args []string) {
-			checkErr(o.Run(cmd, args))
+			util.CheckErr(o.Run(cmd, args))
 		},
 	}
 
@@ -37,19 +37,11 @@ func NewCmdInit(parent string, streams cli.IOStream) *cobra.Command {
 		Use:   "sqlite",
 		Short: "Display one or many organizations",
 		Run: func(cmd *cobra.Command, args []string) {
-			checkErr(o.Sqlite(cmd, args))
+			util.CheckErr(o.Sqlite(cmd, args))
 		},
 	})
 
 	return cmd
-}
-
-func checkErr(err error) {
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return
 }
 
 func (o *Options) Run(cmd *cobra.Command, args []string) error {
