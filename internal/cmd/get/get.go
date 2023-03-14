@@ -10,13 +10,13 @@ import (
 	"github.com/yukitaka/longlong/internal/cli"
 )
 
-type GetOptions struct {
+type Options struct {
 	CmdParent string
 	cli.IOStream
 }
 
-func NewGetOptions(parent string, streams cli.IOStream) *GetOptions {
-	return &GetOptions{
+func NewGetOptions(parent string, streams cli.IOStream) *Options {
+	return &Options{
 		CmdParent: parent,
 		IOStream:  streams,
 	}
@@ -50,12 +50,12 @@ func checkErr(err error) {
 	return
 }
 
-func (o *GetOptions) Run(cmd *cobra.Command, args []string) error {
+func (o *Options) Run(cmd *cobra.Command, args []string) error {
 	fmt.Printf("Args is %v.", args)
 	return nil
 }
 
-func (o *GetOptions) Organization(cmd *cobra.Command, args []string) error {
+func (o *Options) Organization(cmd *cobra.Command, args []string) error {
 	rep := repository.NewOrganizationsRepository()
 	itr := usecase.NewOrganizationFinder(rep)
 	id, err := strconv.Atoi(args[0])
