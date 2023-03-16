@@ -1,8 +1,6 @@
 package usecase
 
 import (
-	"errors"
-	"fmt"
 	"github.com/yukitaka/longlong/internal/domain/usecase/repository"
 )
 
@@ -15,9 +13,10 @@ func NewOrganizationCreator(organizations repository.Organizations) *Organizatio
 }
 
 func (it *OrganizationCreator) New(name string) (int64, error) {
-	if id := it.Organizations.Create(name); id > 0 {
-		return id, nil
+	id, err := it.Organizations.Create(name)
+	if err != nil {
+		return -1, err
 	}
 
-	return 0, errors.New(fmt.Sprintf("Error: Create %s", name))
+	return id, nil
 }
