@@ -34,11 +34,23 @@ func (m *MockOrganizations) EXPECT() *MockOrganizationsMockRecorder {
 	return m.recorder
 }
 
+// Close mocks base method.
+func (m *MockOrganizations) Close() {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "Close")
+}
+
+// Close indicates an expected call of Close.
+func (mr *MockOrganizationsMockRecorder) Close() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Close", reflect.TypeOf((*MockOrganizations)(nil).Close))
+}
+
 // Create mocks base method.
-func (m *MockOrganizations) Create(name string) int {
+func (m *MockOrganizations) Create(name string) int64 {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", name)
-	ret0, _ := ret[0].(int)
+	ret0, _ := ret[0].(int64)
 	return ret0
 }
 
@@ -49,7 +61,7 @@ func (mr *MockOrganizationsMockRecorder) Create(name interface{}) *gomock.Call {
 }
 
 // Find mocks base method.
-func (m *MockOrganizations) Find(id int) (*entity.Organization, error) {
+func (m *MockOrganizations) Find(id int64) (*entity.Organization, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Find", id)
 	ret0, _ := ret[0].(*entity.Organization)

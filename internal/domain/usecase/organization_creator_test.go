@@ -11,12 +11,13 @@ func TestNewOrganizationCreator(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
+	expect := int64(1)
 	rep := mock_repository.NewMockOrganizations(ctrl)
-	rep.EXPECT().Create("Test").Return(1)
+	rep.EXPECT().Create("Test").Return(expect)
 
 	finder := NewOrganizationCreator(rep)
 	id := finder.Create("Test")
-	if id != 1 {
+	if id != expect {
 		t.Errorf("NewOrganizationCreator() = %v", id)
 	}
 }
