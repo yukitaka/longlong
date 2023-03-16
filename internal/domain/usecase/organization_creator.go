@@ -14,7 +14,7 @@ func NewOrganizationCreator(organizations repository.Organizations) *Organizatio
 	return &OrganizationCreator{organizations}
 }
 
-func (it *OrganizationCreator) New(name string) (int, error) {
+func (it *OrganizationCreator) New(name string) (int64, error) {
 	if id := it.Organizations.Create(name); id > 0 {
 		return id, nil
 	}

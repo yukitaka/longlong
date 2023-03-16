@@ -6,7 +6,7 @@ import (
 )
 
 type Organizations interface {
-	Create(name string) int
-	Find(id int) (*entity.Organization, error)
+	Create(name string) int64
+	Find(id int64) (*entity.Organization, error)
 	Close()
 }

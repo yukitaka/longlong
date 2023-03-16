@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"errors"
 	"fmt"
 	"github.com/yukitaka/longlong/internal/domain/entity"
 	rep "github.com/yukitaka/longlong/internal/domain/usecase/repository"
@@ -30,7 +29,7 @@ func (o *Organizations) Close() {
 	o.DB.Close()
 }
 
-func (o *Organizations) Create(name string) int {
+func (o *Organizations) Create(name string) int64 {
 	query := "select max(id) from organizations"
 	row := o.DB.QueryRow(query)
 	var nullableId sql.NullInt64
@@ -39,9 +38,9 @@ func (o *Organizations) Create(name string) int {
 		util.CheckErr(err)
 		return -1
 	}
-	id := 0
+	id := int64(0)
 	if nullableId.Valid {
-		id = int(nullableId.Int64)
+		id = nullableId.Int64
 		id++
 	}
 
@@ -56,11 +55,17 @@ func (o *Organizations) Create(name string) int {
 	return id
 }
 
-func (o *Organizations) Find(id int) (*entity.Organization, error) {
-	if organization, ok := o.organizations[id]; ok {
-		return organization, nil
+func (o *Organizations) Find(id int64) (*entity.Organization, error) {
+	stmt, err := o.DB.Prepare("select name from organizations where id=?")
+	if err != nil {
+		return nil, err
 	}
-	fmt.Printf("Call to find Organization id by %d.\n", id)
+	defer stmt.Close()
+	var name string
+	err = stmt.QueryRow(id).Scan(&name)
+	if err != nil {
+		return nil, err
+	}
 
-	return nil, errors.New(fmt.Sprintf("%d is not found.", id))
+	return &entity.Organization{ID: id, Name: name}, nil
 }
