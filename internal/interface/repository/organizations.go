@@ -30,14 +30,13 @@ func (o *Organizations) Close() {
 	o.DB.Close()
 }
 
-func (o *Organizations) Create(name string) int64 {
+func (o *Organizations) Create(name string) (int64, error) {
 	query := "select max(id) from organizations"
 	row := o.DB.QueryRow(query)
 	var nullableId sql.NullInt64
 	err := row.Scan(&nullableId)
 	if err != nil {
-		util.CheckErr(err)
-		return -1
+		return -1, err
 	}
 	id := int64(0)
 	if nullableId.Valid {
@@ -48,12 +47,10 @@ func (o *Organizations) Create(name string) int64 {
 	query = "insert into organizations (id, name) values (?, ?)"
 	_, err = o.DB.Exec(query, id, name)
 	if err != nil {
-		util.CheckErr(err)
-		return -1
+		return -1, err
 	}
-	fmt.Printf("Create Organization %s id %d.\n", name, id)
 
-	return id
+	return id, nil
 }
 
 func (o *Organizations) Find(id int64) (*entity.Organization, error) {

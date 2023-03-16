@@ -53,7 +53,12 @@ func (o *Options) Organization(cmd *cobra.Command, args []string) error {
 	rep := repository.NewOrganizationsRepository()
 	defer rep.Close()
 	itr := usecase.NewOrganizationCreator(rep)
-	itr.Create(args[0])
+	name := args[0]
+	id, err := itr.Create(name)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("create a organization %s which id is %d\n", name, id)
 
 	return nil
 }
