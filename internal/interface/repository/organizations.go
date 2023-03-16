@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/yukitaka/longlong/internal/domain/entity"
 	rep "github.com/yukitaka/longlong/internal/domain/usecase/repository"
@@ -64,7 +65,11 @@ func (o *Organizations) Find(id int64) (*entity.Organization, error) {
 	var name string
 	err = stmt.QueryRow(id).Scan(&name)
 	if err != nil {
-		return nil, err
+		if err == sql.ErrNoRows {
+			return nil, errors.New(fmt.Sprintf("organization id %d is nothing", id))
+		} else {
+			return nil, err
+		}
 	}
 
 	return entity.NewOrganization(0, id, name), nil
