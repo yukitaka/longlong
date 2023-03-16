@@ -67,5 +67,5 @@ func (o *Organizations) Find(id int64) (*entity.Organization, error) {
 		return nil, err
 	}
 
-	return &entity.Organization{ID: id, Name: name}, nil
+	return entity.NewOrganization(0, id, name), nil
 }
