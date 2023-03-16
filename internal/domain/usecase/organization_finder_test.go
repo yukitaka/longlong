@@ -12,12 +12,13 @@ func TestNewOrganizationFinder(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
+	expect := int64(1)
 	rep := mock_repository.NewMockOrganizations(ctrl)
-	rep.EXPECT().Find(1).Return(&entity.Organization{ID: 1, Name: "Test"}, nil)
+	rep.EXPECT().Find(expect).Return(&entity.Organization{ID: expect, Name: "Test"}, nil)
 
 	finder := NewOrganizationFinder(rep)
-	o, _ := finder.FindById(1)
-	if o.ID != 1 || o.Name != "Test" {
+	o, _ := finder.FindById(expect)
+	if o.ID != expect || o.Name != "Test" {
 		t.Errorf("NewOrganizationFinder() = %v", o)
 	}
 }
