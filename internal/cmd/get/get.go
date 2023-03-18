@@ -55,15 +55,23 @@ func (o *Options) Run(cmd *cobra.Command, args []string) error {
 func (o *Options) Organization(cmd *cobra.Command, args []string) error {
 	rep := repository.NewOrganizationsRepository()
 	itr := usecase.NewOrganizationFinder(rep)
-	id, err := strconv.ParseInt(args[0], 10, 64)
-	if err != nil {
-		return err
+	if len(args) > 0 {
+		id, err := strconv.ParseInt(args[0], 10, 64)
+		if err != nil {
+			return err
+		}
+		org, err := itr.Find(id)
+		if err != nil {
+			return err
+		}
+		fmt.Printf("Found a organization %v\n", org)
+	} else {
+		orgs, err := itr.List()
+		if err != nil {
+			return err
+		}
+		fmt.Printf("Found a organizations %v\n", orgs)
 	}
-	org, err := itr.Find(id)
-	if err != nil {
-		return err
-	}
-	fmt.Printf("Found a organization %v\n", org)
 
 	return nil
 }

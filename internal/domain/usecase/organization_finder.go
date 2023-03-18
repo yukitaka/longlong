@@ -16,3 +16,7 @@ func NewOrganizationFinder(organizations repository.Organizations) *Organization
 func (it *OrganizationFinder) FindById(id int64) (*entity.Organization, error) {
 	return it.Organizations.Find(id)
 }
+
+func (it *OrganizationFinder) All() (*[]entity.Organization, error) {
+	return it.Organizations.List()
+}

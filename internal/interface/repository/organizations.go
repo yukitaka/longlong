@@ -71,3 +71,23 @@ func (o *Organizations) Find(id int64) (*entity.Organization, error) {
 
 	return entity.NewOrganization(0, id, name), nil
 }
+
+func (o *Organizations) List() (*[]entity.Organization, error) {
+	rows, err := o.DB.Query("select id, name from organizations")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var organizations []entity.Organization
+	for rows.Next() {
+		var organization entity.Organization
+		err = rows.Scan(&organization.ID, &organization.Name)
+		if err != nil {
+			return nil, err
+		}
+		organizations = append(organizations, organization)
+	}
+
+	return &organizations, nil
+}
