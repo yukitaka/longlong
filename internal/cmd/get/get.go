@@ -9,6 +9,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/yukitaka/longlong/internal/cli"
 	"github.com/yukitaka/longlong/internal/util"
+
+	"gopkg.in/yaml.v3"
 )
 
 type Options struct {
@@ -55,23 +57,23 @@ func (o *Options) Run(cmd *cobra.Command, args []string) error {
 func (o *Options) Organization(cmd *cobra.Command, args []string) error {
 	rep := repository.NewOrganizationsRepository()
 	itr := usecase.NewOrganizationFinder(rep)
+
+	var err error
 	if len(args) > 0 {
-		id, err := strconv.ParseInt(args[0], 10, 64)
-		if err != nil {
-			return err
+		if id, err := strconv.ParseInt(args[0], 10, 64); err == nil {
+			if organization, err := itr.Find(id); err == nil {
+				if organizationYaml, err := yaml.Marshal(&organization); err == nil {
+					fmt.Println(string(organizationYaml))
+				}
+			}
 		}
-		org, err := itr.Find(id)
-		if err != nil {
-			return err
-		}
-		fmt.Printf("Found a organization %v\n", org)
 	} else {
-		orgs, err := itr.List()
-		if err != nil {
-			return err
+		if organizations, err := itr.List(); err == nil {
+			if organizationsYaml, err := yaml.Marshal(&organizations); err == nil {
+				fmt.Println(string(organizationsYaml))
+			}
 		}
-		fmt.Printf("Found a organizations %v\n", orgs)
 	}
 
-	return nil
+	return err
 }
