@@ -15,18 +15,20 @@ import (
 
 type Options struct {
 	CmdParent string
+	Output    string
 	cli.IOStream
 }
 
-func NewGetOptions(parent string, streams cli.IOStream) *Options {
+func NewGetOptions(parent, output string, streams cli.IOStream) *Options {
 	return &Options{
 		CmdParent: parent,
+		Output:    output,
 		IOStream:  streams,
 	}
 }
 
 func NewCmdGet(parent string, streams cli.IOStream) *cobra.Command {
-	o := NewGetOptions(parent, streams)
+	o := NewGetOptions(parent, "yaml", streams)
 
 	cmd := &cobra.Command{
 		Use:     "get",
@@ -37,14 +39,16 @@ func NewCmdGet(parent string, streams cli.IOStream) *cobra.Command {
 		},
 	}
 
-	cmd.AddCommand(&cobra.Command{
+	organizationCmd := &cobra.Command{
 		Use:     "organization",
 		Aliases: []string{"organ"},
 		Short:   "Display one or many organizations",
 		Run: func(cmd *cobra.Command, args []string) {
 			util.CheckErr(o.Organization(cmd, args))
 		},
-	})
+	}
+	organizationCmd.PersistentFlags().StringP("output", "o", "yaml", "output format")
+	cmd.AddCommand(organizationCmd)
 
 	return cmd
 }
@@ -59,18 +63,28 @@ func (o *Options) Organization(cmd *cobra.Command, args []string) error {
 	itr := usecase.NewOrganizationFinder(rep)
 
 	var err error
-	if len(args) > 0 {
-		if id, err := strconv.ParseInt(args[0], 10, 64); err == nil {
-			if organization, err := itr.Find(id); err == nil {
-				if organizationYaml, err := yaml.Marshal(&organization); err == nil {
-					fmt.Println(string(organizationYaml))
+	if output, err := cmd.PersistentFlags().GetString("output"); err == nil {
+		if len(args) > 0 {
+			if id, err := strconv.ParseInt(args[0], 10, 64); err == nil {
+				if organization, err := itr.Find(id); err == nil {
+					if output == "yaml" {
+						if organizationYaml, err := yaml.Marshal(&organization); err == nil {
+							fmt.Println(string(organizationYaml))
+						}
+					} else {
+						fmt.Printf("%v\n", organization)
+					}
 				}
 			}
-		}
-	} else {
-		if organizations, err := itr.List(); err == nil {
-			if organizationsYaml, err := yaml.Marshal(&organizations); err == nil {
-				fmt.Println(string(organizationsYaml))
+		} else {
+			if organizations, err := itr.List(); err == nil {
+				if output == "yaml" {
+					if organizationsYaml, err := yaml.Marshal(&organizations); err == nil {
+						fmt.Println(string(organizationsYaml))
+					}
+				} else {
+					fmt.Printf("%v\n", organizations)
+				}
 			}
 		}
 	}
