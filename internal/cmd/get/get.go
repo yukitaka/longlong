@@ -20,20 +20,18 @@ import (
 
 type Options struct {
 	CmdParent string
-	Output    string
 	cli.IOStream
 }
 
-func NewGetOptions(parent, output string, streams cli.IOStream) *Options {
+func NewGetOptions(parent string, streams cli.IOStream) *Options {
 	return &Options{
 		CmdParent: parent,
-		Output:    output,
 		IOStream:  streams,
 	}
 }
 
 func NewCmdGet(parent string, streams cli.IOStream) *cobra.Command {
-	o := NewGetOptions(parent, "yaml", streams)
+	o := NewGetOptions(parent, streams)
 
 	cmd := &cobra.Command{
 		Use:     "get",
@@ -52,7 +50,7 @@ func NewCmdGet(parent string, streams cli.IOStream) *cobra.Command {
 			util.CheckErr(o.Organization(cmd, args))
 		},
 	}
-	organizationCmd.PersistentFlags().StringP("output", "o", "yaml", "output format")
+	organizationCmd.PersistentFlags().StringP("output", "o", "table", "output format")
 	cmd.AddCommand(organizationCmd)
 
 	return cmd
