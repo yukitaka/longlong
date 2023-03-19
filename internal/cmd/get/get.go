@@ -67,27 +67,25 @@ func (o *Options) Organization(cmd *cobra.Command, args []string) error {
 		if len(args) > 0 {
 			if id, err := strconv.ParseInt(args[0], 10, 64); err == nil {
 				if organization, err := itr.Find(id); err == nil {
-					if output == "yaml" {
-						if organizationYaml, err := yaml.Marshal(&organization); err == nil {
-							fmt.Println(string(organizationYaml))
-						}
-					} else {
-						fmt.Printf("%v\n", organization)
-					}
+					o.print(output, organization)
 				}
 			}
 		} else {
 			if organizations, err := itr.List(); err == nil {
-				if output == "yaml" {
-					if organizationsYaml, err := yaml.Marshal(&organizations); err == nil {
-						fmt.Println(string(organizationsYaml))
-					}
-				} else {
-					fmt.Printf("%v\n", organizations)
-				}
+				o.print(output, organizations)
 			}
 		}
 	}
 
 	return err
+}
+
+func (o *Options) print(output string, data interface{}) {
+	if output == "yaml" {
+		if organizationsYaml, err := yaml.Marshal(&data); err == nil {
+			fmt.Println(string(organizationsYaml))
+		}
+	} else {
+		fmt.Printf("%v\n", data)
+	}
 }
