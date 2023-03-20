@@ -2,33 +2,35 @@ package get
 
 import (
 	"fmt"
+	tea "github.com/charmbracelet/bubbletea"
+	"github.com/yukitaka/longlong/internal/domain/entity"
 	"github.com/yukitaka/longlong/internal/domain/usecase"
+	"github.com/yukitaka/longlong/internal/interface/output"
 	"github.com/yukitaka/longlong/internal/interface/repository"
+	"os"
 	"strconv"
 
+	"github.com/charmbracelet/bubbles/table"
 	"github.com/spf13/cobra"
 	"github.com/yukitaka/longlong/internal/cli"
 	"github.com/yukitaka/longlong/internal/util"
-
 	"gopkg.in/yaml.v3"
 )
 
 type Options struct {
 	CmdParent string
-	Output    string
 	cli.IOStream
 }
 
-func NewGetOptions(parent, output string, streams cli.IOStream) *Options {
+func NewGetOptions(parent string, streams cli.IOStream) *Options {
 	return &Options{
 		CmdParent: parent,
-		Output:    output,
 		IOStream:  streams,
 	}
 }
 
 func NewCmdGet(parent string, streams cli.IOStream) *cobra.Command {
-	o := NewGetOptions(parent, "yaml", streams)
+	o := NewGetOptions(parent, streams)
 
 	cmd := &cobra.Command{
 		Use:     "get",
@@ -47,7 +49,7 @@ func NewCmdGet(parent string, streams cli.IOStream) *cobra.Command {
 			util.CheckErr(o.Organization(cmd, args))
 		},
 	}
-	organizationCmd.PersistentFlags().StringP("output", "o", "yaml", "output format")
+	organizationCmd.PersistentFlags().StringP("output", "o", "table", "output format")
 	cmd.AddCommand(organizationCmd)
 
 	return cmd
@@ -80,12 +82,38 @@ func (o *Options) Organization(cmd *cobra.Command, args []string) error {
 	return err
 }
 
-func (o *Options) print(output string, data interface{}) {
-	if output == "yaml" {
+func (o *Options) print(format string, data interface{}) {
+	if format == "yaml" {
 		if organizationsYaml, err := yaml.Marshal(&data); err == nil {
 			fmt.Println(string(organizationsYaml))
 		}
 	} else {
-		fmt.Printf("%v\n", data)
+		columns := []table.Column{
+			{Title: "PID", Width: 4},
+			{Title: "ID", Width: 4},
+			{Title: "Name", Width: 16},
+		}
+		var rows []table.Row
+		if o, ok := data.(*entity.Organization); ok {
+			rows = append(rows, table.Row{strconv.FormatInt(o.ParentId, 10), strconv.FormatInt(o.Id, 10), o.Name})
+		} else if orgs, ok := data.(*[]entity.Organization); ok {
+			for _, o := range *orgs {
+				rows = append(rows, table.Row{strconv.FormatInt(o.ParentId, 10), strconv.FormatInt(o.Id, 10), o.Name})
+			}
+		}
+		t := table.New(
+			table.WithColumns(columns),
+			table.WithRows(rows),
+			table.WithFocused(true),
+			table.WithHeight(len(rows)),
+		)
+
+		m := output.NewModel(func(id string) tea.Cmd {
+			return tea.Printf("unfold %s", id)
+		}, t)
+		if _, err := tea.NewProgram(m).Run(); err != nil {
+			fmt.Println("Error running program: ", err)
+			os.Exit(1)
+		}
 	}
 }

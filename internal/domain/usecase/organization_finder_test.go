@@ -14,11 +14,11 @@ func TestNewOrganizationFinder(t *testing.T) {
 
 	expect := int64(1)
 	rep := mock_repository.NewMockOrganizations(ctrl)
-	rep.EXPECT().Find(expect).Return(&entity.Organization{ID: expect, Name: "Test"}, nil)
+	rep.EXPECT().Find(expect).Return(&entity.Organization{Id: expect, Name: "Test"}, nil)
 
 	finder := NewOrganizationFinder(rep)
 	o, _ := finder.FindById(expect)
-	if o.ID != expect || o.Name != "Test" {
+	if o.Id != expect || o.Name != "Test" {
 		t.Errorf("NewOrganizationFinder() = %v", o)
 	}
 }
