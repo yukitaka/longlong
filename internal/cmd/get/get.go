@@ -123,10 +123,10 @@ func (o *Options) print(output string, data interface{}) {
 		}
 		var rows []table.Row
 		if o, ok := data.(*entity.Organization); ok {
-			rows = append(rows, table.Row{strconv.FormatInt(o.ParentID, 10), strconv.FormatInt(o.ID, 10), o.Name})
+			rows = append(rows, table.Row{strconv.FormatInt(o.ParentId, 10), strconv.FormatInt(o.Id, 10), o.Name})
 		} else if orgs, ok := data.(*[]entity.Organization); ok {
 			for _, o := range *orgs {
-				rows = append(rows, table.Row{strconv.FormatInt(o.ParentID, 10), strconv.FormatInt(o.ID, 10), o.Name})
+				rows = append(rows, table.Row{strconv.FormatInt(o.ParentId, 10), strconv.FormatInt(o.Id, 10), o.Name})
 			}
 		}
 		t := table.New(

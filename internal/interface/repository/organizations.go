@@ -82,7 +82,7 @@ func (o *Organizations) List() (*[]entity.Organization, error) {
 	var organizations []entity.Organization
 	for rows.Next() {
 		var organization entity.Organization
-		err = rows.Scan(&organization.ID, &organization.Name)
+		err = rows.Scan(&organization.Id, &organization.Name)
 		if err != nil {
 			return nil, err
 		}
