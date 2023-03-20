@@ -132,8 +132,15 @@ func (o *Options) print(output string, data interface{}) {
 		t := table.New(
 			table.WithColumns(columns),
 			table.WithRows(rows),
+			table.WithFocused(true),
 			table.WithHeight(len(rows)),
 		)
+		s := table.DefaultStyles()
+		s.Selected = s.Selected.
+			Foreground(lipgloss.Color("229")).
+			Background(lipgloss.Color("57")).
+			Bold(false)
+		t.SetStyles(s)
 
 		m := model{t}
 		if _, err := tea.NewProgram(m).Run(); err != nil {
