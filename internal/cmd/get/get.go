@@ -136,6 +136,11 @@ func (o *Options) print(output string, data interface{}) {
 			table.WithHeight(len(rows)),
 		)
 		s := table.DefaultStyles()
+		s.Header = s.Header.
+			BorderStyle(lipgloss.NormalBorder()).
+			BorderForeground(lipgloss.Color("240")).
+			BorderBottom(true).
+			Bold(false)
 		s.Selected = s.Selected.
 			Foreground(lipgloss.Color("229")).
 			Background(lipgloss.Color("57")).
