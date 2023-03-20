@@ -86,6 +86,7 @@ func (o *Options) Organization(cmd *cobra.Command, args []string) error {
 var baseStyle = lipgloss.NewStyle().BorderStyle(lipgloss.NormalBorder()).BorderForeground(lipgloss.Color("240"))
 
 type model struct {
+	enter func(string) tea.Cmd
 	table table.Model
 }
 
@@ -98,6 +99,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 		case "esc", "q", "ctrl+c":
 			return m, tea.Quit
+		case "enter":
+			return m, tea.Batch(
+				m.enter(m.table.SelectedRow()[1]),
+			)
 		}
 	}
 
@@ -147,7 +152,9 @@ func (o *Options) print(output string, data interface{}) {
 			Bold(false)
 		t.SetStyles(s)
 
-		m := model{t}
+		m := model{enter: func(id string) tea.Cmd {
+			return tea.Printf("unfold %s", id)
+		}, table: t}
 		if _, err := tea.NewProgram(m).Run(); err != nil {
 			fmt.Println("Error running program: ", err)
 			os.Exit(1)
