@@ -3,9 +3,9 @@ package get
 import (
 	"fmt"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
 	"github.com/yukitaka/longlong/internal/domain/entity"
 	"github.com/yukitaka/longlong/internal/domain/usecase"
+	"github.com/yukitaka/longlong/internal/interface/output"
 	"github.com/yukitaka/longlong/internal/interface/repository"
 	"os"
 	"strconv"
@@ -14,7 +14,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/yukitaka/longlong/internal/cli"
 	"github.com/yukitaka/longlong/internal/util"
-
 	"gopkg.in/yaml.v3"
 )
 
@@ -83,40 +82,8 @@ func (o *Options) Organization(cmd *cobra.Command, args []string) error {
 	return err
 }
 
-var baseStyle = lipgloss.NewStyle().BorderStyle(lipgloss.NormalBorder()).BorderForeground(lipgloss.Color("240"))
-
-type model struct {
-	enter func(string) tea.Cmd
-	table table.Model
-}
-
-func (m model) Init() tea.Cmd { return nil }
-
-func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	var cmd tea.Cmd
-	switch msg := msg.(type) {
-	case tea.KeyMsg:
-		switch msg.String() {
-		case "esc", "q", "ctrl+c":
-			return m, tea.Quit
-		case "enter":
-			return m, tea.Batch(
-				m.enter(m.table.SelectedRow()[1]),
-			)
-		}
-	}
-
-	m.table, cmd = m.table.Update(msg)
-
-	return m, cmd
-}
-
-func (m model) View() string {
-	return baseStyle.Render(m.table.View()) + "\n"
-}
-
-func (o *Options) print(output string, data interface{}) {
-	if output == "yaml" {
+func (o *Options) print(format string, data interface{}) {
+	if format == "yaml" {
 		if organizationsYaml, err := yaml.Marshal(&data); err == nil {
 			fmt.Println(string(organizationsYaml))
 		}
@@ -140,21 +107,10 @@ func (o *Options) print(output string, data interface{}) {
 			table.WithFocused(true),
 			table.WithHeight(len(rows)),
 		)
-		s := table.DefaultStyles()
-		s.Header = s.Header.
-			BorderStyle(lipgloss.NormalBorder()).
-			BorderForeground(lipgloss.Color("240")).
-			BorderBottom(true).
-			Bold(false)
-		s.Selected = s.Selected.
-			Foreground(lipgloss.Color("229")).
-			Background(lipgloss.Color("57")).
-			Bold(false)
-		t.SetStyles(s)
 
-		m := model{enter: func(id string) tea.Cmd {
+		m := output.NewModel(func(id string) tea.Cmd {
 			return tea.Printf("unfold %s", id)
-		}, table: t}
+		}, t)
 		if _, err := tea.NewProgram(m).Run(); err != nil {
 			fmt.Println("Error running program: ", err)
 			os.Exit(1)
