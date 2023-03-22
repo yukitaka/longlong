@@ -13,10 +13,10 @@ func TestNewOrganizationCreator(t *testing.T) {
 
 	expect := int64(1)
 	rep := mock_repository.NewMockOrganizations(ctrl)
-	rep.EXPECT().Create("Test").Return(expect)
+	rep.EXPECT().Create("Test").Return(expect, nil)
 
 	finder := NewOrganizationCreator(rep)
-	id := finder.Create("Test")
+	id, _ := finder.Create("Test")
 	if id != expect {
 		t.Errorf("NewOrganizationCreator() = %v", id)
 	}
