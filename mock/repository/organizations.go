@@ -47,11 +47,12 @@ func (mr *MockOrganizationsMockRecorder) Close() *gomock.Call {
 }
 
 // Create mocks base method.
-func (m *MockOrganizations) Create(name string) int64 {
+func (m *MockOrganizations) Create(name string) (int64, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", name)
 	ret0, _ := ret[0].(int64)
-	return ret0
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // Create indicates an expected call of Create.
@@ -73,4 +74,19 @@ func (m *MockOrganizations) Find(id int64) (*entity.Organization, error) {
 func (mr *MockOrganizationsMockRecorder) Find(id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Find", reflect.TypeOf((*MockOrganizations)(nil).Find), id)
+}
+
+// List mocks base method.
+func (m *MockOrganizations) List() (*[]entity.Organization, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "List")
+	ret0, _ := ret[0].(*[]entity.Organization)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// List indicates an expected call of List.
+func (mr *MockOrganizationsMockRecorder) List() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockOrganizations)(nil).List))
 }

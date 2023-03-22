@@ -16,8 +16,8 @@ func TestNewOrganizationFinder(t *testing.T) {
 	rep := mock_repository.NewMockOrganizations(ctrl)
 	rep.EXPECT().Find(expect).Return(&entity.Organization{Id: expect, Name: "Test"}, nil)
 
-	finder := NewOrganizationFinder(rep)
-	o, _ := finder.FindById(expect)
+	itr := NewOrganizationFinder(rep)
+	o, _ := itr.FindById(expect)
 	if o.Id != expect || o.Name != "Test" {
 		t.Errorf("NewOrganizationFinder() = %v", o)
 	}
