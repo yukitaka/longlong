@@ -6,7 +6,10 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-var baseStyle = lipgloss.NewStyle().BorderStyle(lipgloss.NormalBorder()).BorderForeground(lipgloss.Color("240"))
+var (
+	baseStyle = lipgloss.NewStyle().BorderStyle(lipgloss.NormalBorder()).BorderForeground(lipgloss.Color("240"))
+	help      = lipgloss.NewStyle().Foreground(lipgloss.Color("241"))
+)
 
 type Model struct {
 	enter func(string) tea.Cmd
@@ -54,5 +57,5 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Model) View() string {
-	return baseStyle.Render(m.table.View()) + "\n"
+	return baseStyle.Render(m.table.View()) + "\n" + help.Render(" Quit[q] Up[↑/k] Down[↓/j]") + "\n"
 }
