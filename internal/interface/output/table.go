@@ -6,11 +6,15 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-var baseStyle = lipgloss.NewStyle().BorderStyle(lipgloss.NormalBorder()).BorderForeground(lipgloss.Color("240"))
+var (
+	baseStyle = lipgloss.NewStyle().BorderStyle(lipgloss.NormalBorder()).BorderForeground(lipgloss.Color("240"))
+	help      = lipgloss.NewStyle().Foreground(lipgloss.Color("241"))
+)
 
 type Model struct {
-	enter func(string) tea.Cmd
-	table table.Model
+	enter    func(string) tea.Cmd
+	table    table.Model
+	quitting bool
 }
 
 func NewModel(enter func(string) tea.Cmd, tbl table.Model) Model {
@@ -40,6 +44,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "esc", "q", "ctrl+c":
+			m.quitting = true
 			return m, tea.Quit
 		case "enter":
 			return m, tea.Batch(
@@ -54,5 +59,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Model) View() string {
-	return baseStyle.Render(m.table.View()) + "\n"
+	if m.quitting {
+		return "Bye!\n"
+	}
+
+	return baseStyle.Render(m.table.View()) + "\n" + help.Render(" Quit[q] Up[↑/k] Down[↓/j]") + "\n"
 }
