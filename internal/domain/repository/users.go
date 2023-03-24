@@ -8,6 +8,5 @@ import (
 type Users interface {
 	Create(name string) (int64, error)
 	Find(id int64) (*entity.User, error)
-	List() (*[]entity.User, error)
 	Close()
 }
