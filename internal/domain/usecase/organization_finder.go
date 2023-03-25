@@ -2,7 +2,7 @@ package usecase
 
 import (
 	"github.com/yukitaka/longlong/internal/domain/entity"
-	"github.com/yukitaka/longlong/internal/domain/usecase/repository"
+	"github.com/yukitaka/longlong/internal/domain/repository"
 )
 
 type OrganizationFinder struct {

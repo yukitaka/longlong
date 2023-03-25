@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/yukitaka/longlong/internal/domain/entity"
-	rep "github.com/yukitaka/longlong/internal/domain/usecase/repository"
+	rep "github.com/yukitaka/longlong/internal/domain/repository"
 	"github.com/yukitaka/longlong/internal/util"
 )
 
