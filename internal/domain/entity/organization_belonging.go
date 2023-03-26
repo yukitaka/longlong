@@ -2,9 +2,9 @@ package entity
 
 type OrganizationBelonging struct {
 	OrganizationId int64
-	UserId         int64
+	AvatarId       int64
 }
 
-func NewOrganizationBelonging(organizationId, userId int64) *OrganizationBelonging {
-	return &OrganizationBelonging{OrganizationId: organizationId, UserId: userId}
+func NewOrganizationBelonging(organizationId, avatarId int64) *OrganizationBelonging {
+	return &OrganizationBelonging{OrganizationId: organizationId, AvatarId: avatarId}
 }
