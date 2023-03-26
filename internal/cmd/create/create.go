@@ -42,6 +42,14 @@ func NewCmdCreate(parent string, streams cli.IOStream) *cobra.Command {
 		},
 	})
 
+	cmd.AddCommand(&cobra.Command{
+		Use:   "user",
+		Short: "Create one user",
+		Run: func(cmd *cobra.Command, args []string) {
+			util.CheckErr(o.User(cmd, args))
+		},
+	})
+
 	return cmd
 }
 
@@ -59,6 +67,24 @@ func (o *Options) Organization(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	fmt.Printf("create a organization %s which id is %d\n", name, id)
+
+	return nil
+}
+
+func (o *Options) User(cmd *cobra.Command, args []string) error {
+	if len(args) != 1 {
+		fmt.Println("Error: must also specify a name")
+		return nil
+	}
+	rep := repository.NewUsersRepository()
+	defer rep.Close()
+	itr := usecase.NewUserCreator(rep)
+	name := args[0]
+	id, err := itr.Create(name)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("create a user %s which id is %d\n", name, id)
 
 	return nil
 }
