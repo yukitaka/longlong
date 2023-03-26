@@ -59,6 +59,9 @@ func (o *Options) Sqlite(cmd *cobra.Command, args []string) error {
 
 	query := `
 	create table organizations (id integer not null primary key, name text);
+	create table users (id integer not null primary key);
+	create table profiles (id integer not null primary key, name text, full_name text);
+	create table user_profiles(user_id integer not null, profile_id integer not null);
 	`
 	_, err = db.Exec(query)
 	if err != nil {
