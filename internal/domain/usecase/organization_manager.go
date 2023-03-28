@@ -16,14 +16,14 @@ func NewOrganizationManager(id int64, organizations repository.Organizations, or
 	return &OrganizationManager{id, organizations, organizationBelongings, users}
 }
 
-func (it *OrganizationManager) AssignUser(userId int64) error {
-	return it.OrganizationBelongings.Entry(it.id, userId)
+func (it *OrganizationManager) AssignAvatar(avatarId int64) error {
+	return it.OrganizationBelongings.Entry(it.id, avatarId)
 }
 
-func (it *OrganizationManager) RejectUser(userId int64, reason string) error {
-	return it.OrganizationBelongings.Leave(it.id, userId, reason)
+func (it *OrganizationManager) RejectAvatar(avatarId int64, reason string) error {
+	return it.OrganizationBelongings.Leave(it.id, avatarId, reason)
 }
 
-func (it *OrganizationManager) Members() (*[]entity.User, error) {
+func (it *OrganizationManager) Members() (*[]entity.Avatar, error) {
 	return it.OrganizationBelongings.Members(it.id)
 }
