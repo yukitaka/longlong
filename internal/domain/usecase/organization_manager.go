@@ -18,3 +18,7 @@ func NewOrganizationManager(id int64, organizations repository.Organizations, or
 func (it *OrganizationManager) AssignUser(userId int64) error {
 	return it.OrganizationBelongings.Entry(it.id, userId)
 }
+
+func (it *OrganizationManager) RejectUser(userId int64, reason string) error {
+	return it.OrganizationBelongings.Leave(it.id, userId, reason)
+}
