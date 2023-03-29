@@ -38,7 +38,7 @@ func NewCmdCreate(parent string, streams cli.IOStream) *cobra.Command {
 		Aliases: []string{"organ"},
 		Short:   "Create one organization",
 		Run: func(cmd *cobra.Command, args []string) {
-			util.CheckErr(o.Organization(cmd, args))
+			util.CheckErr(o.Organization(args))
 		},
 	})
 
@@ -46,14 +46,14 @@ func NewCmdCreate(parent string, streams cli.IOStream) *cobra.Command {
 		Use:   "user",
 		Short: "Create one user",
 		Run: func(cmd *cobra.Command, args []string) {
-			util.CheckErr(o.User(cmd, args))
+			util.CheckErr(o.User(args))
 		},
 	})
 
 	return cmd
 }
 
-func (o *Options) Organization(cmd *cobra.Command, args []string) error {
+func (o *Options) Organization(args []string) error {
 	if len(args) != 1 {
 		fmt.Println("Error: must also specify a name")
 		return nil
@@ -71,7 +71,7 @@ func (o *Options) Organization(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func (o *Options) User(cmd *cobra.Command, args []string) error {
+func (o *Options) User(args []string) error {
 	if len(args) != 1 {
 		fmt.Println("Error: must also specify a name")
 		return nil

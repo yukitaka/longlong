@@ -11,7 +11,7 @@ import (
 
 type Organizations struct {
 	organizations map[int]*entity.Organization
-	sql.DB
+	*sql.DB
 }
 
 func NewOrganizationsRepository() rep.Organizations {
@@ -22,12 +22,15 @@ func NewOrganizationsRepository() rep.Organizations {
 
 	return &Organizations{
 		organizations: make(map[int]*entity.Organization),
-		DB:            *con,
+		DB:            con,
 	}
 }
 
 func (o *Organizations) Close() {
-	o.DB.Close()
+	err := o.DB.Close()
+	if err != nil {
+		fmt.Printf("Error: %v\n", err)
+	}
 }
 
 func (o *Organizations) Create(name string) (int64, error) {
@@ -58,7 +61,12 @@ func (o *Organizations) Find(id int64) (*entity.Organization, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer stmt.Close()
+	defer func(stmt *sql.Stmt) {
+		err := stmt.Close()
+		if err != nil {
+			fmt.Printf("Error: %v\n", err)
+		}
+	}(stmt)
 	var name string
 	err = stmt.QueryRow(id).Scan(&name)
 	if err != nil {
@@ -77,7 +85,12 @@ func (o *Organizations) List() (*[]entity.Organization, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+			fmt.Printf("Error: %v\n", err)
+		}
+	}(rows)
 
 	var organizations []entity.Organization
 	for rows.Next() {

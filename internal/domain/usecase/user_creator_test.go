@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	mock_repository "github.com/yukitaka/longlong/mock/repository"
+	mockRepository "github.com/yukitaka/longlong/mock/repository"
 )
 
 func TestNewUserCreator(t *testing.T) {
@@ -12,7 +12,7 @@ func TestNewUserCreator(t *testing.T) {
 	defer ctrl.Finish()
 
 	expect := int64(1)
-	rep := mock_repository.NewMockUsers(ctrl)
+	rep := mockRepository.NewMockUsers(ctrl)
 	rep.EXPECT().Create("Name").Return(expect, nil)
 
 	itr := NewUserCreator(rep)

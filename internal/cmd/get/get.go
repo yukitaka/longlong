@@ -37,7 +37,7 @@ func NewCmdGet(parent string, streams cli.IOStream) *cobra.Command {
 		Aliases: []string{"g"},
 		Short:   "Display one or many resources",
 		Run: func(cmd *cobra.Command, args []string) {
-			util.CheckErr(o.Run(cmd, args))
+			util.CheckErr(o.Run(args))
 		},
 	}
 
@@ -55,7 +55,7 @@ func NewCmdGet(parent string, streams cli.IOStream) *cobra.Command {
 	return cmd
 }
 
-func (o *Options) Run(cmd *cobra.Command, args []string) error {
+func (o *Options) Run(args []string) error {
 	fmt.Printf("Args is %v.", args)
 	return nil
 }
@@ -65,16 +65,16 @@ func (o *Options) Organization(cmd *cobra.Command, args []string) error {
 	itr := usecase.NewOrganizationFinder(rep)
 
 	var err error
-	if output, err := cmd.PersistentFlags().GetString("output"); err == nil {
+	if outputFlag, err := cmd.PersistentFlags().GetString("output"); err == nil {
 		if len(args) > 0 {
 			if id, err := strconv.ParseInt(args[0], 10, 64); err == nil {
 				if organization, err := itr.Find(id); err == nil {
-					o.print(output, organization)
+					o.print(outputFlag, organization)
 				}
 			}
 		} else {
 			if organizations, err := itr.List(); err == nil {
-				o.print(output, organizations)
+				o.print(outputFlag, organizations)
 			}
 		}
 	}
@@ -96,8 +96,8 @@ func (o *Options) print(format string, data interface{}) {
 		var rows []table.Row
 		if o, ok := data.(*entity.Organization); ok {
 			rows = append(rows, table.Row{strconv.FormatInt(o.ParentId, 10), strconv.FormatInt(o.Id, 10), o.Name})
-		} else if orgs, ok := data.(*[]entity.Organization); ok {
-			for _, o := range *orgs {
+		} else if organizations, ok := data.(*[]entity.Organization); ok {
+			for _, o := range *organizations {
 				rows = append(rows, table.Row{strconv.FormatInt(o.ParentId, 10), strconv.FormatInt(o.Id, 10), o.Name})
 			}
 		}

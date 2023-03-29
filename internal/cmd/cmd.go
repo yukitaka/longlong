@@ -32,7 +32,7 @@ func NewLlctlCommand() *cobra.Command {
 }
 
 func NewLlctlCommandWithArgs(o LlctlOptions) *cobra.Command {
-	cmds := &cobra.Command{
+	cmdGroup := &cobra.Command{
 		Use:   "llctl",
 		Short: "llctl controls the LongLong manager",
 		Long: `
@@ -41,13 +41,13 @@ llctl controls the LongLong manager.
 Find more information at:
 https://github.com/yukitaka/longlong/`,
 	}
-	cmds.AddCommand(initialize.NewCmdInit("llctl", o.IOStream))
-	cmds.AddCommand(get.NewCmdGet("llctl", o.IOStream))
-	cmds.AddCommand(create.NewCmdCreate("llctl", o.IOStream))
+	cmdGroup.AddCommand(initialize.NewCmdInit("llctl", o.IOStream))
+	cmdGroup.AddCommand(get.NewCmdGet("llctl", o.IOStream))
+	cmdGroup.AddCommand(create.NewCmdCreate("llctl", o.IOStream))
 
 	if len(o.Arguments) > 1 {
 		cmdArgs := o.Arguments[1:]
-		if _, _, err := cmds.Find(cmdArgs); err != nil {
+		if _, _, err := cmdGroup.Find(cmdArgs); err != nil {
 			var cmdName string
 			for _, arg := range cmdArgs {
 				if !strings.HasPrefix(arg, "-") {
@@ -60,14 +60,18 @@ https://github.com/yukitaka/longlong/`,
 			case "help", cobra.ShellCompRequestCmd, cobra.ShellCompNoDescRequestCmd:
 			default:
 				if err := HandleCommand(o.CmdHandler, cmdArgs); err != nil {
-					fmt.Fprintf(o.IOStream.ErrOut, "Error: %v\n", cmdName)
+					_, err := fmt.Fprintf(o.IOStream.ErrOut, "Error: %v %v\n", cmdName, err)
+					if err != nil {
+						fmt.Printf("Error: %v\n", err)
+						return nil
+					}
 					os.Exit(1)
 				}
 			}
 		}
 	}
 
-	return cmds
+	return cmdGroup
 }
 
 type Handler interface {

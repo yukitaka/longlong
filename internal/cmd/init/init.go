@@ -29,7 +29,7 @@ func NewCmdInit(parent string, streams cli.IOStream) *cobra.Command {
 		Use:   "init",
 		Short: "Display one or many resources",
 		Run: func(cmd *cobra.Command, args []string) {
-			util.CheckErr(o.Run(cmd, args))
+			util.CheckErr(o.Run(args))
 		},
 	}
 
@@ -37,25 +37,33 @@ func NewCmdInit(parent string, streams cli.IOStream) *cobra.Command {
 		Use:   "sqlite",
 		Short: "Display one or many organizations",
 		Run: func(cmd *cobra.Command, args []string) {
-			util.CheckErr(o.Sqlite(cmd, args))
+			util.CheckErr(o.Sqlite())
 		},
 	})
 
 	return cmd
 }
 
-func (o *Options) Run(cmd *cobra.Command, args []string) error {
+func (o *Options) Run(args []string) error {
 	fmt.Printf("Args is %v.", args)
 	return nil
 }
 
-func (o *Options) Sqlite(cmd *cobra.Command, args []string) error {
-	os.Remove("./longlong.db")
+func (o *Options) Sqlite() error {
+	err := os.Remove("./longlong.db")
+	if err != nil {
+		return err
+	}
 	db, err := sql.Open("sqlite3", "./longlong.db")
 	if err != nil {
 		return err
 	}
-	defer db.Close()
+	defer func(db *sql.DB) {
+		err := db.Close()
+		if err != nil {
+			fmt.Printf("Error: %v", err)
+		}
+	}(db)
 
 	query := `
 	create table organizations (id integer not null primary key, name text);

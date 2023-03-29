@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/yukitaka/longlong/internal/domain/entity"
 	rep "github.com/yukitaka/longlong/internal/domain/repository"
 	"github.com/yukitaka/longlong/internal/util"
@@ -9,7 +10,7 @@ import (
 
 type Users struct {
 	users map[int]*entity.User
-	sql.DB
+	*sql.DB
 }
 
 func NewUsersRepository() rep.Users {
@@ -20,12 +21,15 @@ func NewUsersRepository() rep.Users {
 
 	return &Users{
 		users: make(map[int]*entity.User),
-		DB:    *con,
+		DB:    con,
 	}
 }
 
 func (rep *Users) Close() {
-	rep.DB.Close()
+	err := rep.DB.Close()
+	if err != nil {
+		fmt.Printf("Error: %v\n", err)
+	}
 }
 
 func (rep *Users) Create(name string) (int64, error) {
@@ -56,7 +60,10 @@ func (rep *Users) Create(name string) (int64, error) {
 	if err != nil {
 		return -1, err
 	}
-	tx.Commit()
+	err = tx.Commit()
+	if err != nil {
+		return -1, err
+	}
 
 	return id, nil
 }

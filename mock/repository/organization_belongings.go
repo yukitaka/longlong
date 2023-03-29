@@ -47,38 +47,38 @@ func (mr *MockOrganizationBelongingsMockRecorder) Close() *gomock.Call {
 }
 
 // Entry mocks base method.
-func (m *MockOrganizationBelongings) Entry(organizationId, userId int64) error {
+func (m *MockOrganizationBelongings) Entry(organizationId, avatarId int64) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Entry", organizationId, userId)
+	ret := m.ctrl.Call(m, "Entry", organizationId, avatarId)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Entry indicates an expected call of Entry.
-func (mr *MockOrganizationBelongingsMockRecorder) Entry(organizationId, userId interface{}) *gomock.Call {
+func (mr *MockOrganizationBelongingsMockRecorder) Entry(organizationId, avatarId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Entry", reflect.TypeOf((*MockOrganizationBelongings)(nil).Entry), organizationId, userId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Entry", reflect.TypeOf((*MockOrganizationBelongings)(nil).Entry), organizationId, avatarId)
 }
 
 // Leave mocks base method.
-func (m *MockOrganizationBelongings) Leave(organizationId, userId int64, reason string) error {
+func (m *MockOrganizationBelongings) Leave(organizationId, avatarId int64, reason string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Leave", organizationId, userId, reason)
+	ret := m.ctrl.Call(m, "Leave", organizationId, avatarId, reason)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Leave indicates an expected call of Leave.
-func (mr *MockOrganizationBelongingsMockRecorder) Leave(organizationId, userId, reason interface{}) *gomock.Call {
+func (mr *MockOrganizationBelongingsMockRecorder) Leave(organizationId, avatarId, reason interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Leave", reflect.TypeOf((*MockOrganizationBelongings)(nil).Leave), organizationId, userId, reason)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Leave", reflect.TypeOf((*MockOrganizationBelongings)(nil).Leave), organizationId, avatarId, reason)
 }
 
 // Members mocks base method.
-func (m *MockOrganizationBelongings) Members(organizationId int64) (*[]entity.User, error) {
+func (m *MockOrganizationBelongings) Members(organizationId int64) (*[]entity.Avatar, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Members", organizationId)
-	ret0, _ := ret[0].(*[]entity.User)
+	ret0, _ := ret[0].(*[]entity.Avatar)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
