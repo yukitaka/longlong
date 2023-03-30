@@ -5,9 +5,8 @@ import (
 	"github.com/yukitaka/longlong/internal/domain/entity"
 )
 
-type OrganizationBelongings interface {
-	Entry(avatarId int64) error
-	Leave(avatarId int64, reason string) error
-	Members() (*[]entity.Avatar, error)
+type Avatars interface {
+	Create(name string) (int64, error)
+	Find(id int64) (*entity.Avatar, error)
 	Close()
 }

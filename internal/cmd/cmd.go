@@ -11,6 +11,7 @@ import (
 	"github.com/yukitaka/longlong/internal/cmd/create"
 	"github.com/yukitaka/longlong/internal/cmd/get"
 	initialize "github.com/yukitaka/longlong/internal/cmd/init"
+	"github.com/yukitaka/longlong/internal/cmd/put"
 )
 
 type LlctlOptions struct {
@@ -43,6 +44,7 @@ https://github.com/yukitaka/longlong/`,
 	}
 	cmdGroup.AddCommand(initialize.NewCmdInit("llctl", o.IOStream))
 	cmdGroup.AddCommand(get.NewCmdGet("llctl", o.IOStream))
+	cmdGroup.AddCommand(put.NewCmdPut("llctl", o.IOStream))
 	cmdGroup.AddCommand(create.NewCmdCreate("llctl", o.IOStream))
 
 	if len(o.Arguments) > 1 {
