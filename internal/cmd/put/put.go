@@ -4,7 +4,10 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/yukitaka/longlong/internal/cli"
+	"github.com/yukitaka/longlong/internal/domain/usecase"
+	"github.com/yukitaka/longlong/internal/interface/repository"
 	"github.com/yukitaka/longlong/internal/util"
+	"strconv"
 )
 
 type Options struct {
@@ -51,6 +54,16 @@ func (o *Options) Run(args []string) error {
 }
 
 func (o *Options) Organization(cmd *cobra.Command, args []string) error {
-	fmt.Printf("Args is %v.", args)
-	return nil
+	var err error
+	if id, err := strconv.ParseInt(args[0], 10, 64); err == nil {
+		rep := repository.NewOrganizationsRepository()
+		itr := usecase.NewOrganizationManager(id, rep, repository.NewOrganizationBelongingsRepository(id, rep))
+		if avatarId, err := strconv.ParseInt(args[1], 10, 64); err == nil {
+			if err := itr.Entry(avatarId); err != nil {
+				return err
+			}
+		}
+	}
+
+	return err
 }
