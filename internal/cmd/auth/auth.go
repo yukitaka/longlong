@@ -32,8 +32,14 @@ func NewCmdAuth(parent string, streams cli.IOStream) *cobra.Command {
 	}
 
 	loginCmd := &cobra.Command{
-		Use:   "login",
+		Use:   "login [ACCOUNT]",
 		Short: "Authorize access to Longlong",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if err := cobra.MinimumNArgs(1)(cmd, args); err != nil {
+				return err
+			}
+			return nil
+		},
 		Run: func(cmd *cobra.Command, args []string) {
 			util.CheckErr(o.Login(cmd, args))
 		},
@@ -50,5 +56,8 @@ func (o *Options) Run(args []string) error {
 }
 
 func (o *Options) Login(cmd *cobra.Command, args []string) error {
+	account := args[0]
+	fmt.Printf("Login %s.\n", account)
+
 	return nil
 }
