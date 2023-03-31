@@ -41,7 +41,7 @@ func NewCmdAuth(parent string, streams cli.IOStream) *cobra.Command {
 			return nil
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			util.CheckErr(o.Login(cmd, args))
+			util.CheckErr(o.Login(args))
 		},
 	}
 	loginCmd.PersistentFlags().StringP("output", "o", "table", "output format")
@@ -55,7 +55,7 @@ func (o *Options) Run(args []string) error {
 	return nil
 }
 
-func (o *Options) Login(cmd *cobra.Command, args []string) error {
+func (o *Options) Login(args []string) error {
 	account := args[0]
 	fmt.Printf("Login %s.\n", account)
 
