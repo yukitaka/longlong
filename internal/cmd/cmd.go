@@ -8,6 +8,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/yukitaka/longlong/internal/cli"
+	"github.com/yukitaka/longlong/internal/cmd/auth"
 	"github.com/yukitaka/longlong/internal/cmd/create"
 	"github.com/yukitaka/longlong/internal/cmd/get"
 	initialize "github.com/yukitaka/longlong/internal/cmd/init"
@@ -43,6 +44,7 @@ Find more information at:
 https://github.com/yukitaka/longlong/`,
 	}
 	cmdGroup.AddCommand(initialize.NewCmdInit("llctl", o.IOStream))
+	cmdGroup.AddCommand(auth.NewCmdAuth("llctl", o.IOStream))
 	cmdGroup.AddCommand(get.NewCmdGet("llctl", o.IOStream))
 	cmdGroup.AddCommand(put.NewCmdPut("llctl", o.IOStream))
 	cmdGroup.AddCommand(create.NewCmdCreate("llctl", o.IOStream))
