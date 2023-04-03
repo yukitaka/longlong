@@ -33,21 +33,6 @@ func (m *MockAuthentications) EXPECT() *MockAuthenticationsMockRecorder {
 	return m.recorder
 }
 
-// Auth mocks base method.
-func (m *MockAuthentications) Auth(name, token string) (int64, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Auth", name, token)
-	ret0, _ := ret[0].(int64)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// Auth indicates an expected call of Auth.
-func (mr *MockAuthenticationsMockRecorder) Auth(name, token interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Auth", reflect.TypeOf((*MockAuthentications)(nil).Auth), name, token)
-}
-
 // Close mocks base method.
 func (m *MockAuthentications) Close() {
 	m.ctrl.T.Helper()
@@ -61,16 +46,32 @@ func (mr *MockAuthenticationsMockRecorder) Close() *gomock.Call {
 }
 
 // Create mocks base method.
-func (m *MockAuthentications) Create(name, token string) (int64, error) {
+func (m *MockAuthentications) Create(identify, token string) (int64, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", name, token)
+	ret := m.ctrl.Call(m, "Create", identify, token)
 	ret0, _ := ret[0].(int64)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Create indicates an expected call of Create.
-func (mr *MockAuthenticationsMockRecorder) Create(name, token interface{}) *gomock.Call {
+func (mr *MockAuthenticationsMockRecorder) Create(identify, token interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockAuthentications)(nil).Create), name, token)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockAuthentications)(nil).Create), identify, token)
+}
+
+// FindToken mocks base method.
+func (m *MockAuthentications) FindToken(identify string) (int64, string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindToken", identify)
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(string)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// FindToken indicates an expected call of FindToken.
+func (mr *MockAuthenticationsMockRecorder) FindToken(identify interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindToken", reflect.TypeOf((*MockAuthentications)(nil).FindToken), identify)
 }

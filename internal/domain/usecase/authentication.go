@@ -13,8 +13,8 @@ func NewAuthentication(authentications repository.Authentications) *Authenticati
 	return &Authentication{authentications}
 }
 
-func (it *Authentication) Auth(name, password string) (int64, error) {
-	id, token, err := it.Authentications.FindToken(name)
+func (it *Authentication) Auth(identify, password string) (int64, error) {
+	id, token, err := it.Authentications.FindToken(identify)
 	if err != nil {
 		return -1, err
 	}
