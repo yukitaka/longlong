@@ -3,6 +3,6 @@ package repository
 
 type Authentications interface {
 	Create(name, token string) (int64, error)
-	Auth(name, token string) (int64, error)
+	FindToken(name string) (int64, string, error)
 	Close()
 }
