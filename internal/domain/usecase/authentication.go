@@ -18,12 +18,9 @@ func (it *Authentication) Auth(identify, password string) (int64, error) {
 	if err != nil {
 		return -1, err
 	}
-	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	err = bcrypt.CompareHashAndPassword([]byte(token), []byte(password))
 	if err != nil {
 		return -1, err
-	}
-	if token != string(hash) {
-		return -1, nil
 	}
 
 	return id, nil

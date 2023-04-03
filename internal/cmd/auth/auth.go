@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/yukitaka/longlong/internal/cli"
+	"github.com/yukitaka/longlong/internal/domain/usecase"
+	"github.com/yukitaka/longlong/internal/interface/repository"
 	"github.com/yukitaka/longlong/internal/util"
 )
 
@@ -56,8 +58,14 @@ func (o *Options) Run(args []string) error {
 }
 
 func (o *Options) Login(args []string) error {
-	account := args[0]
-	fmt.Printf("Login %s.\n", account)
+	rep := repository.NewAuthenticationsRepository()
+	itr := usecase.NewAuthentication(rep)
+
+	id, err := itr.Auth(args[0], args[1])
+	if err != nil {
+		return err
+	}
+	fmt.Printf("Login %s %d.\n", args[0], id)
 
 	return nil
 }

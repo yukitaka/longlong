@@ -66,7 +66,7 @@ func (rep *Authentications) FindToken(identify string) (int64, string, error) {
 	}(stmt)
 	var id int64
 	var token string
-	err = stmt.QueryRow(identify).Scan(&id, token)
+	err = stmt.QueryRow(identify).Scan(&id, &token)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return -1, "", errors.New(fmt.Sprintf("authentication identify %s is nothing", identify))
