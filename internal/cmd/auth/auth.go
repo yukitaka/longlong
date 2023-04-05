@@ -71,7 +71,7 @@ func (o *Options) Login(args []string) error {
 
 	id, err := itr.Auth(args[0], string(pw))
 	if err != nil {
-		return err
+		return fmt.Errorf("\nAuthentication failure (%s)", err)
 	}
 	fmt.Printf("Login %s %d.\n", args[0], id)
 
