@@ -7,6 +7,8 @@ import (
 	"github.com/yukitaka/longlong/internal/domain/usecase"
 	"github.com/yukitaka/longlong/internal/interface/repository"
 	"github.com/yukitaka/longlong/internal/util"
+	"golang.org/x/term"
+	"syscall"
 )
 
 type Options struct {
@@ -61,9 +63,15 @@ func (o *Options) Login(args []string) error {
 	rep := repository.NewAuthenticationsRepository()
 	itr := usecase.NewAuthentication(rep)
 
-	id, err := itr.Auth(args[0], args[1])
+	fmt.Print("Password: ")
+	pw, err := term.ReadPassword(syscall.Stdin)
 	if err != nil {
 		return err
+	}
+
+	id, err := itr.Auth(args[0], string(pw))
+	if err != nil {
+		return fmt.Errorf("\nAuthentication failure (%s)", err)
 	}
 	fmt.Printf("Login %s %d.\n", args[0], id)
 
