@@ -12,18 +12,20 @@ import (
 
 type Options struct {
 	CmdParent string
+	UserId    int64
 	cli.IOStream
 }
 
-func NewPutOptions(parent string, streams cli.IOStream) *Options {
+func NewPutOptions(parent string, streams cli.IOStream, userId int64) *Options {
 	return &Options{
 		CmdParent: parent,
+		UserId:    userId,
 		IOStream:  streams,
 	}
 }
 
-func NewCmdPut(parent string, streams cli.IOStream) *cobra.Command {
-	o := NewPutOptions(parent, streams)
+func NewCmdPut(parent string, streams cli.IOStream, userId int64) *cobra.Command {
+	o := NewPutOptions(parent, streams, userId)
 
 	cmd := &cobra.Command{
 		Use:     "put",

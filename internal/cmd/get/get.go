@@ -19,18 +19,20 @@ import (
 
 type Options struct {
 	CmdParent string
+	UserId    int64
 	cli.IOStream
 }
 
-func NewGetOptions(parent string, streams cli.IOStream) *Options {
+func NewGetOptions(parent string, streams cli.IOStream, userId int64) *Options {
 	return &Options{
 		CmdParent: parent,
+		UserId:    userId,
 		IOStream:  streams,
 	}
 }
 
-func NewCmdGet(parent string, streams cli.IOStream) *cobra.Command {
-	o := NewGetOptions(parent, streams)
+func NewCmdGet(parent string, streams cli.IOStream, userId int64) *cobra.Command {
+	o := NewGetOptions(parent, streams, userId)
 
 	cmd := &cobra.Command{
 		Use:     "get",
