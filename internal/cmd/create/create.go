@@ -11,18 +11,20 @@ import (
 
 type Options struct {
 	CmdParent string
+	UserId    int64
 	cli.IOStream
 }
 
-func NewCreateOptions(parent string, streams cli.IOStream) *Options {
+func NewCreateOptions(parent string, streams cli.IOStream, userId int64) *Options {
 	return &Options{
 		CmdParent: parent,
+		UserId:    userId,
 		IOStream:  streams,
 	}
 }
 
-func NewCmdCreate(parent string, streams cli.IOStream) *cobra.Command {
-	o := NewCreateOptions(parent, streams)
+func NewCmdCreate(parent string, streams cli.IOStream, userId int64) *cobra.Command {
+	o := NewCreateOptions(parent, streams, userId)
 
 	cmd := &cobra.Command{
 		Use:     "create",
