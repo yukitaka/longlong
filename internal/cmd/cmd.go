@@ -27,9 +27,10 @@ func NewLlctlCommand() *cobra.Command {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath("$HOME/.config/llctl")
-	err := viper.ReadInConfig()
-	if err != nil {
-		panic(fmt.Errorf("fatal error config file: %w", err))
+	if err := viper.ReadInConfig(); err != nil {
+		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+			panic(fmt.Errorf("fatal error config file: %w", err))
+		}
 	}
 
 	return NewLlctlCommandWithArgs(LlctlOptions{
