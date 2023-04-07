@@ -16,6 +16,12 @@ import (
 	"github.com/yukitaka/longlong/internal/cmd/put"
 )
 
+type config struct {
+	Authorize struct {
+		UserId int64 `mapstructure:"user_id"`
+	}
+}
+
 type LlctlOptions struct {
 	CmdHandler Handler
 	Arguments  []string
@@ -24,6 +30,7 @@ type LlctlOptions struct {
 }
 
 func NewLlctlCommand() *cobra.Command {
+	var conf config
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath("$HOME/.config/llctl")
@@ -32,11 +39,14 @@ func NewLlctlCommand() *cobra.Command {
 			panic(fmt.Errorf("fatal error config file: %w", err))
 		}
 	}
+	if err := viper.Unmarshal(&conf); err != nil {
+		panic(err)
+	}
 
 	return NewLlctlCommandWithArgs(LlctlOptions{
 		CmdHandler: NewDefaultHandler([]string{"llctl"}),
 		Arguments:  os.Args,
-		UserId:     1,
+		UserId:     conf.Authorize.UserId,
 		IOStream: cli.IOStream{
 			In:     os.Stdin,
 			Out:    os.Stdout,
