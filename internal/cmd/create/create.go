@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/yukitaka/longlong/internal/cli"
+	"github.com/yukitaka/longlong/internal/domain/entity"
 	"github.com/yukitaka/longlong/internal/domain/usecase"
 	"github.com/yukitaka/longlong/internal/interface/repository"
 	"github.com/yukitaka/longlong/internal/util"
@@ -62,9 +63,14 @@ func (o *Options) Organization(args []string) error {
 	}
 	rep := repository.NewOrganizationsRepository()
 	defer rep.Close()
-	itr := usecase.NewOrganizationCreator(rep)
+	belongingsRep := repository.NewOrganizationBelongingsRepository(rep, -1)
+	defer belongingsRep.Close()
+	itr := usecase.NewOrganizationCreator(rep, belongingsRep)
+
+	avatar := entity.Avatar{UserId: o.UserId}
+
 	name := args[0]
-	id, err := itr.Create(name)
+	id, err := itr.Create(name, avatar)
 	if err != nil {
 		return err
 	}

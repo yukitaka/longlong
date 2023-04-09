@@ -47,18 +47,18 @@ func (mr *MockOrganizationsMockRecorder) Close() *gomock.Call {
 }
 
 // Create mocks base method.
-func (m *MockOrganizations) Create(name string) (int64, error) {
+func (m *MockOrganizations) Create(name string, avatar entity.Avatar) (int64, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", name)
+	ret := m.ctrl.Call(m, "Create", name, avatar)
 	ret0, _ := ret[0].(int64)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Create indicates an expected call of Create.
-func (mr *MockOrganizationsMockRecorder) Create(name interface{}) *gomock.Call {
+func (mr *MockOrganizationsMockRecorder) Create(name, avatar interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockOrganizations)(nil).Create), name)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockOrganizations)(nil).Create), name, avatar)
 }
 
 // Find mocks base method.

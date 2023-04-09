@@ -59,7 +59,7 @@ func (o *Options) Organization(cmd *cobra.Command, args []string) error {
 	var err error
 	if id, err := strconv.ParseInt(args[0], 10, 64); err == nil {
 		rep := repository.NewOrganizationsRepository()
-		itr := usecase.NewOrganizationManager(id, rep, repository.NewOrganizationBelongingsRepository(id, rep))
+		itr := usecase.NewOrganizationManager(id, rep, repository.NewOrganizationBelongingsRepository(rep, id))
 		if avatarId, err := strconv.ParseInt(args[1], 10, 64); err == nil {
 			if err := itr.Entry(avatarId); err != nil {
 				return err

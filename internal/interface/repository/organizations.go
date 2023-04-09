@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/yukitaka/longlong/internal/domain/entity"
 	rep "github.com/yukitaka/longlong/internal/domain/repository"
+	"github.com/yukitaka/longlong/internal/domain/value_object"
 	"github.com/yukitaka/longlong/internal/util"
 )
 
@@ -33,7 +34,7 @@ func (o *Organizations) Close() {
 	}
 }
 
-func (o *Organizations) Create(name string) (int64, error) {
+func (o *Organizations) Create(name string, avatar entity.Avatar) (int64, error) {
 	query := "select max(id) from organizations"
 	row := o.DB.QueryRow(query)
 	var nullableId sql.NullInt64
@@ -49,6 +50,11 @@ func (o *Organizations) Create(name string) (int64, error) {
 
 	query = "insert into organizations (id, name) values (?, ?)"
 	_, err = o.DB.Exec(query, id, name)
+	if err != nil {
+		return -1, err
+	}
+	query = "insert into organization_belongings (organization_id, avatar_id, role) values (?, ?, ?)"
+	_, err = o.DB.Exec(query, id, name, avatar.Id, value_object.OWNER)
 	if err != nil {
 		return -1, err
 	}

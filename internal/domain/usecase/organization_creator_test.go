@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"github.com/yukitaka/longlong/internal/domain/entity"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -13,10 +14,12 @@ func TestNewOrganizationCreator(t *testing.T) {
 
 	expect := int64(1)
 	rep := mockRepository.NewMockOrganizations(ctrl)
-	rep.EXPECT().Create("TestParent").Return(expect, nil)
+	rep.EXPECT().Create("TestParent", entity.Avatar{UserId: 1}).Return(expect, nil)
 
-	itr := NewOrganizationCreator(rep)
-	id, _ := itr.Create("TestParent")
+	belongingRep := mockRepository.NewMockOrganizationBelongings(ctrl)
+	itr := NewOrganizationCreator(rep, belongingRep)
+
+	id, _ := itr.Create("TestParent", entity.Avatar{UserId: 1})
 	if id != expect {
 		t.Errorf("NewOrganizationCreator() = %v", id)
 	}

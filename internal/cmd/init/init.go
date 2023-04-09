@@ -74,6 +74,7 @@ func (o *Options) Sqlite() error {
 	query := `
 	create table authentications (id integer not null primary key, identify text, token text);
 	create table organizations (id integer not null primary key, name text);
+	create table organization_belongings (organization_id integer not null, avatar_id integer not null, role integer);
 	create table users (id integer not null primary key);
 	create table profiles (id integer not null primary key, name text, full_name text);
 	create table user_profiles(user_id integer not null, profile_id integer not null);
