@@ -6,10 +6,14 @@
 go run cmd/llctl/llctl.go help
 ```
 
-### Generate mocks
-#### All mocks
+### Generate
+#### All
 ```
 go generate ./...
+```
+#### Stringer
+```
+go install golang.org/x/tools/cmd/stringer@latest
 ```
 
 ### Execute tests
