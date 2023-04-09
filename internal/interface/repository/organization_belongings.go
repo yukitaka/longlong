@@ -13,14 +13,17 @@ type OrganizationBelongings struct {
 	*sql.DB
 }
 
-func NewOrganizationBelongingsRepository(id int64, organizations rep.Organizations) rep.OrganizationBelongings {
+func NewOrganizationBelongingsRepository(organizations rep.Organizations, id int64) rep.OrganizationBelongings {
 	con, err := sql.Open("sqlite3", "./longlong.db")
 	if err != nil {
 		util.CheckErr(err)
 	}
-	organization, err := organizations.Find(id)
-	if err != nil {
-		util.CheckErr(err)
+	var organization *entity.Organization
+	if id >= 0 {
+		organization, err = organizations.Find(id)
+		if err != nil {
+			util.CheckErr(err)
+		}
 	}
 
 	return &OrganizationBelongings{
