@@ -6,7 +6,7 @@ import (
 )
 
 type Avatars interface {
-	Create(name string) (int64, error)
+	Create(name string, userId, profileId int64) (int64, error)
 	Find(id int64) (*entity.Avatar, error)
 	Close()
 }

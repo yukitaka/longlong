@@ -77,6 +77,7 @@ func (o *Options) Sqlite() error {
 	create table organization_belongings (organization_id integer not null, avatar_id integer not null, role integer);
 	create table users (id integer not null primary key);
 	create table profiles (id integer not null primary key, name text, full_name text);
+	create table avatars (id integer not null primary key, name text, user_id integer, profile_id integer);
 	create table user_profiles(user_id integer not null, profile_id integer not null);
 	insert into organizations (id, name) values (1, 'longlong');
 	insert into users (id) values (1);
