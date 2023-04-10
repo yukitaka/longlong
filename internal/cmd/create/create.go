@@ -86,9 +86,12 @@ func (o *Options) User(args []string) error {
 	}
 	rep := repository.NewUsersRepository()
 	defer rep.Close()
-	itr := usecase.NewUserCreator(rep)
+	avatarRep := repository.NewAvatarsRepository()
+	defer avatarRep.Close()
+
+	itr := usecase.NewUserCreator(rep, avatarRep)
 	name := args[0]
-	id, err := itr.Create(name)
+	id, err := itr.New(name)
 	if err != nil {
 		return err
 	}
