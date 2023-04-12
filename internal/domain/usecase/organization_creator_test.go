@@ -14,12 +14,12 @@ func TestNewOrganizationCreator(t *testing.T) {
 
 	expect := int64(1)
 	rep := mockRepository.NewMockOrganizations(ctrl)
-	rep.EXPECT().Create("TestParent", entity.Avatar{UserId: 1}).Return(expect, nil)
+	rep.EXPECT().Create("TestParent", entity.Individual{UserId: 1}).Return(expect, nil)
 
 	belongingRep := mockRepository.NewMockOrganizationBelongings(ctrl)
 	itr := NewOrganizationCreator(rep, belongingRep)
 
-	id, _ := itr.Create("TestParent", entity.Avatar{UserId: 1})
+	id, _ := itr.Create("TestParent", entity.Individual{UserId: 1})
 	if id != expect {
 		t.Errorf("NewOrganizationCreator() = %v", id)
 	}

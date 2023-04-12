@@ -34,7 +34,7 @@ func (o *Organizations) Close() {
 	}
 }
 
-func (o *Organizations) Create(name string, avatar entity.Avatar) (int64, error) {
+func (o *Organizations) Create(name string, individual entity.Individual) (int64, error) {
 	query := "select max(id) from organizations"
 	row := o.DB.QueryRow(query)
 	var nullableId sql.NullInt64
@@ -53,8 +53,8 @@ func (o *Organizations) Create(name string, avatar entity.Avatar) (int64, error)
 	if err != nil {
 		return -1, err
 	}
-	query = "insert into organization_belongings (organization_id, avatar_id, role) values (?, ?, ?)"
-	_, err = o.DB.Exec(query, id, name, avatar.Id, value_object.OWNER)
+	query = "insert into organization_belongings (organization_id, individual_id, role) values (?, ?, ?)"
+	_, err = o.DB.Exec(query, id, name, individual.Id, value_object.OWNER)
 	if err != nil {
 		return -1, err
 	}

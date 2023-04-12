@@ -6,11 +6,11 @@ import (
 
 type UserCreator struct {
 	repository.Users
-	repository.Avatars
+	repository.Individuals
 }
 
-func NewUserCreator(users repository.Users, avatars repository.Avatars) *UserCreator {
-	return &UserCreator{users, avatars}
+func NewUserCreator(users repository.Users, individuals repository.Individuals) *UserCreator {
+	return &UserCreator{users, individuals}
 }
 
 func (it *UserCreator) New(name string) (int64, error) {
@@ -18,7 +18,7 @@ func (it *UserCreator) New(name string) (int64, error) {
 	if err != nil {
 		return -1, err
 	}
-	id, err := it.Avatars.Create("Default", userId, -1)
+	id, err := it.Individuals.Create("Default", userId, -1)
 	if err != nil {
 		return 0, err
 	}

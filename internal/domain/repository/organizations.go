@@ -6,7 +6,7 @@ import (
 )
 
 type Organizations interface {
-	Create(name string, avatar entity.Avatar) (int64, error)
+	Create(name string, individual entity.Individual) (int64, error)
 	Find(id int64) (*entity.Organization, error)
 	List() (*[]entity.Organization, error)
 	Close()

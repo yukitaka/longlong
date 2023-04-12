@@ -32,17 +32,17 @@ func NewOrganizationBelongingsRepository(organizations rep.Organizations, id int
 	}
 }
 
-func (o OrganizationBelongings) Entry(avatarId int64) error {
+func (o OrganizationBelongings) Entry(individualId int64) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (o OrganizationBelongings) Leave(avatarId int64, reason string) error {
+func (o OrganizationBelongings) Leave(individualId int64, reason string) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (o OrganizationBelongings) Members() (*[]entity.Avatar, error) {
+func (o OrganizationBelongings) Members() (*[]entity.Individual, error) {
 	//TODO implement me
 	panic("implement me")
 }

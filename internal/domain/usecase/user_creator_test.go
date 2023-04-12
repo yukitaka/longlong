@@ -15,8 +15,10 @@ func TestNewUserCreator(t *testing.T) {
 	rep := mockRepository.NewMockUsers(ctrl)
 	rep.EXPECT().Create("Name").Return(expect, nil)
 
-	itr := NewUserCreator(rep)
-	id, _ := itr.Create("Name")
+	individualRep := mockRepository.NewMockIndividuals(ctrl)
+
+	itr := NewUserCreator(rep, individualRep)
+	id, _ := itr.Users.Create("Name")
 	if id != expect {
 		t.Errorf("NewUserCreator() = %v", id)
 	}
