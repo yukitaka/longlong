@@ -67,10 +67,10 @@ func (o *Options) Organization(args []string) error {
 	defer belongingsRep.Close()
 	itr := usecase.NewOrganizationCreator(rep, belongingsRep)
 
-	avatar := entity.Avatar{UserId: o.UserId}
+	individual := entity.Individual{UserId: o.UserId}
 
 	name := args[0]
-	id, err := itr.Create(name, avatar)
+	id, err := itr.Create(name, individual)
 	if err != nil {
 		return err
 	}
@@ -86,10 +86,10 @@ func (o *Options) User(args []string) error {
 	}
 	rep := repository.NewUsersRepository()
 	defer rep.Close()
-	avatarRep := repository.NewAvatarsRepository()
-	defer avatarRep.Close()
+	individualRep := repository.NewIndividualsRepository()
+	defer individualRep.Close()
 
-	itr := usecase.NewUserCreator(rep, avatarRep)
+	itr := usecase.NewUserCreator(rep, individualRep)
 	name := args[0]
 	id, err := itr.New(name)
 	if err != nil {

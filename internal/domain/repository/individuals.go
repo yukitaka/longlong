@@ -5,8 +5,8 @@ import (
 	"github.com/yukitaka/longlong/internal/domain/entity"
 )
 
-type Avatars interface {
+type Individuals interface {
 	Create(name string, userId, profileId int64) (int64, error)
-	Find(id int64) (*entity.Avatar, error)
+	Find(id int64) (*entity.Individual, error)
 	Close()
 }

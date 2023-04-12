@@ -6,8 +6,8 @@ import (
 )
 
 type OrganizationBelongings interface {
-	Entry(avatarId int64) error
-	Leave(avatarId int64, reason string) error
-	Members() (*[]entity.Avatar, error)
+	Entry(individualId int64) error
+	Leave(individualId int64, reason string) error
+	Members() (*[]entity.Individual, error)
 	Close()
 }

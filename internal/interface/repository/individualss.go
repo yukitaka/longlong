@@ -8,30 +8,30 @@ import (
 	"github.com/yukitaka/longlong/internal/util"
 )
 
-type Avatars struct {
+type Individuals struct {
 	*sql.DB
 }
 
-func NewAvatarsRepository() rep.Avatars {
+func NewIndividualsRepository() rep.Individuals {
 	con, err := sql.Open("sqlite3", "./longlong.db")
 	if err != nil {
 		util.CheckErr(err)
 	}
 
-	return &Avatars{
+	return &Individuals{
 		DB: con,
 	}
 }
 
-func (rep *Avatars) Close() {
+func (rep *Individuals) Close() {
 	err := rep.DB.Close()
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
 	}
 }
 
-func (rep *Avatars) Create(name string, userId, profileId int64) (int64, error) {
-	query := "select max(id) from avatars"
+func (rep *Individuals) Create(name string, userId, profileId int64) (int64, error) {
+	query := "select max(id) from individuals"
 	row := rep.DB.QueryRow(query)
 	var nullableId sql.NullInt64
 	err := row.Scan(&nullableId)
@@ -48,7 +48,7 @@ func (rep *Avatars) Create(name string, userId, profileId int64) (int64, error) 
 	if err != nil {
 		return -1, err
 	}
-	query = "insert into avatars (id, name, user_id, profile_id) values (?, ?, ?, ?)"
+	query = "insert into individuals (id, name, user_id, profile_id) values (?, ?, ?, ?)"
 	_, err = rep.DB.Exec(query, id, name, userId, profileId)
 	if err != nil {
 		return -1, err
@@ -61,7 +61,7 @@ func (rep *Avatars) Create(name string, userId, profileId int64) (int64, error) 
 	return id, nil
 }
 
-func (rep *Avatars) Find(id int64) (*entity.Avatar, error) {
+func (rep *Individuals) Find(id int64) (*entity.Individual, error) {
 	//TODO implement me
 	panic("implement me")
 }

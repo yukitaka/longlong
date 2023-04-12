@@ -47,38 +47,38 @@ func (mr *MockOrganizationBelongingsMockRecorder) Close() *gomock.Call {
 }
 
 // Entry mocks base method.
-func (m *MockOrganizationBelongings) Entry(avatarId int64) error {
+func (m *MockOrganizationBelongings) Entry(individualId int64) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Entry", avatarId)
+	ret := m.ctrl.Call(m, "Entry", individualId)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Entry indicates an expected call of Entry.
-func (mr *MockOrganizationBelongingsMockRecorder) Entry(avatarId interface{}) *gomock.Call {
+func (mr *MockOrganizationBelongingsMockRecorder) Entry(individualId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Entry", reflect.TypeOf((*MockOrganizationBelongings)(nil).Entry), avatarId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Entry", reflect.TypeOf((*MockOrganizationBelongings)(nil).Entry), individualId)
 }
 
 // Leave mocks base method.
-func (m *MockOrganizationBelongings) Leave(avatarId int64, reason string) error {
+func (m *MockOrganizationBelongings) Leave(individualId int64, reason string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Leave", avatarId, reason)
+	ret := m.ctrl.Call(m, "Leave", individualId, reason)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Leave indicates an expected call of Leave.
-func (mr *MockOrganizationBelongingsMockRecorder) Leave(avatarId, reason interface{}) *gomock.Call {
+func (mr *MockOrganizationBelongingsMockRecorder) Leave(individualId, reason interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Leave", reflect.TypeOf((*MockOrganizationBelongings)(nil).Leave), avatarId, reason)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Leave", reflect.TypeOf((*MockOrganizationBelongings)(nil).Leave), individualId, reason)
 }
 
 // Members mocks base method.
-func (m *MockOrganizationBelongings) Members() (*[]entity.Avatar, error) {
+func (m *MockOrganizationBelongings) Members() (*[]entity.Individual, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Members")
-	ret0, _ := ret[0].(*[]entity.Avatar)
+	ret0, _ := ret[0].(*[]entity.Individual)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
