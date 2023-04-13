@@ -22,7 +22,7 @@ func (it *UserAssigned) OrganizationList() (*[]entity.Organization, error) {
 		return nil, err
 	}
 
-	assigned, err := it.OrganizationBelongings.UserAssigned(it.UserId)
+	assigned, err := it.OrganizationBelongings.IndividualsAssigned(individuals)
 	if err != nil {
 		return nil, err
 	}
