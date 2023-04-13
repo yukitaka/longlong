@@ -52,7 +52,17 @@ func NewCmdGet(parent string, streams cli.IOStream, userId int64) *cobra.Command
 		},
 	}
 	organizationCmd.PersistentFlags().StringP("output", "o", "table", "output format")
+
+	userCmd := &cobra.Command{
+		Use:   "user",
+		Short: "Display one or many users",
+		Run: func(cmd *cobra.Command, args []string) {
+			util.CheckErr(o.User(cmd, args))
+		},
+	}
+	userCmd.PersistentFlags().StringP("output", "o", "table", "output format")
 	cmd.AddCommand(organizationCmd)
+	cmd.AddCommand(userCmd)
 
 	return cmd
 }
@@ -82,6 +92,10 @@ func (o *Options) Organization(cmd *cobra.Command, args []string) error {
 	}
 
 	return err
+}
+
+func (o *Options) User(cmd *cobra.Command, args []string) error {
+	return nil
 }
 
 func (o *Options) print(format string, data interface{}) {
