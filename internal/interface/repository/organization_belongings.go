@@ -47,6 +47,11 @@ func (o OrganizationBelongings) Members() (*[]entity.Individual, error) {
 	panic("implement me")
 }
 
+func (o OrganizationBelongings) UserAssigned(userId int64) (*[]entity.OrganizationBelonging, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
 func (o OrganizationBelongings) Close() {
 	err := o.DB.Close()
 	if err != nil {

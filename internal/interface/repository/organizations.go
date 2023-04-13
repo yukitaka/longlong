@@ -86,6 +86,31 @@ func (o *Organizations) Find(id int64) (*entity.Organization, error) {
 	return entity.NewOrganization(0, id, name), nil
 }
 
+func (o *Organizations) FindAll(ids []int64) (*[]entity.Organization, error) {
+	stmt, err := o.DB.Prepare("select parent_id, name from organizations where id in ?")
+	if err != nil {
+		return nil, err
+	}
+	defer func(stmt *sql.Stmt) {
+		err := stmt.Close()
+		if err != nil {
+			fmt.Printf("Error: %v\n", err)
+		}
+	}(stmt)
+	var parentId int64
+	var name string
+	err = stmt.QueryRow(ids).Scan(&parentId, &name)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, errors.New(fmt.Sprintf("organization ids %d are nothing", ids))
+		} else {
+			return nil, err
+		}
+	}
+
+	return nil, nil
+}
+
 func (o *Organizations) List() (*[]entity.Organization, error) {
 	rows, err := o.DB.Query("select id, name from organizations")
 	if err != nil {
