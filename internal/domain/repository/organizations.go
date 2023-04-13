@@ -8,6 +8,7 @@ import (
 type Organizations interface {
 	Create(name string, individual entity.Individual) (int64, error)
 	Find(id int64) (*entity.Organization, error)
+	FindAll(ids []int64) (*[]entity.Organization, error)
 	List() (*[]entity.Organization, error)
 	Close()
 }
