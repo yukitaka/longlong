@@ -9,5 +9,6 @@ type OrganizationBelongings interface {
 	Entry(individualId int64) error
 	Leave(individualId int64, reason string) error
 	Members() (*[]entity.Individual, error)
+	IndividualsAssigned(individual *[]entity.Individual) (*[]entity.OrganizationBelonging, error)
 	Close()
 }

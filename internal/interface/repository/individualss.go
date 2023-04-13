@@ -65,3 +65,8 @@ func (rep *Individuals) Find(id int64) (*entity.Individual, error) {
 	//TODO implement me
 	panic("implement me")
 }
+
+func (rep *Individuals) FindByUserId(userId int64) (*[]entity.Individual, error) {
+	//TODO implement me
+	panic("implement me")
+}
