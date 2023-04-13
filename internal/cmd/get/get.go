@@ -95,6 +95,12 @@ func (o *Options) Organization(cmd *cobra.Command, args []string) error {
 }
 
 func (o *Options) User(cmd *cobra.Command, args []string) error {
+	rep := repository.NewIndividualsRepository()
+	_, err := rep.Find(o.UserId)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
