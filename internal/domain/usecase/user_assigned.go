@@ -7,22 +7,28 @@ import (
 
 type UserAssigned struct {
 	UserId int64
+	repository.Individuals
 	repository.Organizations
 	repository.OrganizationBelongings
 }
 
-func NewUserAssigned(userId int64, organizations repository.Organizations, belongings repository.OrganizationBelongings) *UserAssigned {
-	return &UserAssigned{userId, organizations, belongings}
+func NewUserAssigned(userId int64, individuals repository.Individuals, organizations repository.Organizations, belongings repository.OrganizationBelongings) *UserAssigned {
+	return &UserAssigned{userId, individuals, organizations, belongings}
 }
 
 func (it *UserAssigned) OrganizationList() (*[]entity.Organization, error) {
+	individuals, err := it.Individuals.FindByUserId(it.UserId)
+	if err != nil {
+		return nil, err
+	}
+
 	assigned, err := it.OrganizationBelongings.UserAssigned(it.UserId)
 	if err != nil {
 		return nil, err
 	}
 	organizationIds := make([]int64, len(*assigned))
 	for i, v := range *assigned {
-		organizationIds[i] = v.OrganizationId
+		organizationIds[i] = v.Organization.Id
 	}
 	organizations, err := it.Organizations.FindAll(organizationIds)
 	if err != nil {
