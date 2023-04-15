@@ -7,6 +7,7 @@ import (
 	"github.com/yukitaka/longlong/internal/domain/entity"
 	rep "github.com/yukitaka/longlong/internal/domain/repository"
 	"github.com/yukitaka/longlong/internal/util"
+	"strings"
 )
 
 type OrganizationBelongings struct {
@@ -40,22 +41,13 @@ func (o OrganizationBelongings) Members() (*[]entity.Individual, error) {
 }
 
 func (o OrganizationBelongings) IndividualsAssigned(individuals *[]entity.Individual) (*[]entity.OrganizationBelonging, error) {
-	ids := make([]int64, len(*individuals))
+	ids := make([]interface{}, len(*individuals))
 	for i, individual := range *individuals {
 		ids[i] = individual.Id
 	}
 
-	stmt, err := o.DB.Prepare("select t1.id, t1.parent_id, t1.name, t.individual_id from organization_belongings t join organizations t1 on t.organization_id=t1.id where individual_id in ?")
-	if err != nil {
-		return nil, err
-	}
-	defer func(stmt *sql.Stmt) {
-		err := stmt.Close()
-		if err != nil {
-			fmt.Printf("Error: %v\n", err)
-		}
-	}(stmt)
-	rows, err := stmt.Query(ids)
+	stmt := "select t1.id, t1.parent_id, t1.name, t.individual_id from organization_belongings t join organizations t1 on t.organization_id=t1.id where individual_id in (?" + strings.Repeat(",?", len(ids)-1) + ")"
+	rows, err := o.DB.Query(stmt, ids...)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, errors.New(fmt.Sprintf("individual ids %d are nothing", ids))
