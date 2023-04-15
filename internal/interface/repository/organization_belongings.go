@@ -78,14 +78,14 @@ func (o OrganizationBelongings) IndividualsAssigned(individuals *[]entity.Indivi
 		var id int64
 		var parentId int64
 		var name string
-		var individual_id int64
-		err = rows.Scan(&id, &parentId, &name, &individual_id)
+		var individualId int64
+		err = rows.Scan(&id, &parentId, &name, &individualId)
 		if err != nil {
 			return nil, err
 		}
 		organization := entity.NewOrganization(id, parentId, name)
 		for i, individual := range *individuals {
-			if individual.Id == individual_id {
+			if individual.Id == individualId {
 				belongings[i] = entity.OrganizationBelonging{
 					Individual:   &individual,
 					Organization: organization,
