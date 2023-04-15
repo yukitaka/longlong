@@ -83,6 +83,7 @@ func (o *Options) Sqlite() error {
 	insert into users (id) values (1);
 	insert into profiles (id, name, full_name) values (1, 'yukitaka', 'Yuki Sato');
 	insert into user_profiles (user_id, profile_id) values (1, 1);
+	insert into individuals (id, name, user_id, profile_id) values (1, 'yukitaka', 1, 1);
 	insert into authentications (id, identify, token) values (1, 'yukitaka', '%s');
 	`
 	_, err = db.Exec(fmt.Sprintf(query, hash))
