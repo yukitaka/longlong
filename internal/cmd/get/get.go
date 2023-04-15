@@ -97,7 +97,7 @@ func (o *Options) Organization(cmd *cobra.Command, args []string) error {
 func (o *Options) User(cmd *cobra.Command, args []string) error {
 	rep := repository.NewIndividualsRepository()
 
-	itr := usecase.NewUserAssigned(o.UserId, rep, repository.NewOrganizationsRepository(), repository.OrganizationBelongings{})
+	itr := usecase.NewUserAssigned(o.UserId, rep, repository.NewOrganizationsRepository(), repository.NewOrganizationBelongingsRepository())
 	_, err := itr.OrganizationList()
 	if err != nil {
 		return err

@@ -63,7 +63,7 @@ func (o *Options) Organization(args []string) error {
 	}
 	rep := repository.NewOrganizationsRepository()
 	defer rep.Close()
-	belongingsRep := repository.NewOrganizationBelongingsRepository(rep, -1)
+	belongingsRep := repository.NewOrganizationBelongingsRepository()
 	defer belongingsRep.Close()
 	itr := usecase.NewOrganizationCreator(rep, belongingsRep)
 

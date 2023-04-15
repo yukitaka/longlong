@@ -10,26 +10,17 @@ import (
 )
 
 type OrganizationBelongings struct {
-	organization *entity.Organization
 	*sql.DB
 }
 
-func NewOrganizationBelongingsRepository(organizations rep.Organizations, id int64) rep.OrganizationBelongings {
+func NewOrganizationBelongingsRepository() rep.OrganizationBelongings {
 	con, err := sql.Open("sqlite3", "./longlong.db")
 	if err != nil {
 		util.CheckErr(err)
 	}
-	var organization *entity.Organization
-	if id >= 0 {
-		organization, err = organizations.Find(id)
-		if err != nil {
-			util.CheckErr(err)
-		}
-	}
 
 	return &OrganizationBelongings{
-		organization: organization,
-		DB:           con,
+		DB: con,
 	}
 }
 
