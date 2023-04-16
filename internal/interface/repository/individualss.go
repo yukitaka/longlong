@@ -67,6 +67,27 @@ func (rep *Individuals) Find(id int64) (*entity.Individual, error) {
 }
 
 func (rep *Individuals) FindByUserId(userId int64) (*[]entity.Individual, error) {
-	//TODO implement me
-	panic("implement me")
+	r, err := rep.DB.Query("select id, name, profile_id from individuals where user_id = ?", userId)
+	if err != nil {
+		return nil, err
+	}
+	var individuals []entity.Individual
+	for r.Next() {
+		var id int64
+		var name string
+		var profileId int64
+
+		err := r.Scan(&id, &name, &profileId)
+		if err != nil {
+			return nil, err
+		}
+		individuals = append(individuals, entity.Individual{
+			Id:        id,
+			Name:      name,
+			UserId:    userId,
+			ProfileId: profileId,
+		})
+	}
+
+	return &individuals, nil
 }

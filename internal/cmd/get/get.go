@@ -96,9 +96,15 @@ func (o *Options) Organization(cmd *cobra.Command, args []string) error {
 
 func (o *Options) User(cmd *cobra.Command, args []string) error {
 	rep := repository.NewIndividualsRepository()
-	_, err := rep.Find(o.UserId)
+
+	itr := usecase.NewUserAssigned(o.UserId, rep, repository.NewOrganizationsRepository(), repository.NewOrganizationBelongingsRepository())
+	organizations, err := itr.OrganizationList()
 	if err != nil {
 		return err
+	}
+
+	if outputFlag, err := cmd.PersistentFlags().GetString("output"); err == nil {
+		o.print(outputFlag, organizations)
 	}
 
 	return nil
