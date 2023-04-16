@@ -26,7 +26,7 @@ func (it *UserAssigned) OrganizationList() (*[]entity.Organization, error) {
 	if err != nil {
 		return nil, err
 	}
-	organizationIds := make([]int64, len(*assigned))
+	organizationIds := make([]interface{}, len(*assigned))
 	for i, v := range *assigned {
 		organizationIds[i] = v.Organization.Id
 	}

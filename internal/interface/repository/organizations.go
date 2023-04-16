@@ -8,6 +8,7 @@ import (
 	rep "github.com/yukitaka/longlong/internal/domain/repository"
 	"github.com/yukitaka/longlong/internal/domain/value_object"
 	"github.com/yukitaka/longlong/internal/util"
+	"strings"
 )
 
 type Organizations struct {
@@ -86,8 +87,8 @@ func (o *Organizations) Find(id int64) (*entity.Organization, error) {
 	return entity.NewOrganization(0, id, name), nil
 }
 
-func (o *Organizations) FindAll(ids []int64) (*[]entity.Organization, error) {
-	stmt, err := o.DB.Prepare("select parent_id, name from organizations where id in ?")
+func (o *Organizations) FindAll(ids []interface{}) (*[]entity.Organization, error) {
+	stmt, err := o.DB.Prepare("select parent_id, name from organizations where id in (?" + strings.Repeat(",?", len(ids)-1) + ")")
 	if err != nil {
 		return nil, err
 	}
@@ -99,7 +100,7 @@ func (o *Organizations) FindAll(ids []int64) (*[]entity.Organization, error) {
 	}(stmt)
 	var parentId int64
 	var name string
-	err = stmt.QueryRow(ids).Scan(&parentId, &name)
+	err = stmt.QueryRow(ids...).Scan(&parentId, &name)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, errors.New(fmt.Sprintf("organization ids %d are nothing", ids))
