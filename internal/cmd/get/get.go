@@ -98,9 +98,13 @@ func (o *Options) User(cmd *cobra.Command, args []string) error {
 	rep := repository.NewIndividualsRepository()
 
 	itr := usecase.NewUserAssigned(o.UserId, rep, repository.NewOrganizationsRepository(), repository.NewOrganizationBelongingsRepository())
-	_, err := itr.OrganizationList()
+	organizations, err := itr.OrganizationList()
 	if err != nil {
 		return err
+	}
+
+	if outputFlag, err := cmd.PersistentFlags().GetString("output"); err == nil {
+		o.print(outputFlag, organizations)
 	}
 
 	return nil
