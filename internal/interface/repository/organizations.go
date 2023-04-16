@@ -88,7 +88,7 @@ func (o *Organizations) Find(id int64) (*entity.Organization, error) {
 }
 
 func (o *Organizations) FindAll(ids []interface{}) (*[]entity.Organization, error) {
-	stmt, err := o.DB.Prepare("select parent_id, name from organizations where id in (?" + strings.Repeat(",?", len(ids)-1) + ")")
+	stmt, err := o.DB.Prepare("select parent_id, id, name from organizations where id in (?" + strings.Repeat(",?", len(ids)-1) + ")")
 	if err != nil {
 		return nil, err
 	}
@@ -98,9 +98,7 @@ func (o *Organizations) FindAll(ids []interface{}) (*[]entity.Organization, erro
 			fmt.Printf("Error: %v\n", err)
 		}
 	}(stmt)
-	var parentId int64
-	var name string
-	err = stmt.QueryRow(ids...).Scan(&parentId, &name)
+	res, err := stmt.Query(ids...)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, errors.New(fmt.Sprintf("organization ids %d are nothing", ids))
@@ -108,8 +106,19 @@ func (o *Organizations) FindAll(ids []interface{}) (*[]entity.Organization, erro
 			return nil, err
 		}
 	}
+	var organizations []entity.Organization
+	for res.Next() {
+		var parentId int64
+		var id int64
+		var name string
+		err = res.Scan(&parentId, &id, &name)
+		if err != nil {
+			return nil, err
+		}
+		organizations = append(organizations, *entity.NewOrganization(parentId, id, name))
+	}
 
-	return nil, nil
+	return &organizations, nil
 }
 
 func (o *Organizations) List() (*[]entity.Organization, error) {
