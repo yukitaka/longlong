@@ -66,7 +66,7 @@ func (o OrganizationBelongings) IndividualsAssigned(individuals *[]entity.Indivi
 		if err != nil {
 			return nil, err
 		}
-		organization := entity.NewOrganization(id, parentId, name)
+		organization := entity.NewOrganization(parentId, id, name)
 		for i, individual := range *individuals {
 			if individual.Id == individualId {
 				belongings[i] = entity.OrganizationBelonging{
