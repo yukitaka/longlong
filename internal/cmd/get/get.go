@@ -3,7 +3,6 @@ package get
 import (
 	"fmt"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/yukitaka/longlong/internal/domain/entity"
 	"github.com/yukitaka/longlong/internal/domain/usecase"
 	"github.com/yukitaka/longlong/internal/interface/output"
 	"github.com/yukitaka/longlong/internal/interface/repository"
@@ -81,12 +80,34 @@ func (o *Options) Organization(cmd *cobra.Command, args []string) error {
 		if len(args) > 0 {
 			if id, err := strconv.ParseInt(args[0], 10, 64); err == nil {
 				if organization, err := itr.Find(id); err == nil {
-					o.print(outputFlag, organization)
+					var columns []table.Column
+					var rows []table.Row
+					if outputFlag == "table" {
+						columns = []table.Column{
+							{Title: "PID", Width: 4},
+							{Title: "ID", Width: 4},
+							{Title: "Name", Width: 16},
+						}
+						rows = append(rows, table.Row{strconv.FormatInt(organization.ParentId, 10), strconv.FormatInt(organization.Id, 10), organization.Name})
+					}
+					o.print(organization, columns, rows)
 				}
 			}
 		} else {
 			if organizations, err := itr.List(); err == nil {
-				o.print(outputFlag, organizations)
+				var columns []table.Column
+				var rows []table.Row
+				if outputFlag == "table" {
+					columns = []table.Column{
+						{Title: "PID", Width: 4},
+						{Title: "ID", Width: 4},
+						{Title: "Name", Width: 16},
+					}
+					for _, o := range *organizations {
+						rows = append(rows, table.Row{strconv.FormatInt(o.ParentId, 10), strconv.FormatInt(o.Id, 10), o.Name})
+					}
+				}
+				o.print(organizations, columns, rows)
 			}
 		}
 	}
@@ -104,31 +125,38 @@ func (o *Options) User(cmd *cobra.Command, args []string) error {
 	}
 
 	if outputFlag, err := cmd.PersistentFlags().GetString("output"); err == nil {
-		o.print(outputFlag, organizations)
+		var columns []table.Column
+		var rows []table.Row
+		if outputFlag == "table" {
+			columns = []table.Column{
+				{Title: "PID", Width: 4},
+				{Title: "ID", Width: 4},
+				{Title: "Organization", Width: 16},
+				{Title: "Name", Width: 16},
+				{Title: "Role", Width: 16},
+			}
+			for _, o := range *organizations {
+				rows = append(rows, table.Row{
+					strconv.FormatInt(o.Organization.ParentId, 10),
+					strconv.FormatInt(o.Organization.Id, 10),
+					o.Organization.Name,
+					o.Individual.Name,
+					o.Role.String(),
+				})
+			}
+		}
+		o.print(organizations, columns, rows)
 	}
 
 	return nil
 }
 
-func (o *Options) print(format string, data interface{}) {
-	if format == "yaml" {
+func (o *Options) print(data interface{}, columns []table.Column, rows []table.Row) {
+	if columns == nil {
 		if organizationsYaml, err := yaml.Marshal(&data); err == nil {
 			fmt.Println(string(organizationsYaml))
 		}
 	} else {
-		columns := []table.Column{
-			{Title: "PID", Width: 4},
-			{Title: "ID", Width: 4},
-			{Title: "Name", Width: 16},
-		}
-		var rows []table.Row
-		if o, ok := data.(*entity.Organization); ok {
-			rows = append(rows, table.Row{strconv.FormatInt(o.ParentId, 10), strconv.FormatInt(o.Id, 10), o.Name})
-		} else if organizations, ok := data.(*[]entity.Organization); ok {
-			for _, o := range *organizations {
-				rows = append(rows, table.Row{strconv.FormatInt(o.ParentId, 10), strconv.FormatInt(o.Id, 10), o.Name})
-			}
-		}
 		t := table.New(
 			table.WithColumns(columns),
 			table.WithRows(rows),
