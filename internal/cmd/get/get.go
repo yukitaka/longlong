@@ -128,6 +128,10 @@ func (o *Options) print(format string, data interface{}) {
 			for _, o := range *organizations {
 				rows = append(rows, table.Row{strconv.FormatInt(o.ParentId, 10), strconv.FormatInt(o.Id, 10), o.Name})
 			}
+		} else if organizationBelongings, ok := data.(*[]entity.OrganizationBelonging); ok {
+			for _, o := range *organizationBelongings {
+				rows = append(rows, table.Row{strconv.FormatInt(o.Organization.ParentId, 10), strconv.FormatInt(o.Organization.Id, 10), o.Organization.Name})
+			}
 		}
 		t := table.New(
 			table.WithColumns(columns),
