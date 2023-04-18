@@ -77,17 +77,19 @@ func (o *Options) Organization(cmd *cobra.Command, args []string) error {
 
 	var err error
 	if outputFlag, err := cmd.PersistentFlags().GetString("output"); err == nil {
+		var columns []table.Column
+		var rows []table.Row
+		if outputFlag == "table" {
+			columns = []table.Column{
+				{Title: "PID", Width: 4},
+				{Title: "ID", Width: 4},
+				{Title: "Name", Width: 16},
+			}
+		}
 		if len(args) > 0 {
 			if id, err := strconv.ParseInt(args[0], 10, 64); err == nil {
 				if organization, err := itr.Find(id); err == nil {
-					var columns []table.Column
-					var rows []table.Row
 					if outputFlag == "table" {
-						columns = []table.Column{
-							{Title: "PID", Width: 4},
-							{Title: "ID", Width: 4},
-							{Title: "Name", Width: 16},
-						}
 						rows = append(rows, table.Row{strconv.FormatInt(organization.ParentId, 10), strconv.FormatInt(organization.Id, 10), organization.Name})
 					}
 					o.print(organization, columns, rows)
@@ -95,14 +97,7 @@ func (o *Options) Organization(cmd *cobra.Command, args []string) error {
 			}
 		} else {
 			if organizations, err := itr.List(); err == nil {
-				var columns []table.Column
-				var rows []table.Row
 				if outputFlag == "table" {
-					columns = []table.Column{
-						{Title: "PID", Width: 4},
-						{Title: "ID", Width: 4},
-						{Title: "Name", Width: 16},
-					}
 					for _, o := range *organizations {
 						rows = append(rows, table.Row{strconv.FormatInt(o.ParentId, 10), strconv.FormatInt(o.Id, 10), o.Name})
 					}
