@@ -124,7 +124,6 @@ func (o *Options) User(cmd *cobra.Command, args []string) error {
 		var rows []table.Row
 		if outputFlag == "table" {
 			columns = []table.Column{
-				{Title: "PID", Width: 4},
 				{Title: "ID", Width: 4},
 				{Title: "Organization", Width: 16},
 				{Title: "Name", Width: 16},
@@ -132,7 +131,6 @@ func (o *Options) User(cmd *cobra.Command, args []string) error {
 			}
 			for _, o := range *organizations {
 				rows = append(rows, table.Row{
-					strconv.FormatInt(o.Organization.ParentId, 10),
 					strconv.FormatInt(o.Organization.Id, 10),
 					o.Organization.Name,
 					o.Individual.Name,
