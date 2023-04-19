@@ -54,7 +54,7 @@ func (rep *Authentications) Create(identify, token string) (int64, error) {
 }
 
 func (rep *Authentications) FindToken(identify string) (int64, string, error) {
-	stmt, err := rep.DB.Prepare("select id, token from authentications where identify=?")
+	stmt, err := rep.DB.Prepare("select individual_id, token from authentications where identify=?")
 	if err != nil {
 		return -1, "", err
 	}

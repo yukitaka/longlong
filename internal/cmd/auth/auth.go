@@ -36,10 +36,10 @@ func NewCmdAuth(parent string, streams cli.IOStream) *cobra.Command {
 	}
 
 	loginCmd := &cobra.Command{
-		Use:   "login [ACCOUNT]",
+		Use:   "login [ORGANIZATION] [ACCOUNT]",
 		Short: "Authorize access to Longlong",
 		Args: func(cmd *cobra.Command, args []string) error {
-			if err := cobra.MinimumNArgs(1)(cmd, args); err != nil {
+			if err := cobra.MinimumNArgs(2)(cmd, args); err != nil {
 				return err
 			}
 			return nil
@@ -69,11 +69,11 @@ func (o *Options) Login(args []string) error {
 		return err
 	}
 
-	id, err := itr.Auth(args[0], string(pw))
+	id, err := itr.Auth(args[1], string(pw))
 	if err != nil {
 		return fmt.Errorf("\nAuthentication failure (%s)", err)
 	}
-	fmt.Printf("Login %s %d.\n", args[0], id)
+	fmt.Printf("Login %s %s %d.\n", args[0], args[1], id)
 
 	return nil
 }

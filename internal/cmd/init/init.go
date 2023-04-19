@@ -72,7 +72,7 @@ func (o *Options) Sqlite() error {
 	}
 
 	query := `
-	create table authentications (id integer not null primary key, identify text, token text);
+	create table authentications (id integer not null primary key, identify text not null, token text not null, individual_id integer);
 	create table organizations (id integer not null primary key, parent_id integer not null default 0, name text);
 	create table organization_belongings (organization_id integer not null, individual_id integer not null, role integer);
 	create table users (id integer not null primary key);
@@ -85,7 +85,7 @@ func (o *Options) Sqlite() error {
 	insert into user_profiles (user_id, profile_id) values (1, 1);
 	insert into individuals (id, name, user_id, profile_id) values (1, 'yukitaka', 1, 1);
 	insert into organization_belongings (organization_id, individual_id, role) values (1, 1, 0);
-	insert into authentications (id, identify, token) values (1, 'yukitaka', '%s');
+	insert into authentications (id, identify, token, individual_id) values (1, 'yukitaka', '%s', 1);
 	`
 	_, err = db.Exec(fmt.Sprintf(query, hash))
 	if err != nil {
