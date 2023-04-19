@@ -73,7 +73,7 @@ func (o *Options) Login(args []string) error {
 	if err != nil {
 		return fmt.Errorf("\nAuthentication failure (%s)", err)
 	}
-	fmt.Printf("Login %s %d.\n", args[0], id)
+	fmt.Printf("Login %s %s %d.\n", args[0], args[1], id)
 
 	return nil
 }
