@@ -1,20 +1,23 @@
 package usecase
 
 import (
+	"fmt"
+	"github.com/yukitaka/longlong/internal/domain/entity"
 	"github.com/yukitaka/longlong/internal/domain/repository"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type Authentication struct {
 	repository.Authentications
+	repository.Organizations
 	repository.OrganizationBelongings
 }
 
-func NewAuthentication(authentications repository.Authentications, organizationBelongings repository.OrganizationBelongings) *Authentication {
-	return &Authentication{authentications, organizationBelongings}
+func NewAuthentication(authentications repository.Authentications, organizations repository.Organizations, organizationBelongings repository.OrganizationBelongings) *Authentication {
+	return &Authentication{authentications, organizations, organizationBelongings}
 }
 
-func (it *Authentication) Auth(identify, password string) (int64, error) {
+func (it *Authentication) Auth(organization, identify, password string) (int64, error) {
 	id, token, err := it.Authentications.FindToken(identify)
 	if err != nil {
 		return -1, err
@@ -24,5 +27,13 @@ func (it *Authentication) Auth(identify, password string) (int64, error) {
 		return -1, err
 	}
 
-	return id, nil
+	organizationBelongings, err := it.OrganizationBelongings.IndividualsAssigned(&[]entity.Individual{*entity.NewIndividual(id, 0, 0, identify)})
+	for _, ob := range *organizationBelongings {
+		o, _ := it.Organizations.Find(ob.Organization.Id)
+		if o.Name == organization {
+			return id, nil
+		}
+	}
+
+	return -1, fmt.Errorf("Error: organization %s not allowed", organization)
 }
