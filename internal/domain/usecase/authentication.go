@@ -7,10 +7,11 @@ import (
 
 type Authentication struct {
 	repository.Authentications
+	repository.OrganizationBelongings
 }
 
-func NewAuthentication(authentications repository.Authentications) *Authentication {
-	return &Authentication{authentications}
+func NewAuthentication(authentications repository.Authentications, organizationBelongings repository.OrganizationBelongings) *Authentication {
+	return &Authentication{authentications, organizationBelongings}
 }
 
 func (it *Authentication) Auth(identify, password string) (int64, error) {

@@ -61,7 +61,8 @@ func (o *Options) Run(args []string) error {
 
 func (o *Options) Login(args []string) error {
 	rep := repository.NewAuthenticationsRepository()
-	itr := usecase.NewAuthentication(rep)
+	organizationBelongingsRep := repository.NewOrganizationBelongingsRepository()
+	itr := usecase.NewAuthentication(rep, organizationBelongingsRep)
 
 	fmt.Print("Password: ")
 	pw, err := term.ReadPassword(syscall.Stdin)
