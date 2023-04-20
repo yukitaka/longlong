@@ -61,7 +61,9 @@ func (o *Options) Run(args []string) error {
 
 func (o *Options) Login(args []string) error {
 	rep := repository.NewAuthenticationsRepository()
-	itr := usecase.NewAuthentication(rep)
+	organizationsRep := repository.NewOrganizationsRepository()
+	organizationBelongingsRep := repository.NewOrganizationBelongingsRepository()
+	itr := usecase.NewAuthentication(rep, organizationsRep, organizationBelongingsRep)
 
 	fmt.Print("Password: ")
 	pw, err := term.ReadPassword(syscall.Stdin)
@@ -69,10 +71,11 @@ func (o *Options) Login(args []string) error {
 		return err
 	}
 
-	id, err := itr.Auth(args[1], string(pw))
+	id, err := itr.Auth(args[0], args[1], string(pw))
 	if err != nil {
 		return fmt.Errorf("\nAuthentication failure (%s)", err)
 	}
+	fmt.Println()
 	fmt.Printf("Login %s %s %d.\n", args[0], args[1], id)
 
 	return nil
