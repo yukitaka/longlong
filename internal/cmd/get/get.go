@@ -2,18 +2,15 @@ package get
 
 import (
 	"fmt"
-	tea "github.com/charmbracelet/bubbletea"
 	"github.com/yukitaka/longlong/internal/domain/usecase"
-	"github.com/yukitaka/longlong/internal/interface/output"
 	"github.com/yukitaka/longlong/internal/interface/repository"
-	"os"
 	"strconv"
 
 	"github.com/charmbracelet/bubbles/table"
 	"github.com/spf13/cobra"
 	"github.com/yukitaka/longlong/internal/cli"
+	cmdutil "github.com/yukitaka/longlong/internal/cmd/util"
 	"github.com/yukitaka/longlong/internal/util"
-	"gopkg.in/yaml.v3"
 )
 
 type Options struct {
@@ -92,7 +89,8 @@ func (o *Options) Organization(cmd *cobra.Command, args []string) error {
 					if outputFlag == "table" {
 						rows = append(rows, table.Row{strconv.FormatInt(organization.ParentId, 10), strconv.FormatInt(organization.Id, 10), organization.Name})
 					}
-					o.print(organization, columns, rows)
+					printer := cmdutil.NewPrinter(organization, columns, rows)
+					printer.Print()
 				}
 			}
 		} else {
@@ -102,7 +100,8 @@ func (o *Options) Organization(cmd *cobra.Command, args []string) error {
 						rows = append(rows, table.Row{strconv.FormatInt(o.ParentId, 10), strconv.FormatInt(o.Id, 10), o.Name})
 					}
 				}
-				o.print(organizations, columns, rows)
+				printer := cmdutil.NewPrinter(organizations, columns, rows)
+				printer.Print()
 			}
 		}
 	}
@@ -138,31 +137,9 @@ func (o *Options) User(cmd *cobra.Command, args []string) error {
 				})
 			}
 		}
-		o.print(organizations, columns, rows)
+		printer := cmdutil.NewPrinter(organizations, columns, rows)
+		printer.Print()
 	}
 
 	return nil
-}
-
-func (o *Options) print(data interface{}, columns []table.Column, rows []table.Row) {
-	if columns == nil {
-		if organizationsYaml, err := yaml.Marshal(&data); err == nil {
-			fmt.Println(string(organizationsYaml))
-		}
-	} else {
-		t := table.New(
-			table.WithColumns(columns),
-			table.WithRows(rows),
-			table.WithFocused(true),
-			table.WithHeight(len(rows)),
-		)
-
-		m := output.NewModel(func(id string) tea.Cmd {
-			return tea.Printf("unfold %s", id)
-		}, t)
-		if _, err := tea.NewProgram(m).Run(); err != nil {
-			fmt.Println("Error running program: ", err)
-			os.Exit(1)
-		}
-	}
 }
