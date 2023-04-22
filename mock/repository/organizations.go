@@ -76,6 +76,21 @@ func (mr *MockOrganizationsMockRecorder) Find(id interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Find", reflect.TypeOf((*MockOrganizations)(nil).Find), id)
 }
 
+// FindAll mocks base method.
+func (m *MockOrganizations) FindAll(ids []interface{}) (*[]entity.Organization, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindAll", ids)
+	ret0, _ := ret[0].(*[]entity.Organization)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindAll indicates an expected call of FindAll.
+func (mr *MockOrganizationsMockRecorder) FindAll(ids interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAll", reflect.TypeOf((*MockOrganizations)(nil).FindAll), ids)
+}
+
 // List mocks base method.
 func (m *MockOrganizations) List() (*[]entity.Organization, error) {
 	m.ctrl.T.Helper()

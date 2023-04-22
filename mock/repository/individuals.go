@@ -75,3 +75,18 @@ func (mr *MockIndividualsMockRecorder) Find(id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Find", reflect.TypeOf((*MockIndividuals)(nil).Find), id)
 }
+
+// FindByUserId mocks base method.
+func (m *MockIndividuals) FindByUserId(userId int64) (*[]entity.Individual, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindByUserId", userId)
+	ret0, _ := ret[0].(*[]entity.Individual)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindByUserId indicates an expected call of FindByUserId.
+func (mr *MockIndividualsMockRecorder) FindByUserId(userId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByUserId", reflect.TypeOf((*MockIndividuals)(nil).FindByUserId), userId)
+}
