@@ -60,6 +60,21 @@ func (mr *MockOrganizationBelongingsMockRecorder) Entry(individualId interface{}
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Entry", reflect.TypeOf((*MockOrganizationBelongings)(nil).Entry), individualId)
 }
 
+// IndividualsAssigned mocks base method.
+func (m *MockOrganizationBelongings) IndividualsAssigned(individual *[]entity.Individual) (*[]entity.OrganizationBelonging, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "IndividualsAssigned", individual)
+	ret0, _ := ret[0].(*[]entity.OrganizationBelonging)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// IndividualsAssigned indicates an expected call of IndividualsAssigned.
+func (mr *MockOrganizationBelongingsMockRecorder) IndividualsAssigned(individual interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IndividualsAssigned", reflect.TypeOf((*MockOrganizationBelongings)(nil).IndividualsAssigned), individual)
+}
+
 // Leave mocks base method.
 func (m *MockOrganizationBelongings) Leave(individualId int64, reason string) error {
 	m.ctrl.T.Helper()
