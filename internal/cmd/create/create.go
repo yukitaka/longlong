@@ -93,7 +93,7 @@ func (o *Options) User(args []string) error {
 
 	itr := usecase.NewUserCreator(rep, individualRep)
 	name := args[0]
-	id, err := itr.New(name)
+	id, err := itr.New(o.OrganizationId, name)
 	if err != nil {
 		return err
 	}
