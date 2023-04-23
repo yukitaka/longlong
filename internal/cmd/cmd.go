@@ -72,7 +72,7 @@ https://github.com/yukitaka/longlong/`,
 	cmdGroup.AddCommand(auth.NewCmdAuth("llctl", o.IOStream))
 	cmdGroup.AddCommand(get.NewCmdGet("llctl", o.IOStream, o.UserId))
 	cmdGroup.AddCommand(put.NewCmdPut("llctl", o.IOStream, o.UserId))
-	cmdGroup.AddCommand(create.NewCmdCreate("llctl", o.IOStream, o.UserId))
+	cmdGroup.AddCommand(create.NewCmdCreate("llctl", o.IOStream, o.UserId, o.OrganizationId))
 
 	if len(o.Arguments) > 1 {
 		cmdArgs := o.Arguments[1:]
