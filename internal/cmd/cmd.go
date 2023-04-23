@@ -18,14 +18,16 @@ import (
 
 type config struct {
 	Authorize struct {
-		UserId int64 `mapstructure:"user_id"`
+		UserId         int64 `mapstructure:"user_id"`
+		OrganizationId int64 `mapstructure:"organization_id"`
 	}
 }
 
 type LlctlOptions struct {
-	CmdHandler Handler
-	Arguments  []string
-	UserId     int64
+	CmdHandler     Handler
+	Arguments      []string
+	UserId         int64
+	OrganizationId int64
 	cli.IOStream
 }
 
@@ -44,9 +46,10 @@ func NewLlctlCommand() *cobra.Command {
 	}
 
 	return NewLlctlCommandWithArgs(LlctlOptions{
-		CmdHandler: NewDefaultHandler([]string{"llctl"}),
-		Arguments:  os.Args,
-		UserId:     conf.Authorize.UserId,
+		CmdHandler:     NewDefaultHandler([]string{"llctl"}),
+		Arguments:      os.Args,
+		UserId:         conf.Authorize.UserId,
+		OrganizationId: conf.Authorize.OrganizationId,
 		IOStream: cli.IOStream{
 			In:     os.Stdin,
 			Out:    os.Stdout,
@@ -69,7 +72,7 @@ https://github.com/yukitaka/longlong/`,
 	cmdGroup.AddCommand(auth.NewCmdAuth("llctl", o.IOStream))
 	cmdGroup.AddCommand(get.NewCmdGet("llctl", o.IOStream, o.UserId))
 	cmdGroup.AddCommand(put.NewCmdPut("llctl", o.IOStream, o.UserId))
-	cmdGroup.AddCommand(create.NewCmdCreate("llctl", o.IOStream, o.UserId))
+	cmdGroup.AddCommand(create.NewCmdCreate("llctl", o.IOStream, o.UserId, o.OrganizationId))
 
 	if len(o.Arguments) > 1 {
 		cmdArgs := o.Arguments[1:]

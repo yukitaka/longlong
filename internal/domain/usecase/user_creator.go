@@ -13,8 +13,8 @@ func NewUserCreator(users repository.Users, individuals repository.Individuals) 
 	return &UserCreator{users, individuals}
 }
 
-func (it *UserCreator) New(name string) (int64, error) {
-	userId, err := it.Users.Create(name)
+func (it *UserCreator) New(organizationId int64, name string) (int64, error) {
+	userId, err := it.Users.Create(organizationId, name)
 	if err != nil {
 		return -1, err
 	}
