@@ -35,9 +35,29 @@ func (o OrganizationBelongings) Leave(individualId int64, reason string) error {
 	panic("implement me")
 }
 
-func (o OrganizationBelongings) Members() (*[]entity.Individual, error) {
-	//TODO implement me
-	panic("implement me")
+func (o OrganizationBelongings) Members(organizationId int64, individualRepository rep.Individuals) (*[]entity.Individual, error) {
+	stmt := "select organization_id, individual_id from organization_belongings where organization_id=?"
+	ret, err := o.DB.Query(stmt, organizationId)
+	if err != nil {
+		return nil, err
+	}
+
+	var individuals []entity.Individual
+	for ret.Next() {
+		var oid int64
+		var iid int64
+		err := ret.Scan(&oid, &iid)
+		if err != nil {
+			return nil, err
+		}
+		individual, err := individualRepository.Find(iid)
+		if err != nil {
+			return nil, err
+		}
+		individuals = append(individuals, *individual)
+	}
+
+	return &individuals, nil
 }
 
 func (o OrganizationBelongings) IndividualsAssigned(individuals *[]entity.Individual) (*[]entity.OrganizationBelonging, error) {

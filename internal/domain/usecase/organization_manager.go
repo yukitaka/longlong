@@ -9,10 +9,11 @@ type OrganizationManager struct {
 	id int64
 	repository.Organizations
 	repository.OrganizationBelongings
+	repository.Individuals
 }
 
-func NewOrganizationManager(id int64, organizations repository.Organizations, organizationBelongings repository.OrganizationBelongings) *OrganizationManager {
-	return &OrganizationManager{id, organizations, organizationBelongings}
+func NewOrganizationManager(id int64, organizations repository.Organizations, organizationBelongings repository.OrganizationBelongings, individuals repository.Individuals) *OrganizationManager {
+	return &OrganizationManager{id, organizations, organizationBelongings, individuals}
 }
 
 func (it *OrganizationManager) AssignIndividual(individualId int64) error {
@@ -24,5 +25,5 @@ func (it *OrganizationManager) RejectIndividual(individualId int64, reason strin
 }
 
 func (it *OrganizationManager) Members() (*[]entity.Individual, error) {
-	return it.OrganizationBelongings.Members()
+	return it.OrganizationBelongings.Members(it.id, it.Individuals)
 }
