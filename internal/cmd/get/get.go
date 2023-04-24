@@ -118,6 +118,17 @@ func (o *Options) User(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
+	repOrg := repository.NewOrganizationsRepository()
+	repOrgBelong := repository.NewOrganizationBelongingsRepository()
+	for _, organization := range *organizations {
+		manager := usecase.NewOrganizationManager(organization.Organization.Id, repOrg, repOrgBelong)
+		members, err := manager.Members()
+		if err != nil {
+			return err
+		}
+		fmt.Printf("%v\n", members)
+	}
+
 	if outputFlag, err := cmd.PersistentFlags().GetString("output"); err == nil {
 		var columns []table.Column
 		var rows []table.Row
