@@ -24,5 +24,5 @@ func (it *OrganizationManager) RejectIndividual(individualId int64, reason strin
 }
 
 func (it *OrganizationManager) Members() (*[]entity.Individual, error) {
-	return it.OrganizationBelongings.Members()
+	return it.OrganizationBelongings.Members(it.id)
 }
