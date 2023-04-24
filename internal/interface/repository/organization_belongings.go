@@ -35,7 +35,7 @@ func (o OrganizationBelongings) Leave(individualId int64, reason string) error {
 	panic("implement me")
 }
 
-func (o OrganizationBelongings) Members(organizationId int64) (*[]entity.Individual, error) {
+func (o OrganizationBelongings) Members(organizationId int64, individualRepository rep.Individuals) (*[]entity.Individual, error) {
 	stmt := "select organization_id, individual_id from organization_belongings where organization_id=?"
 	ret, err := o.DB.Query(stmt, organizationId)
 	if err != nil {

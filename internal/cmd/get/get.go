@@ -120,8 +120,9 @@ func (o *Options) User(cmd *cobra.Command, args []string) error {
 
 	repOrg := repository.NewOrganizationsRepository()
 	repOrgBelong := repository.NewOrganizationBelongingsRepository()
+	repIndividual := repository.NewIndividualsRepository()
 	for _, organization := range *organizations {
-		manager := usecase.NewOrganizationManager(organization.Organization.Id, repOrg, repOrgBelong)
+		manager := usecase.NewOrganizationManager(organization.Organization.Id, repOrg, repOrgBelong, repIndividual)
 		members, err := manager.Members()
 		if err != nil {
 			return err
