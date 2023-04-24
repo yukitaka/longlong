@@ -50,7 +50,11 @@ func (o OrganizationBelongings) Members(organizationId int64, individualReposito
 		if err != nil {
 			return nil, err
 		}
-		individuals = append(individuals, *entity.NewIndividual(iid, -1, -1, ""))
+		individual, err := individualRepository.Find(iid)
+		if err != nil {
+			return nil, err
+		}
+		individuals = append(individuals, *individual)
 	}
 
 	return &individuals, nil
