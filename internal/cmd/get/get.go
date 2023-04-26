@@ -122,15 +122,15 @@ func (o *Options) User(cmd *cobra.Command, args []string) error {
 	repOrgBelong := repository.NewOrganizationBelongingsRepository()
 	repIndividual := repository.NewIndividualsRepository()
 
-	members := map[string][]entity.Individual{}
+	members := map[string][]entity.OrganizationBelonging{}
 	for _, organization := range *organizations {
-		manager := usecase.NewOrganizationManager(organization.Organization.Id, repOrg, repOrgBelong, repIndividual)
+		manager := usecase.NewOrganizationManager(organization.Organization, repOrg, repOrgBelong, repIndividual)
 		m, err := manager.Members()
 		if err != nil {
 			return err
 		}
 		if _, ok := members[organization.Organization.Name]; !ok {
-			members[organization.Organization.Name] = []entity.Individual{}
+			members[organization.Organization.Name] = []entity.OrganizationBelonging{}
 		}
 		members[organization.Organization.Name] = append(members[organization.Organization.Name], *m...)
 	}
@@ -142,16 +142,14 @@ func (o *Options) User(cmd *cobra.Command, args []string) error {
 			columns = []table.Column{
 				{Title: "Organization", Width: 16},
 				{Title: "Name", Width: 16},
-				{Title: "UserId", Width: 16},
-				{Title: "ProfileId", Width: 16},
+				{Title: "Role", Width: 16},
 			}
 			for n, ms := range members {
 				for _, m := range ms {
 					rows = append(rows, table.Row{
 						n,
-						m.Name,
-						strconv.FormatInt(m.UserId, 10),
-						strconv.FormatInt(m.ProfileId, 10),
+						m.Individual.Name,
+						m.Role.String(),
 					})
 				}
 			}
