@@ -27,8 +27,10 @@ func NewOrganizationBelongingsRepository() rep.OrganizationBelongings {
 }
 
 func (o OrganizationBelongings) Entry(organizationId, individualId int64, role value_object.Role) error {
-	//TODO implement me
-	panic("implement me")
+	query := "insert into organization_belongings (organization_id, individual_id, role) values (?, ?, ?)"
+	_, err := o.DB.Exec(query, organizationId, individualId, role)
+
+	return err
 }
 
 func (o OrganizationBelongings) Leave(individualId int64, reason string) error {
