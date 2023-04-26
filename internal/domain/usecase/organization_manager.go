@@ -3,6 +3,7 @@ package usecase
 import (
 	"github.com/yukitaka/longlong/internal/domain/entity"
 	"github.com/yukitaka/longlong/internal/domain/repository"
+	"github.com/yukitaka/longlong/internal/domain/value_object"
 )
 
 type OrganizationManager struct {
@@ -17,7 +18,7 @@ func NewOrganizationManager(organization *entity.Organization, organizations rep
 }
 
 func (it *OrganizationManager) AssignIndividual(individualId int64) error {
-	return it.OrganizationBelongings.Entry(individualId)
+	return it.OrganizationBelongings.Entry(it.organization.Id, individualId, value_object.MEMBER)
 }
 
 func (it *OrganizationManager) RejectIndividual(individualId int64, reason string) error {

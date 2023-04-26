@@ -26,7 +26,7 @@ func NewOrganizationBelongingsRepository() rep.OrganizationBelongings {
 	}
 }
 
-func (o OrganizationBelongings) Entry(individualId int64) error {
+func (o OrganizationBelongings) Entry(organizationId, individualId int64, role value_object.Role) error {
 	//TODO implement me
 	panic("implement me")
 }
