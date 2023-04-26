@@ -12,12 +12,12 @@ func TestNewUserCreator(t *testing.T) {
 	defer ctrl.Finish()
 
 	expect := int64(1)
-	rep := mockRepository.NewMockUsers(ctrl)
-	rep.EXPECT().Create("Name").Return(expect, nil)
+	userRep := mockRepository.NewMockUsers(ctrl)
+	userRep.EXPECT().Create("Name").Return(expect, nil)
 
 	individualRep := mockRepository.NewMockIndividuals(ctrl)
 
-	itr := NewUserCreator(rep, individualRep)
+	itr := NewUserCreator(userRep, individualRep)
 	id, _ := itr.Users.Create("Name")
 	if id != expect {
 		t.Errorf("NewUserCreator() = %v", id)

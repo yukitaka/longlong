@@ -70,8 +70,8 @@ func (o *Options) Run(args []string) error {
 }
 
 func (o *Options) Organization(cmd *cobra.Command, args []string) error {
-	rep := repository.NewOrganizationsRepository()
-	itr := usecase.NewOrganizationFinder(rep)
+	organizationRep := repository.NewOrganizationsRepository()
+	itr := usecase.NewOrganizationFinder(organizationRep)
 
 	var err error
 	if outputFlag, err := cmd.PersistentFlags().GetString("output"); err == nil {
@@ -111,20 +111,22 @@ func (o *Options) Organization(cmd *cobra.Command, args []string) error {
 }
 
 func (o *Options) User(cmd *cobra.Command, args []string) error {
-	rep := repository.NewIndividualsRepository()
+	individualRep := repository.NewIndividualsRepository()
+	defer individualRep.Close()
+	organizationRep := repository.NewOrganizationsRepository()
+	defer organizationRep.Close()
+	belongingRep := repository.NewOrganizationBelongingsRepository()
+	defer belongingRep.Close()
 
-	itr := usecase.NewUserAssigned(o.UserId, rep, repository.NewOrganizationsRepository(), repository.NewOrganizationBelongingsRepository())
+	itr := usecase.NewUserAssigned(o.UserId, individualRep, organizationRep, belongingRep)
 	organizations, err := itr.OrganizationList()
 	if err != nil {
 		return err
 	}
-	repOrg := repository.NewOrganizationsRepository()
-	repOrgBelong := repository.NewOrganizationBelongingsRepository()
-	repIndividual := repository.NewIndividualsRepository()
 
 	members := map[string][]entity.OrganizationBelonging{}
 	for _, organization := range *organizations {
-		manager := usecase.NewOrganizationManager(organization.Organization, repOrg, repOrgBelong, repIndividual)
+		manager := usecase.NewOrganizationManager(organization.Organization, organizationRep, belongingRep, individualRep)
 		m, err := manager.Members()
 		if err != nil {
 			return err

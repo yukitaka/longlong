@@ -63,11 +63,11 @@ func (o *Options) Organization(args []string) error {
 		fmt.Println("Error: must also specify a name")
 		return nil
 	}
-	rep := repository.NewOrganizationsRepository()
-	defer rep.Close()
-	belongingsRep := repository.NewOrganizationBelongingsRepository()
-	defer belongingsRep.Close()
-	itr := usecase.NewOrganizationCreator(rep, belongingsRep)
+	organizationRep := repository.NewOrganizationsRepository()
+	defer organizationRep.Close()
+	belongingRep := repository.NewOrganizationBelongingsRepository()
+	defer belongingRep.Close()
+	itr := usecase.NewOrganizationCreator(organizationRep, belongingRep)
 
 	individual := entity.Individual{UserId: o.UserId}
 
@@ -86,14 +86,14 @@ func (o *Options) User(args []string) error {
 		fmt.Println("Error: must also specify a name")
 		return nil
 	}
-	rep := repository.NewUsersRepository()
-	defer rep.Close()
+	userRep := repository.NewUsersRepository()
+	defer userRep.Close()
 	individualRep := repository.NewIndividualsRepository()
 	defer individualRep.Close()
 	belongingRep := repository.NewOrganizationBelongingsRepository()
 	defer belongingRep.Close()
 
-	itr := usecase.NewUserCreator(rep, individualRep, belongingRep)
+	itr := usecase.NewUserCreator(userRep, individualRep, belongingRep)
 	name := args[0]
 	id, err := itr.New(o.OrganizationId, name)
 	if err != nil {

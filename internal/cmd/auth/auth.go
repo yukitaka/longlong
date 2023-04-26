@@ -60,10 +60,13 @@ func (o *Options) Run(args []string) error {
 }
 
 func (o *Options) Login(args []string) error {
-	rep := repository.NewAuthenticationsRepository()
-	organizationsRep := repository.NewOrganizationsRepository()
-	organizationBelongingsRep := repository.NewOrganizationBelongingsRepository()
-	itr := usecase.NewAuthentication(rep, organizationsRep, organizationBelongingsRep)
+	authRep := repository.NewAuthenticationsRepository()
+	defer authRep.Close()
+	organizationRep := repository.NewOrganizationsRepository()
+	defer organizationRep.Close()
+	belongingRep := repository.NewOrganizationBelongingsRepository()
+	defer belongingRep.Close()
+	itr := usecase.NewAuthentication(authRep, organizationRep, belongingRep)
 
 	fmt.Print("Password: ")
 	pw, err := term.ReadPassword(syscall.Stdin)
