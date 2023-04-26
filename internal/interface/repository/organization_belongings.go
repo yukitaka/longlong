@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/yukitaka/longlong/internal/domain/entity"
 	rep "github.com/yukitaka/longlong/internal/domain/repository"
+	"github.com/yukitaka/longlong/internal/domain/value_object"
 	"github.com/yukitaka/longlong/internal/util"
 	"strings"
 )
@@ -35,18 +36,19 @@ func (o OrganizationBelongings) Leave(individualId int64, reason string) error {
 	panic("implement me")
 }
 
-func (o OrganizationBelongings) Members(organizationId int64, individualRepository rep.Individuals) (*[]entity.Individual, error) {
-	stmt := "select organization_id, individual_id from organization_belongings where organization_id=?"
-	ret, err := o.DB.Query(stmt, organizationId)
+func (o OrganizationBelongings) Members(organization *entity.Organization, individualRepository rep.Individuals) (*[]entity.OrganizationBelonging, error) {
+	stmt := "select organization_id, individual_id, role from organization_belongings where organization_id=?"
+	ret, err := o.DB.Query(stmt, organization.Id)
 	if err != nil {
 		return nil, err
 	}
 
-	var individuals []entity.Individual
+	var belongings []entity.OrganizationBelonging
 	for ret.Next() {
 		var oid int64
 		var iid int64
-		err := ret.Scan(&oid, &iid)
+		var role int
+		err := ret.Scan(&oid, &iid, &role)
 		if err != nil {
 			return nil, err
 		}
@@ -54,10 +56,10 @@ func (o OrganizationBelongings) Members(organizationId int64, individualReposito
 		if err != nil {
 			return nil, err
 		}
-		individuals = append(individuals, *individual)
+		belongings = append(belongings, *entity.NewOrganizationBelonging(organization, individual, value_object.Role(role)))
 	}
 
-	return &individuals, nil
+	return &belongings, nil
 }
 
 func (o OrganizationBelongings) IndividualsAssigned(individuals *[]entity.Individual) (*[]entity.OrganizationBelonging, error) {
