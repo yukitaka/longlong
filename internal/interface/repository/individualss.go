@@ -51,6 +51,7 @@ func (rep *Individuals) Create(name string, userId, profileId int64) (int64, err
 	query = "insert into individuals (id, name, user_id, profile_id) values (?, ?, ?, ?)"
 	_, err = rep.DB.Exec(query, id, name, userId, profileId)
 	if err != nil {
+		fmt.Println(id)
 		return -1, err
 	}
 	err = tx.Commit()

@@ -3,10 +3,11 @@ package repository
 
 import (
 	"github.com/yukitaka/longlong/internal/domain/entity"
+	"github.com/yukitaka/longlong/internal/domain/value_object"
 )
 
 type OrganizationBelongings interface {
-	Entry(individualId int64) error
+	Entry(organizationId, individualId int64, role value_object.Role) error
 	Leave(individualId int64, reason string) error
 	Members(organization *entity.Organization, individualRepository Individuals) (*[]entity.OrganizationBelonging, error)
 	IndividualsAssigned(individual *[]entity.Individual) (*[]entity.OrganizationBelonging, error)

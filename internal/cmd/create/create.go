@@ -90,8 +90,10 @@ func (o *Options) User(args []string) error {
 	defer rep.Close()
 	individualRep := repository.NewIndividualsRepository()
 	defer individualRep.Close()
+	belongingRep := repository.NewOrganizationBelongingsRepository()
+	defer belongingRep.Close()
 
-	itr := usecase.NewUserCreator(rep, individualRep)
+	itr := usecase.NewUserCreator(rep, individualRep, belongingRep)
 	name := args[0]
 	id, err := itr.New(o.OrganizationId, name)
 	if err != nil {

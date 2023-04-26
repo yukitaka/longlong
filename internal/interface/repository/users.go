@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/yukitaka/longlong/internal/domain/entity"
 	rep "github.com/yukitaka/longlong/internal/domain/repository"
-	"github.com/yukitaka/longlong/internal/domain/value_object"
 	"github.com/yukitaka/longlong/internal/util"
 )
 
@@ -33,7 +32,7 @@ func (rep *Users) Close() {
 	}
 }
 
-func (rep *Users) Create(organizationId int64, name string) (int64, error) {
+func (rep *Users) Create(name string) (int64, error) {
 	query := "select max(id) from users"
 	row := rep.DB.QueryRow(query)
 	var nullableId sql.NullInt64
@@ -60,18 +59,6 @@ func (rep *Users) Create(organizationId int64, name string) (int64, error) {
 	_, err = rep.DB.Exec(query, id, name)
 	if err != nil {
 		return -1, err
-	}
-	query = "insert into individuals (id, name, user_id, profile_id) values (?, ?, ?, ?)"
-	_, err = rep.DB.Exec(query, id, name, id, id)
-	if err != nil {
-		return -1, err
-	}
-	if organizationId > 0 {
-		query = "insert into organization_belongings (organization_id, individual_id, role) values (?, ?, ?)"
-		_, err = rep.DB.Exec(query, organizationId, id, value_object.MEMBER)
-		if err != nil {
-			return -1, err
-		}
 	}
 	err = tx.Commit()
 	if err != nil {
