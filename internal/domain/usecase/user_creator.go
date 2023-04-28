@@ -20,7 +20,7 @@ func (it *UserCreator) New(organizationId int64, name string) (int64, error) {
 	if err != nil {
 		return -1, err
 	}
-	id, err := it.Individuals.Create("Default", userId, -1)
+	id, err := it.Individuals.Create(name, userId, -1)
 	if err != nil {
 		return 0, err
 	}

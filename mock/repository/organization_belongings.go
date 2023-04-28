@@ -9,6 +9,8 @@ import (
 
 	gomock "github.com/golang/mock/gomock"
 	entity "github.com/yukitaka/longlong/internal/domain/entity"
+	repository "github.com/yukitaka/longlong/internal/domain/repository"
+	value_object "github.com/yukitaka/longlong/internal/domain/value_object"
 )
 
 // MockOrganizationBelongings is a mock of OrganizationBelongings interface.
@@ -47,17 +49,17 @@ func (mr *MockOrganizationBelongingsMockRecorder) Close() *gomock.Call {
 }
 
 // Entry mocks base method.
-func (m *MockOrganizationBelongings) Entry(individualId int64) error {
+func (m *MockOrganizationBelongings) Entry(organizationId, individualId int64, role value_object.Role) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Entry", individualId)
+	ret := m.ctrl.Call(m, "Entry", organizationId, individualId, role)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Entry indicates an expected call of Entry.
-func (mr *MockOrganizationBelongingsMockRecorder) Entry(individualId interface{}) *gomock.Call {
+func (mr *MockOrganizationBelongingsMockRecorder) Entry(organizationId, individualId, role interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Entry", reflect.TypeOf((*MockOrganizationBelongings)(nil).Entry), individualId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Entry", reflect.TypeOf((*MockOrganizationBelongings)(nil).Entry), organizationId, individualId, role)
 }
 
 // IndividualsAssigned mocks base method.
@@ -90,16 +92,16 @@ func (mr *MockOrganizationBelongingsMockRecorder) Leave(individualId, reason int
 }
 
 // Members mocks base method.
-func (m *MockOrganizationBelongings) Members() (*[]entity.Individual, error) {
+func (m *MockOrganizationBelongings) Members(organization *entity.Organization, individualRepository repository.Individuals) (*[]entity.OrganizationBelonging, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Members")
-	ret0, _ := ret[0].(*[]entity.Individual)
+	ret := m.ctrl.Call(m, "Members", organization, individualRepository)
+	ret0, _ := ret[0].(*[]entity.OrganizationBelonging)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Members indicates an expected call of Members.
-func (mr *MockOrganizationBelongingsMockRecorder) Members() *gomock.Call {
+func (mr *MockOrganizationBelongingsMockRecorder) Members(organization, individualRepository interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Members", reflect.TypeOf((*MockOrganizationBelongings)(nil).Members))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Members", reflect.TypeOf((*MockOrganizationBelongings)(nil).Members), organization, individualRepository)
 }
