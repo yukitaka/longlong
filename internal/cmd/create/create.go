@@ -90,7 +90,6 @@ func (o *Options) User(cmd *cobra.Command, args []string) error {
 	}
 
 	if role, err := cmd.PersistentFlags().GetString("role"); err == nil {
-		fmt.Println(role)
 		userRep := repository.NewUsersRepository()
 		defer userRep.Close()
 		individualRep := repository.NewIndividualsRepository()
@@ -100,7 +99,7 @@ func (o *Options) User(cmd *cobra.Command, args []string) error {
 
 		itr := usecase.NewUserCreator(userRep, individualRep, belongingRep)
 		name := args[0]
-		id, err := itr.New(o.OrganizationId, name)
+		id, err := itr.New(o.OrganizationId, name, role)
 		if err != nil {
 			return err
 		}
