@@ -47,13 +47,15 @@ func NewCmdCreate(parent string, streams cli.IOStream, userId, organizationId in
 		},
 	})
 
-	cmd.AddCommand(&cobra.Command{
+	userCmd := &cobra.Command{
 		Use:   "user",
 		Short: "Create one user",
 		Run: func(cmd *cobra.Command, args []string) {
-			util.CheckErr(o.User(args))
+			util.CheckErr(o.User(cmd, args))
 		},
-	})
+	}
+	userCmd.PersistentFlags().StringP("role", "r", "member", "user role")
+	cmd.AddCommand(userCmd)
 
 	return cmd
 }
@@ -81,25 +83,29 @@ func (o *Options) Organization(args []string) error {
 	return nil
 }
 
-func (o *Options) User(args []string) error {
+func (o *Options) User(cmd *cobra.Command, args []string) error {
 	if len(args) != 1 {
 		fmt.Println("Error: must also specify a name")
 		return nil
 	}
-	userRep := repository.NewUsersRepository()
-	defer userRep.Close()
-	individualRep := repository.NewIndividualsRepository()
-	defer individualRep.Close()
-	belongingRep := repository.NewOrganizationBelongingsRepository()
-	defer belongingRep.Close()
 
-	itr := usecase.NewUserCreator(userRep, individualRep, belongingRep)
-	name := args[0]
-	id, err := itr.New(o.OrganizationId, name)
-	if err != nil {
-		return err
+	if role, err := cmd.PersistentFlags().GetString("role"); err == nil {
+		fmt.Println(role)
+		userRep := repository.NewUsersRepository()
+		defer userRep.Close()
+		individualRep := repository.NewIndividualsRepository()
+		defer individualRep.Close()
+		belongingRep := repository.NewOrganizationBelongingsRepository()
+		defer belongingRep.Close()
+
+		itr := usecase.NewUserCreator(userRep, individualRep, belongingRep)
+		name := args[0]
+		id, err := itr.New(o.OrganizationId, name)
+		if err != nil {
+			return err
+		}
+		fmt.Printf("create a user %s which id is %d\n", name, id)
 	}
-	fmt.Printf("create a user %s which id is %d\n", name, id)
 
 	return nil
 }
