@@ -15,7 +15,7 @@ func NewUserCreator(users repository.Users, individuals repository.Individuals, 
 	return &UserCreator{users, individuals, belongings}
 }
 
-func (it *UserCreator) New(organizationId int64, name string, role string) (int64, error) {
+func (it *UserCreator) New(ownerId, organizationId int64, name string, role string) (int64, error) {
 	var roleType value_object.Role
 	if role == "owner" {
 		roleType = value_object.OWNER
