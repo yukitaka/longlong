@@ -30,18 +30,11 @@ func (o OrganizationBelongings) Find(organizationId, individualId int64) (*entit
 	query := "select role from organization_belongings where organization_id=$1 and individual_id=$2"
 	row := o.DB.QueryRow(query, organizationId, individualId)
 
-	var role string
+	var role int
 	if err := row.Scan(&role); err != nil {
 		return nil, err
 	}
-	var roleType value_object.Role
-	if role == "owner" {
-		roleType = value_object.OWNER
-	} else if role == "admin" {
-		roleType = value_object.ADMIN
-	} else {
-		roleType = value_object.MEMBER
-	}
+	roleType := value_object.Role(role)
 
 	var parentId int64
 	var organizationName string
