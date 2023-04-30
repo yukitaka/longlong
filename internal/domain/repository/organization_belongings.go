@@ -7,6 +7,7 @@ import (
 )
 
 type OrganizationBelongings interface {
+	Find(organizationId, individualId int64) (*entity.OrganizationBelonging, error)
 	Entry(organizationId, individualId int64, role value_object.Role) error
 	Leave(individualId int64, reason string) error
 	Members(organization *entity.Organization, individualRepository Individuals) (*[]entity.OrganizationBelonging, error)
