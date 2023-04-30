@@ -16,8 +16,8 @@ func NewUserCreator(users repository.Users, individuals repository.Individuals, 
 	return &UserCreator{users, individuals, belongings}
 }
 
-func (it *UserCreator) New(ownerId, organizationId int64, name string, role string) (int64, error) {
-	owner, err := it.OrganizationBelongings.Find(organizationId, ownerId)
+func (it *UserCreator) New(operatorId, organizationId int64, name string, role string) (int64, error) {
+	operator, err := it.OrganizationBelongings.Find(organizationId, operatorId)
 	var roleType value_object.Role
 	if role == "owner" {
 		roleType = value_object.OWNER
@@ -26,7 +26,7 @@ func (it *UserCreator) New(ownerId, organizationId int64, name string, role stri
 	} else {
 		roleType = value_object.MEMBER
 	}
-	if owner.Role > roleType {
+	if operator.Role > roleType {
 		return -1, fmt.Errorf("New user role isn't permitted.\n")
 	}
 
