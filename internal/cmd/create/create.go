@@ -99,7 +99,7 @@ func (o *Options) User(cmd *cobra.Command, args []string) error {
 
 		itr := usecase.NewUserCreator(userRep, individualRep, belongingRep)
 		name := args[0]
-		id, err := itr.New(o.OrganizationId, name, role)
+		id, err := itr.New(o.UserId, o.OrganizationId, name, role)
 		if err != nil {
 			return err
 		}

@@ -26,6 +26,36 @@ func NewOrganizationBelongingsRepository() rep.OrganizationBelongings {
 	}
 }
 
+func (o OrganizationBelongings) Find(organizationId, individualId int64) (*entity.OrganizationBelonging, error) {
+	query := "select role from organization_belongings where organization_id=$1 and individual_id=$2"
+	row := o.DB.QueryRow(query, organizationId, individualId)
+
+	var role int
+	if err := row.Scan(&role); err != nil {
+		return nil, err
+	}
+	roleType := value_object.Role(role)
+
+	var parentId int64
+	var organizationName string
+	row = o.DB.QueryRow("select parent_id, name from organizations where id=$1", organizationId)
+	if err := row.Scan(&parentId, &organizationName); err != nil {
+		return nil, err
+	}
+	organization := entity.NewOrganization(parentId, organizationId, organizationName)
+
+	var userId int64
+	var profileId int64
+	var individualName string
+	row = o.DB.QueryRow("select user_id, profile_id, name from individuals where id=$1", individualId)
+	if err := row.Scan(&userId, &profileId, &individualName); err != nil {
+		return nil, err
+	}
+	individual := entity.NewIndividual(individualId, userId, profileId, individualName)
+
+	return entity.NewOrganizationBelonging(organization, individual, roleType), nil
+}
+
 func (o OrganizationBelongings) Entry(organizationId, individualId int64, role value_object.Role) error {
 	query := "insert into organization_belongings (organization_id, individual_id, role) values (?, ?, ?)"
 	_, err := o.DB.Exec(query, organizationId, individualId, role)
