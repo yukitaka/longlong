@@ -62,6 +62,21 @@ func (mr *MockOrganizationBelongingsMockRecorder) Entry(organizationId, individu
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Entry", reflect.TypeOf((*MockOrganizationBelongings)(nil).Entry), organizationId, individualId, role)
 }
 
+// Find mocks base method.
+func (m *MockOrganizationBelongings) Find(organizationId, individualId int64) (*entity.OrganizationBelonging, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Find", organizationId, individualId)
+	ret0, _ := ret[0].(*entity.OrganizationBelonging)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Find indicates an expected call of Find.
+func (mr *MockOrganizationBelongingsMockRecorder) Find(organizationId, individualId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Find", reflect.TypeOf((*MockOrganizationBelongings)(nil).Find), organizationId, individualId)
+}
+
 // IndividualsAssigned mocks base method.
 func (m *MockOrganizationBelongings) IndividualsAssigned(individual *[]entity.Individual) (*[]entity.OrganizationBelonging, error) {
 	m.ctrl.T.Helper()
