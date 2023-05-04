@@ -15,7 +15,7 @@ type OrganizationBelongings struct {
 	*sql.DB
 }
 
-func NewOrganizationBelongingsRepository() rep.OrganizationBelongings {
+func NewOrganizationBelongingsRepository() rep.OrganizationMembers {
 	con, err := sql.Open("sqlite3", "./longlong.db")
 	if err != nil {
 		util.CheckErr(err)

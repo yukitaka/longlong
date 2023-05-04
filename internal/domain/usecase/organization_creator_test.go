@@ -16,7 +16,7 @@ func TestNewOrganizationCreator(t *testing.T) {
 	organizationRep := mockRepository.NewMockOrganizations(ctrl)
 	organizationRep.EXPECT().Create("TestParent", entity.Individual{UserId: 1}).Return(expect, nil)
 
-	belongingRep := mockRepository.NewMockOrganizationBelongings(ctrl)
+	belongingRep := mockRepository.NewMockOrganizationMembers(ctrl)
 	itr := NewOrganizationCreator(organizationRep, belongingRep)
 
 	id, _ := itr.Create("TestParent", entity.Individual{UserId: 1})

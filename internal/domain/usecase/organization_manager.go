@@ -9,22 +9,22 @@ import (
 type OrganizationManager struct {
 	organization *entity.Organization
 	repository.Organizations
-	repository.OrganizationBelongings
+	repository.OrganizationMembers
 	repository.Individuals
 }
 
-func NewOrganizationManager(organization *entity.Organization, organizations repository.Organizations, organizationBelongings repository.OrganizationBelongings, individuals repository.Individuals) *OrganizationManager {
+func NewOrganizationManager(organization *entity.Organization, organizations repository.Organizations, organizationBelongings repository.OrganizationMembers, individuals repository.Individuals) *OrganizationManager {
 	return &OrganizationManager{organization, organizations, organizationBelongings, individuals}
 }
 
 func (it *OrganizationManager) AssignIndividual(individualId int64) error {
-	return it.OrganizationBelongings.Entry(it.organization.Id, individualId, value_object.MEMBER)
+	return it.OrganizationMembers.Entry(it.organization.Id, individualId, value_object.MEMBER)
 }
 
 func (it *OrganizationManager) RejectIndividual(individualId int64, reason string) error {
-	return it.OrganizationBelongings.Leave(individualId, reason)
+	return it.OrganizationMembers.Leave(individualId, reason)
 }
 
 func (it *OrganizationManager) Members() (*[]entity.OrganizationMember, error) {
-	return it.OrganizationBelongings.Members(it.organization, it.Individuals)
+	return it.OrganizationMembers.Members(it.organization, it.Individuals)
 }

@@ -9,10 +9,10 @@ type UserAssigned struct {
 	UserId int64
 	repository.Individuals
 	repository.Organizations
-	repository.OrganizationBelongings
+	repository.OrganizationMembers
 }
 
-func NewUserAssigned(userId int64, individuals repository.Individuals, organizations repository.Organizations, belongings repository.OrganizationBelongings) *UserAssigned {
+func NewUserAssigned(userId int64, individuals repository.Individuals, organizations repository.Organizations, belongings repository.OrganizationMembers) *UserAssigned {
 	return &UserAssigned{userId, individuals, organizations, belongings}
 }
 
@@ -22,7 +22,7 @@ func (it *UserAssigned) OrganizationList() (*[]entity.OrganizationMember, error)
 		return nil, err
 	}
 
-	assigned, err := it.OrganizationBelongings.IndividualsAssigned(individuals)
+	assigned, err := it.OrganizationMembers.IndividualsAssigned(individuals)
 	if err != nil {
 		return nil, err
 	}

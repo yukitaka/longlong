@@ -6,7 +6,7 @@ import (
 	"github.com/yukitaka/longlong/internal/domain/value_object"
 )
 
-type OrganizationBelongings interface {
+type OrganizationMembers interface {
 	Find(organizationId, individualId int64) (*entity.OrganizationMember, error)
 	Entry(organizationId, individualId int64, role value_object.Role) error
 	Leave(individualId int64, reason string) error

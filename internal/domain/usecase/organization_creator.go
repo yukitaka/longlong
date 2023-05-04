@@ -7,10 +7,10 @@ import (
 
 type OrganizationCreator struct {
 	repository.Organizations
-	repository.OrganizationBelongings
+	repository.OrganizationMembers
 }
 
-func NewOrganizationCreator(organizations repository.Organizations, belongings repository.OrganizationBelongings) *OrganizationCreator {
+func NewOrganizationCreator(organizations repository.Organizations, belongings repository.OrganizationMembers) *OrganizationCreator {
 	return &OrganizationCreator{organizations, belongings}
 }
 

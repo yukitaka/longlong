@@ -16,7 +16,7 @@ func TestNewUserCreator(t *testing.T) {
 	userRep.EXPECT().Create("Name").Return(expect, nil)
 
 	individualRep := mockRepository.NewMockIndividuals(ctrl)
-	belongingRep := mockRepository.NewMockOrganizationBelongings(ctrl)
+	belongingRep := mockRepository.NewMockOrganizationMembers(ctrl)
 
 	itr := NewUserCreator(userRep, individualRep, belongingRep)
 	id, _ := itr.Users.Create("Name")

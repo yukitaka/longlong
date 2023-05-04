@@ -20,7 +20,7 @@ func TestAuth(t *testing.T) {
 
 	authRep := mockRepository.NewMockAuthentications(ctrl)
 	organizationRep := mockRepository.NewMockOrganizations(ctrl)
-	belongingRep := mockRepository.NewMockOrganizationBelongings(ctrl2)
+	belongingRep := mockRepository.NewMockOrganizationMembers(ctrl2)
 	authRep.EXPECT().FindToken("TestUser").Return(int64(1), string(token), nil)
 
 	individual := entity.NewIndividual(1, 0, 0, "TestUser")
