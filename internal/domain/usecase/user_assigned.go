@@ -16,7 +16,7 @@ func NewUserAssigned(userId int64, individuals repository.Individuals, organizat
 	return &UserAssigned{userId, individuals, organizations, belongings}
 }
 
-func (it *UserAssigned) OrganizationList() (*[]entity.OrganizationBelonging, error) {
+func (it *UserAssigned) OrganizationList() (*[]entity.OrganizationMember, error) {
 	individuals, err := it.Individuals.FindByUserId(it.UserId)
 	if err != nil {
 		return nil, err

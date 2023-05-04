@@ -25,6 +25,6 @@ func (it *OrganizationManager) RejectIndividual(individualId int64, reason strin
 	return it.OrganizationBelongings.Leave(individualId, reason)
 }
 
-func (it *OrganizationManager) Members() (*[]entity.OrganizationBelonging, error) {
+func (it *OrganizationManager) Members() (*[]entity.OrganizationMember, error) {
 	return it.OrganizationBelongings.Members(it.organization, it.Individuals)
 }

@@ -63,10 +63,10 @@ func (mr *MockOrganizationBelongingsMockRecorder) Entry(organizationId, individu
 }
 
 // Find mocks base method.
-func (m *MockOrganizationBelongings) Find(organizationId, individualId int64) (*entity.OrganizationBelonging, error) {
+func (m *MockOrganizationBelongings) Find(organizationId, individualId int64) (*entity.OrganizationMember, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Find", organizationId, individualId)
-	ret0, _ := ret[0].(*entity.OrganizationBelonging)
+	ret0, _ := ret[0].(*entity.OrganizationMember)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -78,10 +78,10 @@ func (mr *MockOrganizationBelongingsMockRecorder) Find(organizationId, individua
 }
 
 // IndividualsAssigned mocks base method.
-func (m *MockOrganizationBelongings) IndividualsAssigned(individual *[]entity.Individual) (*[]entity.OrganizationBelonging, error) {
+func (m *MockOrganizationBelongings) IndividualsAssigned(individual *[]entity.Individual) (*[]entity.OrganizationMember, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "IndividualsAssigned", individual)
-	ret0, _ := ret[0].(*[]entity.OrganizationBelonging)
+	ret0, _ := ret[0].(*[]entity.OrganizationMember)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -107,10 +107,10 @@ func (mr *MockOrganizationBelongingsMockRecorder) Leave(individualId, reason int
 }
 
 // Members mocks base method.
-func (m *MockOrganizationBelongings) Members(organization *entity.Organization, individualRepository repository.Individuals) (*[]entity.OrganizationBelonging, error) {
+func (m *MockOrganizationBelongings) Members(organization *entity.Organization, individualRepository repository.Individuals) (*[]entity.OrganizationMember, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Members", organization, individualRepository)
-	ret0, _ := ret[0].(*[]entity.OrganizationBelonging)
+	ret0, _ := ret[0].(*[]entity.OrganizationMember)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

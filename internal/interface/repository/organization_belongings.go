@@ -26,7 +26,7 @@ func NewOrganizationBelongingsRepository() rep.OrganizationBelongings {
 	}
 }
 
-func (o OrganizationBelongings) Find(organizationId, individualId int64) (*entity.OrganizationBelonging, error) {
+func (o OrganizationBelongings) Find(organizationId, individualId int64) (*entity.OrganizationMember, error) {
 	query := "select role from organization_belongings where organization_id=$1 and individual_id=$2"
 	row := o.DB.QueryRow(query, organizationId, individualId)
 
@@ -53,7 +53,7 @@ func (o OrganizationBelongings) Find(organizationId, individualId int64) (*entit
 	}
 	individual := entity.NewIndividual(individualId, userId, profileId, individualName)
 
-	return entity.NewOrganizationBelonging(organization, individual, roleType), nil
+	return entity.NewOrganizationMember(organization, individual, roleType), nil
 }
 
 func (o OrganizationBelongings) Entry(organizationId, individualId int64, role value_object.Role) error {
@@ -68,14 +68,14 @@ func (o OrganizationBelongings) Leave(individualId int64, reason string) error {
 	panic("implement me")
 }
 
-func (o OrganizationBelongings) Members(organization *entity.Organization, individualRepository rep.Individuals) (*[]entity.OrganizationBelonging, error) {
+func (o OrganizationBelongings) Members(organization *entity.Organization, individualRepository rep.Individuals) (*[]entity.OrganizationMember, error) {
 	stmt := "select organization_id, individual_id, role from organization_belongings where organization_id=?"
 	ret, err := o.DB.Query(stmt, organization.Id)
 	if err != nil {
 		return nil, err
 	}
 
-	var belongings []entity.OrganizationBelonging
+	var belongings []entity.OrganizationMember
 	for ret.Next() {
 		var oid int64
 		var iid int64
@@ -88,13 +88,13 @@ func (o OrganizationBelongings) Members(organization *entity.Organization, indiv
 		if err != nil {
 			return nil, err
 		}
-		belongings = append(belongings, *entity.NewOrganizationBelonging(organization, individual, value_object.Role(role)))
+		belongings = append(belongings, *entity.NewOrganizationMember(organization, individual, value_object.Role(role)))
 	}
 
 	return &belongings, nil
 }
 
-func (o OrganizationBelongings) IndividualsAssigned(individuals *[]entity.Individual) (*[]entity.OrganizationBelonging, error) {
+func (o OrganizationBelongings) IndividualsAssigned(individuals *[]entity.Individual) (*[]entity.OrganizationMember, error) {
 	ids := make([]interface{}, len(*individuals))
 	for i, individual := range *individuals {
 		ids[i] = individual.Id
@@ -110,7 +110,7 @@ func (o OrganizationBelongings) IndividualsAssigned(individuals *[]entity.Indivi
 		}
 	}
 
-	belongings := make([]entity.OrganizationBelonging, len(*individuals))
+	belongings := make([]entity.OrganizationMember, len(*individuals))
 	for rows.Next() {
 		var id int64
 		var parentId int64
@@ -123,7 +123,7 @@ func (o OrganizationBelongings) IndividualsAssigned(individuals *[]entity.Indivi
 		organization := entity.NewOrganization(parentId, id, name)
 		for i, individual := range *individuals {
 			if individual.Id == individualId {
-				belongings[i] = entity.OrganizationBelonging{
+				belongings[i] = entity.OrganizationMember{
 					Individual:   &individual,
 					Organization: organization,
 				}

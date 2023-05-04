@@ -7,10 +7,10 @@ import (
 )
 
 type OrganizationBelongings interface {
-	Find(organizationId, individualId int64) (*entity.OrganizationBelonging, error)
+	Find(organizationId, individualId int64) (*entity.OrganizationMember, error)
 	Entry(organizationId, individualId int64, role value_object.Role) error
 	Leave(individualId int64, reason string) error
-	Members(organization *entity.Organization, individualRepository Individuals) (*[]entity.OrganizationBelonging, error)
-	IndividualsAssigned(individual *[]entity.Individual) (*[]entity.OrganizationBelonging, error)
+	Members(organization *entity.Organization, individualRepository Individuals) (*[]entity.OrganizationMember, error)
+	IndividualsAssigned(individual *[]entity.Individual) (*[]entity.OrganizationMember, error)
 	Close()
 }

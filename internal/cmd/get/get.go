@@ -124,7 +124,7 @@ func (o *Options) User(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	members := map[string][]entity.OrganizationBelonging{}
+	members := map[string][]entity.OrganizationMember{}
 	for _, organization := range *organizations {
 		manager := usecase.NewOrganizationManager(organization.Organization, organizationRep, belongingRep, individualRep)
 		m, err := manager.Members()
@@ -132,7 +132,7 @@ func (o *Options) User(cmd *cobra.Command, args []string) error {
 			return err
 		}
 		if _, ok := members[organization.Organization.Name]; !ok {
-			members[organization.Organization.Name] = []entity.OrganizationBelonging{}
+			members[organization.Organization.Name] = []entity.OrganizationMember{}
 		}
 		members[organization.Organization.Name] = append(members[organization.Organization.Name], *m...)
 	}
