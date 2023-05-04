@@ -10,15 +10,15 @@ import (
 type UserCreator struct {
 	repository.Users
 	repository.Individuals
-	repository.OrganizationBelongings
+	repository.OrganizationMembers
 }
 
-func NewUserCreator(users repository.Users, individuals repository.Individuals, belongings repository.OrganizationBelongings) *UserCreator {
-	return &UserCreator{users, individuals, belongings}
+func NewUserCreator(users repository.Users, individuals repository.Individuals, members repository.OrganizationMembers) *UserCreator {
+	return &UserCreator{users, individuals, members}
 }
 
 func (it *UserCreator) New(operatorId, organizationId int64, name string, role string) (int64, error) {
-	operator, err := it.OrganizationBelongings.Find(organizationId, operatorId)
+	operator, err := it.OrganizationMembers.Find(organizationId, operatorId)
 	roleType, err := value_object.ParseRole(strings.ToUpper(role))
 	if err != nil {
 		return 0, err
@@ -35,7 +35,7 @@ func (it *UserCreator) New(operatorId, organizationId int64, name string, role s
 	if err != nil {
 		return 0, err
 	}
-	err = it.OrganizationBelongings.Entry(organizationId, id, roleType)
+	err = it.OrganizationMembers.Entry(organizationId, id, roleType)
 
 	return id, nil
 }

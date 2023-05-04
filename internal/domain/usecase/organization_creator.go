@@ -7,11 +7,11 @@ import (
 
 type OrganizationCreator struct {
 	repository.Organizations
-	repository.OrganizationBelongings
+	repository.OrganizationMembers
 }
 
-func NewOrganizationCreator(organizations repository.Organizations, belongings repository.OrganizationBelongings) *OrganizationCreator {
-	return &OrganizationCreator{organizations, belongings}
+func NewOrganizationCreator(organizations repository.Organizations, members repository.OrganizationMembers) *OrganizationCreator {
+	return &OrganizationCreator{organizations, members}
 }
 
 func (it *OrganizationCreator) New(name string, individual entity.Individual) (int64, error) {

@@ -20,14 +20,14 @@ func TestAuth(t *testing.T) {
 
 	authRep := mockRepository.NewMockAuthentications(ctrl)
 	organizationRep := mockRepository.NewMockOrganizations(ctrl)
-	belongingRep := mockRepository.NewMockOrganizationBelongings(ctrl2)
+	memberRep := mockRepository.NewMockOrganizationMembers(ctrl2)
 	authRep.EXPECT().FindToken("TestUser").Return(int64(1), string(token), nil)
 
 	individual := entity.NewIndividual(1, 0, 0, "TestUser")
-	belongingRep.EXPECT().IndividualsAssigned(&[]entity.Individual{*individual}).Return(&[]entity.OrganizationBelonging{*entity.NewOrganizationBelonging(entity.NewOrganization(0, 1, "TestOrganization"), individual, value_object.ADMIN)}, nil)
+	memberRep.EXPECT().IndividualsAssigned(&[]entity.Individual{*individual}).Return(&[]entity.OrganizationMember{*entity.NewOrganizationMember(entity.NewOrganization(0, 1, "TestOrganization"), individual, value_object.ADMIN)}, nil)
 	organizationRep.EXPECT().Find(int64(1)).Return(entity.NewOrganization(int64(1), int64(1), "TestOrganization"), nil)
 
-	itr := NewAuthentication(authRep, organizationRep, belongingRep)
+	itr := NewAuthentication(authRep, organizationRep, memberRep)
 	id, _ := itr.Auth("TestOrganization", "TestUser", "password")
 	if id != 1 {
 		t.Errorf("Auth = %v", id)

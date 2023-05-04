@@ -10,11 +10,11 @@ import (
 type Authentication struct {
 	repository.Authentications
 	repository.Organizations
-	repository.OrganizationBelongings
+	repository.OrganizationMembers
 }
 
-func NewAuthentication(authentications repository.Authentications, organizations repository.Organizations, organizationBelongings repository.OrganizationBelongings) *Authentication {
-	return &Authentication{authentications, organizations, organizationBelongings}
+func NewAuthentication(authentications repository.Authentications, organizations repository.Organizations, organizationMembers repository.OrganizationMembers) *Authentication {
+	return &Authentication{authentications, organizations, organizationMembers}
 }
 
 func (it *Authentication) Auth(organization, identify, password string) (int64, error) {
@@ -27,8 +27,8 @@ func (it *Authentication) Auth(organization, identify, password string) (int64, 
 		return -1, err
 	}
 
-	organizationBelongings, err := it.OrganizationBelongings.IndividualsAssigned(&[]entity.Individual{*entity.NewIndividual(id, 0, 0, identify)})
-	for _, ob := range *organizationBelongings {
+	organizationMembers, err := it.OrganizationMembers.IndividualsAssigned(&[]entity.Individual{*entity.NewIndividual(id, 0, 0, identify)})
+	for _, ob := range *organizationMembers {
 		o, _ := it.Organizations.Find(ob.Organization.Id)
 		if o.Name == organization {
 			return id, nil

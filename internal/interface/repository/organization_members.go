@@ -11,23 +11,23 @@ import (
 	"strings"
 )
 
-type OrganizationBelongings struct {
+type OrganizationMembers struct {
 	*sql.DB
 }
 
-func NewOrganizationBelongingsRepository() rep.OrganizationBelongings {
+func NewOrganizationMembersRepository() rep.OrganizationMembers {
 	con, err := sql.Open("sqlite3", "./longlong.db")
 	if err != nil {
 		util.CheckErr(err)
 	}
 
-	return &OrganizationBelongings{
+	return &OrganizationMembers{
 		DB: con,
 	}
 }
 
-func (o OrganizationBelongings) Find(organizationId, individualId int64) (*entity.OrganizationBelonging, error) {
-	query := "select role from organization_belongings where organization_id=$1 and individual_id=$2"
+func (o OrganizationMembers) Find(organizationId, individualId int64) (*entity.OrganizationMember, error) {
+	query := "select role from organization_members where organization_id=$1 and individual_id=$2"
 	row := o.DB.QueryRow(query, organizationId, individualId)
 
 	var role int
@@ -53,29 +53,29 @@ func (o OrganizationBelongings) Find(organizationId, individualId int64) (*entit
 	}
 	individual := entity.NewIndividual(individualId, userId, profileId, individualName)
 
-	return entity.NewOrganizationBelonging(organization, individual, roleType), nil
+	return entity.NewOrganizationMember(organization, individual, roleType), nil
 }
 
-func (o OrganizationBelongings) Entry(organizationId, individualId int64, role value_object.Role) error {
-	query := "insert into organization_belongings (organization_id, individual_id, role) values (?, ?, ?)"
+func (o OrganizationMembers) Entry(organizationId, individualId int64, role value_object.Role) error {
+	query := "insert into organization_members (organization_id, individual_id, role) values (?, ?, ?)"
 	_, err := o.DB.Exec(query, organizationId, individualId, role)
 
 	return err
 }
 
-func (o OrganizationBelongings) Leave(individualId int64, reason string) error {
+func (o OrganizationMembers) Leave(individualId int64, reason string) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (o OrganizationBelongings) Members(organization *entity.Organization, individualRepository rep.Individuals) (*[]entity.OrganizationBelonging, error) {
-	stmt := "select organization_id, individual_id, role from organization_belongings where organization_id=?"
+func (o OrganizationMembers) Members(organization *entity.Organization, individualRepository rep.Individuals) (*[]entity.OrganizationMember, error) {
+	stmt := "select organization_id, individual_id, role from organization_members where organization_id=?"
 	ret, err := o.DB.Query(stmt, organization.Id)
 	if err != nil {
 		return nil, err
 	}
 
-	var belongings []entity.OrganizationBelonging
+	var members []entity.OrganizationMember
 	for ret.Next() {
 		var oid int64
 		var iid int64
@@ -88,19 +88,19 @@ func (o OrganizationBelongings) Members(organization *entity.Organization, indiv
 		if err != nil {
 			return nil, err
 		}
-		belongings = append(belongings, *entity.NewOrganizationBelonging(organization, individual, value_object.Role(role)))
+		members = append(members, *entity.NewOrganizationMember(organization, individual, value_object.Role(role)))
 	}
 
-	return &belongings, nil
+	return &members, nil
 }
 
-func (o OrganizationBelongings) IndividualsAssigned(individuals *[]entity.Individual) (*[]entity.OrganizationBelonging, error) {
+func (o OrganizationMembers) IndividualsAssigned(individuals *[]entity.Individual) (*[]entity.OrganizationMember, error) {
 	ids := make([]interface{}, len(*individuals))
 	for i, individual := range *individuals {
 		ids[i] = individual.Id
 	}
 
-	stmt := "select t1.id, t1.parent_id, t1.name, t.individual_id from organization_belongings t join organizations t1 on t.organization_id=t1.id where individual_id in (?" + strings.Repeat(",?", len(ids)-1) + ")"
+	stmt := "select t1.id, t1.parent_id, t1.name, t.individual_id from organization_members t join organizations t1 on t.organization_id=t1.id where individual_id in (?" + strings.Repeat(",?", len(ids)-1) + ")"
 	rows, err := o.DB.Query(stmt, ids...)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -110,7 +110,7 @@ func (o OrganizationBelongings) IndividualsAssigned(individuals *[]entity.Indivi
 		}
 	}
 
-	belongings := make([]entity.OrganizationBelonging, len(*individuals))
+	members := make([]entity.OrganizationMember, len(*individuals))
 	for rows.Next() {
 		var id int64
 		var parentId int64
@@ -123,7 +123,7 @@ func (o OrganizationBelongings) IndividualsAssigned(individuals *[]entity.Indivi
 		organization := entity.NewOrganization(parentId, id, name)
 		for i, individual := range *individuals {
 			if individual.Id == individualId {
-				belongings[i] = entity.OrganizationBelonging{
+				members[i] = entity.OrganizationMember{
 					Individual:   &individual,
 					Organization: organization,
 				}
@@ -131,10 +131,10 @@ func (o OrganizationBelongings) IndividualsAssigned(individuals *[]entity.Indivi
 		}
 	}
 
-	return &belongings, nil
+	return &members, nil
 }
 
-func (o OrganizationBelongings) Close() {
+func (o OrganizationMembers) Close() {
 	err := o.DB.Close()
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
