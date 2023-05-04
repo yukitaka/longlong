@@ -67,9 +67,9 @@ func (o *Options) Organization(args []string) error {
 	}
 	organizationRep := repository.NewOrganizationsRepository()
 	defer organizationRep.Close()
-	belongingRep := repository.NewOrganizationMembersRepository()
-	defer belongingRep.Close()
-	itr := usecase.NewOrganizationCreator(organizationRep, belongingRep)
+	memberRep := repository.NewOrganizationMembersRepository()
+	defer memberRep.Close()
+	itr := usecase.NewOrganizationCreator(organizationRep, memberRep)
 
 	individual := entity.Individual{UserId: o.UserId}
 
@@ -94,10 +94,10 @@ func (o *Options) User(cmd *cobra.Command, args []string) error {
 		defer userRep.Close()
 		individualRep := repository.NewIndividualsRepository()
 		defer individualRep.Close()
-		belongingRep := repository.NewOrganizationMembersRepository()
-		defer belongingRep.Close()
+		memberRep := repository.NewOrganizationMembersRepository()
+		defer memberRep.Close()
 
-		itr := usecase.NewUserCreator(userRep, individualRep, belongingRep)
+		itr := usecase.NewUserCreator(userRep, individualRep, memberRep)
 		name := args[0]
 		id, err := itr.New(o.UserId, o.OrganizationId, name, role)
 		if err != nil {

@@ -10,8 +10,8 @@ type OrganizationCreator struct {
 	repository.OrganizationMembers
 }
 
-func NewOrganizationCreator(organizations repository.Organizations, belongings repository.OrganizationMembers) *OrganizationCreator {
-	return &OrganizationCreator{organizations, belongings}
+func NewOrganizationCreator(organizations repository.Organizations, members repository.OrganizationMembers) *OrganizationCreator {
+	return &OrganizationCreator{organizations, members}
 }
 
 func (it *OrganizationCreator) New(name string, individual entity.Individual) (int64, error) {

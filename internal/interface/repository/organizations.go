@@ -54,7 +54,7 @@ func (o *Organizations) Create(name string, individual entity.Individual) (int64
 	if err != nil {
 		return -1, err
 	}
-	query = "insert into organization_belongings (organization_id, individual_id, role) values (?, ?, ?)"
+	query = "insert into organization_members (organization_id, individual_id, role) values (?, ?, ?)"
 	_, err = o.DB.Exec(query, id, name, individual.Id, value_object.OWNER)
 	if err != nil {
 		return -1, err

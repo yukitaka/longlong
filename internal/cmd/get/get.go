@@ -115,10 +115,10 @@ func (o *Options) User(cmd *cobra.Command, args []string) error {
 	defer individualRep.Close()
 	organizationRep := repository.NewOrganizationsRepository()
 	defer organizationRep.Close()
-	belongingRep := repository.NewOrganizationMembersRepository()
-	defer belongingRep.Close()
+	memberRep := repository.NewOrganizationMembersRepository()
+	defer memberRep.Close()
 
-	itr := usecase.NewUserAssigned(o.UserId, individualRep, organizationRep, belongingRep)
+	itr := usecase.NewUserAssigned(o.UserId, individualRep, organizationRep, memberRep)
 	organizations, err := itr.OrganizationList()
 	if err != nil {
 		return err
@@ -126,7 +126,7 @@ func (o *Options) User(cmd *cobra.Command, args []string) error {
 
 	members := map[string][]entity.OrganizationMember{}
 	for _, organization := range *organizations {
-		manager := usecase.NewOrganizationManager(organization.Organization, organizationRep, belongingRep, individualRep)
+		manager := usecase.NewOrganizationManager(organization.Organization, organizationRep, memberRep, individualRep)
 		m, err := manager.Members()
 		if err != nil {
 			return err

@@ -13,8 +13,8 @@ type OrganizationManager struct {
 	repository.Individuals
 }
 
-func NewOrganizationManager(organization *entity.Organization, organizations repository.Organizations, organizationBelongings repository.OrganizationMembers, individuals repository.Individuals) *OrganizationManager {
-	return &OrganizationManager{organization, organizations, organizationBelongings, individuals}
+func NewOrganizationManager(organization *entity.Organization, organizations repository.Organizations, organizationMembers repository.OrganizationMembers, individuals repository.Individuals) *OrganizationManager {
+	return &OrganizationManager{organization, organizations, organizationMembers, individuals}
 }
 
 func (it *OrganizationManager) AssignIndividual(individualId int64) error {

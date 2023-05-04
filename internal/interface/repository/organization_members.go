@@ -27,7 +27,7 @@ func NewOrganizationMembersRepository() rep.OrganizationMembers {
 }
 
 func (o OrganizationMembers) Find(organizationId, individualId int64) (*entity.OrganizationMember, error) {
-	query := "select role from organization_belongings where organization_id=$1 and individual_id=$2"
+	query := "select role from organization_members where organization_id=$1 and individual_id=$2"
 	row := o.DB.QueryRow(query, organizationId, individualId)
 
 	var role int
@@ -57,7 +57,7 @@ func (o OrganizationMembers) Find(organizationId, individualId int64) (*entity.O
 }
 
 func (o OrganizationMembers) Entry(organizationId, individualId int64, role value_object.Role) error {
-	query := "insert into organization_belongings (organization_id, individual_id, role) values (?, ?, ?)"
+	query := "insert into organization_members (organization_id, individual_id, role) values (?, ?, ?)"
 	_, err := o.DB.Exec(query, organizationId, individualId, role)
 
 	return err
@@ -69,13 +69,13 @@ func (o OrganizationMembers) Leave(individualId int64, reason string) error {
 }
 
 func (o OrganizationMembers) Members(organization *entity.Organization, individualRepository rep.Individuals) (*[]entity.OrganizationMember, error) {
-	stmt := "select organization_id, individual_id, role from organization_belongings where organization_id=?"
+	stmt := "select organization_id, individual_id, role from organization_members where organization_id=?"
 	ret, err := o.DB.Query(stmt, organization.Id)
 	if err != nil {
 		return nil, err
 	}
 
-	var belongings []entity.OrganizationMember
+	var members []entity.OrganizationMember
 	for ret.Next() {
 		var oid int64
 		var iid int64
@@ -88,10 +88,10 @@ func (o OrganizationMembers) Members(organization *entity.Organization, individu
 		if err != nil {
 			return nil, err
 		}
-		belongings = append(belongings, *entity.NewOrganizationMember(organization, individual, value_object.Role(role)))
+		members = append(members, *entity.NewOrganizationMember(organization, individual, value_object.Role(role)))
 	}
 
-	return &belongings, nil
+	return &members, nil
 }
 
 func (o OrganizationMembers) IndividualsAssigned(individuals *[]entity.Individual) (*[]entity.OrganizationMember, error) {
@@ -100,7 +100,7 @@ func (o OrganizationMembers) IndividualsAssigned(individuals *[]entity.Individua
 		ids[i] = individual.Id
 	}
 
-	stmt := "select t1.id, t1.parent_id, t1.name, t.individual_id from organization_belongings t join organizations t1 on t.organization_id=t1.id where individual_id in (?" + strings.Repeat(",?", len(ids)-1) + ")"
+	stmt := "select t1.id, t1.parent_id, t1.name, t.individual_id from organization_members t join organizations t1 on t.organization_id=t1.id where individual_id in (?" + strings.Repeat(",?", len(ids)-1) + ")"
 	rows, err := o.DB.Query(stmt, ids...)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -110,7 +110,7 @@ func (o OrganizationMembers) IndividualsAssigned(individuals *[]entity.Individua
 		}
 	}
 
-	belongings := make([]entity.OrganizationMember, len(*individuals))
+	members := make([]entity.OrganizationMember, len(*individuals))
 	for rows.Next() {
 		var id int64
 		var parentId int64
@@ -123,7 +123,7 @@ func (o OrganizationMembers) IndividualsAssigned(individuals *[]entity.Individua
 		organization := entity.NewOrganization(parentId, id, name)
 		for i, individual := range *individuals {
 			if individual.Id == individualId {
-				belongings[i] = entity.OrganizationMember{
+				members[i] = entity.OrganizationMember{
 					Individual:   &individual,
 					Organization: organization,
 				}
@@ -131,7 +131,7 @@ func (o OrganizationMembers) IndividualsAssigned(individuals *[]entity.Individua
 		}
 	}
 
-	return &belongings, nil
+	return &members, nil
 }
 
 func (o OrganizationMembers) Close() {

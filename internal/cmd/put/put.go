@@ -61,8 +61,8 @@ func (o *Options) Organization(cmd *cobra.Command, args []string) error {
 	if id, err := strconv.ParseInt(args[0], 10, 64); err == nil {
 		organizationRep := repository.NewOrganizationsRepository()
 		defer organizationRep.Close()
-		belongingRep := repository.NewOrganizationMembersRepository()
-		defer belongingRep.Close()
+		memberRep := repository.NewOrganizationMembersRepository()
+		defer memberRep.Close()
 		individualRep := repository.NewIndividualsRepository()
 		defer individualRep.Close()
 
@@ -70,7 +70,7 @@ func (o *Options) Organization(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return err
 		}
-		itr := usecase.NewOrganizationManager(organization, organizationRep, belongingRep, individualRep)
+		itr := usecase.NewOrganizationManager(organization, organizationRep, memberRep, individualRep)
 		if individualId, err := strconv.ParseInt(args[1], 10, 64); err == nil {
 			if err := itr.Entry(id, individualId, value_object.MEMBER); err != nil {
 				return err

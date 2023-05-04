@@ -13,8 +13,8 @@ type UserCreator struct {
 	repository.OrganizationMembers
 }
 
-func NewUserCreator(users repository.Users, individuals repository.Individuals, belongings repository.OrganizationMembers) *UserCreator {
-	return &UserCreator{users, individuals, belongings}
+func NewUserCreator(users repository.Users, individuals repository.Individuals, members repository.OrganizationMembers) *UserCreator {
+	return &UserCreator{users, individuals, members}
 }
 
 func (it *UserCreator) New(operatorId, organizationId int64, name string, role string) (int64, error) {

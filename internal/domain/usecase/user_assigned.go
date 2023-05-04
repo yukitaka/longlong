@@ -12,8 +12,8 @@ type UserAssigned struct {
 	repository.OrganizationMembers
 }
 
-func NewUserAssigned(userId int64, individuals repository.Individuals, organizations repository.Organizations, belongings repository.OrganizationMembers) *UserAssigned {
-	return &UserAssigned{userId, individuals, organizations, belongings}
+func NewUserAssigned(userId int64, individuals repository.Individuals, organizations repository.Organizations, members repository.OrganizationMembers) *UserAssigned {
+	return &UserAssigned{userId, individuals, organizations, members}
 }
 
 func (it *UserAssigned) OrganizationList() (*[]entity.OrganizationMember, error) {
