@@ -67,7 +67,7 @@ func (o *Options) Organization(args []string) error {
 	}
 	organizationRep := repository.NewOrganizationsRepository()
 	defer organizationRep.Close()
-	belongingRep := repository.NewOrganizationBelongingsRepository()
+	belongingRep := repository.NewOrganizationMembersRepository()
 	defer belongingRep.Close()
 	itr := usecase.NewOrganizationCreator(organizationRep, belongingRep)
 
@@ -94,7 +94,7 @@ func (o *Options) User(cmd *cobra.Command, args []string) error {
 		defer userRep.Close()
 		individualRep := repository.NewIndividualsRepository()
 		defer individualRep.Close()
-		belongingRep := repository.NewOrganizationBelongingsRepository()
+		belongingRep := repository.NewOrganizationMembersRepository()
 		defer belongingRep.Close()
 
 		itr := usecase.NewUserCreator(userRep, individualRep, belongingRep)

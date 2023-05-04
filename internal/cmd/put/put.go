@@ -61,7 +61,7 @@ func (o *Options) Organization(cmd *cobra.Command, args []string) error {
 	if id, err := strconv.ParseInt(args[0], 10, 64); err == nil {
 		organizationRep := repository.NewOrganizationsRepository()
 		defer organizationRep.Close()
-		belongingRep := repository.NewOrganizationBelongingsRepository()
+		belongingRep := repository.NewOrganizationMembersRepository()
 		defer belongingRep.Close()
 		individualRep := repository.NewIndividualsRepository()
 		defer individualRep.Close()

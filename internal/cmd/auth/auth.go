@@ -64,7 +64,7 @@ func (o *Options) Login(args []string) error {
 	defer authRep.Close()
 	organizationRep := repository.NewOrganizationsRepository()
 	defer organizationRep.Close()
-	belongingRep := repository.NewOrganizationBelongingsRepository()
+	belongingRep := repository.NewOrganizationMembersRepository()
 	defer belongingRep.Close()
 	itr := usecase.NewAuthentication(authRep, organizationRep, belongingRep)
 

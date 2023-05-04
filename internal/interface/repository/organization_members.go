@@ -11,22 +11,22 @@ import (
 	"strings"
 )
 
-type OrganizationBelongings struct {
+type OrganizationMembers struct {
 	*sql.DB
 }
 
-func NewOrganizationBelongingsRepository() rep.OrganizationMembers {
+func NewOrganizationMembersRepository() rep.OrganizationMembers {
 	con, err := sql.Open("sqlite3", "./longlong.db")
 	if err != nil {
 		util.CheckErr(err)
 	}
 
-	return &OrganizationBelongings{
+	return &OrganizationMembers{
 		DB: con,
 	}
 }
 
-func (o OrganizationBelongings) Find(organizationId, individualId int64) (*entity.OrganizationMember, error) {
+func (o OrganizationMembers) Find(organizationId, individualId int64) (*entity.OrganizationMember, error) {
 	query := "select role from organization_belongings where organization_id=$1 and individual_id=$2"
 	row := o.DB.QueryRow(query, organizationId, individualId)
 
@@ -56,19 +56,19 @@ func (o OrganizationBelongings) Find(organizationId, individualId int64) (*entit
 	return entity.NewOrganizationMember(organization, individual, roleType), nil
 }
 
-func (o OrganizationBelongings) Entry(organizationId, individualId int64, role value_object.Role) error {
+func (o OrganizationMembers) Entry(organizationId, individualId int64, role value_object.Role) error {
 	query := "insert into organization_belongings (organization_id, individual_id, role) values (?, ?, ?)"
 	_, err := o.DB.Exec(query, organizationId, individualId, role)
 
 	return err
 }
 
-func (o OrganizationBelongings) Leave(individualId int64, reason string) error {
+func (o OrganizationMembers) Leave(individualId int64, reason string) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (o OrganizationBelongings) Members(organization *entity.Organization, individualRepository rep.Individuals) (*[]entity.OrganizationMember, error) {
+func (o OrganizationMembers) Members(organization *entity.Organization, individualRepository rep.Individuals) (*[]entity.OrganizationMember, error) {
 	stmt := "select organization_id, individual_id, role from organization_belongings where organization_id=?"
 	ret, err := o.DB.Query(stmt, organization.Id)
 	if err != nil {
@@ -94,7 +94,7 @@ func (o OrganizationBelongings) Members(organization *entity.Organization, indiv
 	return &belongings, nil
 }
 
-func (o OrganizationBelongings) IndividualsAssigned(individuals *[]entity.Individual) (*[]entity.OrganizationMember, error) {
+func (o OrganizationMembers) IndividualsAssigned(individuals *[]entity.Individual) (*[]entity.OrganizationMember, error) {
 	ids := make([]interface{}, len(*individuals))
 	for i, individual := range *individuals {
 		ids[i] = individual.Id
@@ -134,7 +134,7 @@ func (o OrganizationBelongings) IndividualsAssigned(individuals *[]entity.Indivi
 	return &belongings, nil
 }
 
-func (o OrganizationBelongings) Close() {
+func (o OrganizationMembers) Close() {
 	err := o.DB.Close()
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)

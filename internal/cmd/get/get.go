@@ -115,7 +115,7 @@ func (o *Options) User(cmd *cobra.Command, args []string) error {
 	defer individualRep.Close()
 	organizationRep := repository.NewOrganizationsRepository()
 	defer organizationRep.Close()
-	belongingRep := repository.NewOrganizationBelongingsRepository()
+	belongingRep := repository.NewOrganizationMembersRepository()
 	defer belongingRep.Close()
 
 	itr := usecase.NewUserAssigned(o.UserId, individualRep, organizationRep, belongingRep)
