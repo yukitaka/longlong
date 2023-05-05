@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"fmt"
+	"github.com/yukitaka/longlong/internal/domain/entity"
 	"github.com/yukitaka/longlong/internal/domain/repository"
 	"github.com/yukitaka/longlong/internal/domain/value_object"
 	"strings"
@@ -17,8 +18,7 @@ func NewUserCreator(users repository.Users, individuals repository.Individuals, 
 	return &UserCreator{users, individuals, members}
 }
 
-func (it *UserCreator) New(operatorId, organizationId int64, name string, role string) (int64, error) {
-	operator, err := it.OrganizationMembers.Find(organizationId, operatorId)
+func (it *UserCreator) New(operator *entity.OrganizationMember, name string, role string) (int64, error) {
 	roleType, err := value_object.ParseRole(strings.ToUpper(role))
 	if err != nil {
 		return 0, err
@@ -35,7 +35,7 @@ func (it *UserCreator) New(operatorId, organizationId int64, name string, role s
 	if err != nil {
 		return 0, err
 	}
-	err = it.OrganizationMembers.Entry(organizationId, id, roleType)
+	err = it.OrganizationMembers.Entry(operator.Organization.Id, id, roleType)
 
 	return id, nil
 }

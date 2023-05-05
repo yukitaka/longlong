@@ -16,20 +16,20 @@ import (
 
 type Options struct {
 	CmdParent string
-	UserId    int64
+	Operator  *entity.OrganizationMember
 	cli.IOStream
 }
 
-func NewGetOptions(parent string, streams cli.IOStream, userId int64) *Options {
+func NewGetOptions(parent string, streams cli.IOStream, operator *entity.OrganizationMember) *Options {
 	return &Options{
 		CmdParent: parent,
-		UserId:    userId,
+		Operator:  operator,
 		IOStream:  streams,
 	}
 }
 
-func NewCmdGet(parent string, streams cli.IOStream, userId int64) *cobra.Command {
-	o := NewGetOptions(parent, streams, userId)
+func NewCmdGet(parent string, streams cli.IOStream, operator *entity.OrganizationMember) *cobra.Command {
+	o := NewGetOptions(parent, streams, operator)
 
 	cmd := &cobra.Command{
 		Use:     "get",
@@ -118,7 +118,7 @@ func (o *Options) User(cmd *cobra.Command, args []string) error {
 	memberRep := repository.NewOrganizationMembersRepository()
 	defer memberRep.Close()
 
-	itr := usecase.NewUserAssigned(o.UserId, individualRep, organizationRep, memberRep)
+	itr := usecase.NewUserAssigned(o.Operator.Individual.Id, individualRep, organizationRep, memberRep)
 	organizations, err := itr.OrganizationList()
 	if err != nil {
 		return err
