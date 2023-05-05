@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/yukitaka/longlong/internal/cli"
+	"github.com/yukitaka/longlong/internal/domain/entity"
 	"github.com/yukitaka/longlong/internal/domain/usecase"
 	"github.com/yukitaka/longlong/internal/domain/value_object"
 	"github.com/yukitaka/longlong/internal/interface/repository"
@@ -13,20 +14,20 @@ import (
 
 type Options struct {
 	CmdParent string
-	UserId    int64
+	Operator  *entity.OrganizationMember
 	cli.IOStream
 }
 
-func NewPutOptions(parent string, streams cli.IOStream, userId int64) *Options {
+func NewPutOptions(parent string, streams cli.IOStream, operator *entity.OrganizationMember) *Options {
 	return &Options{
 		CmdParent: parent,
-		UserId:    userId,
+		Operator:  operator,
 		IOStream:  streams,
 	}
 }
 
-func NewCmdPut(parent string, streams cli.IOStream, userId int64) *cobra.Command {
-	o := NewPutOptions(parent, streams, userId)
+func NewCmdPut(parent string, streams cli.IOStream, operator *entity.OrganizationMember) *cobra.Command {
+	o := NewPutOptions(parent, streams, operator)
 
 	cmd := &cobra.Command{
 		Use:     "put",

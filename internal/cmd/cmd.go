@@ -2,6 +2,9 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/yukitaka/longlong/internal/domain/entity"
+	"github.com/yukitaka/longlong/internal/domain/usecase"
+	"github.com/yukitaka/longlong/internal/interface/repository"
 	"os"
 	"os/exec"
 	"strings"
@@ -24,10 +27,9 @@ type config struct {
 }
 
 type LlctlOptions struct {
-	CmdHandler     Handler
-	Arguments      []string
-	UserId         int64
-	OrganizationId int64
+	CmdHandler Handler
+	Arguments  []string
+	Operator   entity.OrganizationMember
 	cli.IOStream
 }
 
@@ -45,11 +47,13 @@ func NewLlctlCommand() *cobra.Command {
 		panic(err)
 	}
 
+	itr := usecase.NewOrganizationMemberFinder(repository.NewOrganizationMembersRepository())
+	member, _ := itr.FindById(conf.Authorize.OrganizationId, conf.Authorize.UserId)
+
 	return NewLlctlCommandWithArgs(LlctlOptions{
-		CmdHandler:     NewDefaultHandler([]string{"llctl"}),
-		Arguments:      os.Args,
-		UserId:         conf.Authorize.UserId,
-		OrganizationId: conf.Authorize.OrganizationId,
+		CmdHandler: NewDefaultHandler([]string{"llctl"}),
+		Arguments:  os.Args,
+		Operator:   *member,
 		IOStream: cli.IOStream{
 			In:     os.Stdin,
 			Out:    os.Stdout,
@@ -70,9 +74,9 @@ https://github.com/yukitaka/longlong/`,
 	}
 	cmdGroup.AddCommand(initialize.NewCmdInit("llctl", o.IOStream))
 	cmdGroup.AddCommand(auth.NewCmdAuth("llctl", o.IOStream))
-	cmdGroup.AddCommand(get.NewCmdGet("llctl", o.IOStream, o.UserId))
-	cmdGroup.AddCommand(put.NewCmdPut("llctl", o.IOStream, o.UserId))
-	cmdGroup.AddCommand(create.NewCmdCreate("llctl", o.IOStream, o.UserId, o.OrganizationId))
+	cmdGroup.AddCommand(get.NewCmdGet("llctl", o.IOStream, &o.Operator))
+	cmdGroup.AddCommand(put.NewCmdPut("llctl", o.IOStream, &o.Operator))
+	cmdGroup.AddCommand(create.NewCmdCreate("llctl", o.IOStream, &o.Operator))
 
 	if len(o.Arguments) > 1 {
 		cmdArgs := o.Arguments[1:]

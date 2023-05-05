@@ -11,23 +11,21 @@ import (
 )
 
 type Options struct {
-	CmdParent      string
-	UserId         int64
-	OrganizationId int64
+	CmdParent string
+	Operator  *entity.OrganizationMember
 	cli.IOStream
 }
 
-func NewCreateOptions(parent string, streams cli.IOStream, userId, organizationId int64) *Options {
+func NewCreateOptions(parent string, streams cli.IOStream, member *entity.OrganizationMember) *Options {
 	return &Options{
-		CmdParent:      parent,
-		UserId:         userId,
-		OrganizationId: organizationId,
-		IOStream:       streams,
+		CmdParent: parent,
+		Operator:  member,
+		IOStream:  streams,
 	}
 }
 
-func NewCmdCreate(parent string, streams cli.IOStream, userId, organizationId int64) *cobra.Command {
-	o := NewCreateOptions(parent, streams, userId, organizationId)
+func NewCmdCreate(parent string, streams cli.IOStream, member *entity.OrganizationMember) *cobra.Command {
+	o := NewCreateOptions(parent, streams, member)
 
 	cmd := &cobra.Command{
 		Use:     "create",
@@ -71,10 +69,8 @@ func (o *Options) Organization(args []string) error {
 	defer memberRep.Close()
 	itr := usecase.NewOrganizationCreator(organizationRep, memberRep)
 
-	individual := entity.Individual{UserId: o.UserId}
-
 	name := args[0]
-	id, err := itr.Create(name, individual)
+	id, err := itr.Create(name, *o.Operator.Individual)
 	if err != nil {
 		return err
 	}
@@ -99,7 +95,7 @@ func (o *Options) User(cmd *cobra.Command, args []string) error {
 
 		itr := usecase.NewUserCreator(userRep, individualRep, memberRep)
 		name := args[0]
-		id, err := itr.New(o.UserId, o.OrganizationId, name, role)
+		id, err := itr.New(o.Operator, name, role)
 		if err != nil {
 			return err
 		}
