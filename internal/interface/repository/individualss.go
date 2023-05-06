@@ -30,17 +30,17 @@ func (rep *Individuals) Close() {
 	}
 }
 
-func (rep *Individuals) Create(name string, userId, profileId int64) (int64, error) {
+func (rep *Individuals) Create(name string, userId, profileId int) (int, error) {
 	query := "select max(id) from individuals"
 	row := rep.DB.QueryRow(query)
-	var nullableId sql.NullInt64
+	var nullableId sql.NullInt32
 	err := row.Scan(&nullableId)
 	if err != nil {
 		return -1, err
 	}
-	id := int64(0)
+	id := 0
 	if nullableId.Valid {
-		id = nullableId.Int64
+		id = int(nullableId.Int32)
 		id++
 	}
 
@@ -62,12 +62,12 @@ func (rep *Individuals) Create(name string, userId, profileId int64) (int64, err
 	return id, nil
 }
 
-func (rep *Individuals) Find(id int64) (*entity.Individual, error) {
+func (rep *Individuals) Find(id int) (*entity.Individual, error) {
 	row := rep.DB.QueryRow("select name, user_id, profile_id from individuals where id = ?", id)
 
 	var name string
-	var userId int64
-	var profileId int64
+	var userId int
+	var profileId int
 	err := row.Scan(&name, &userId, &profileId)
 	if err != nil {
 		return nil, err
@@ -81,16 +81,16 @@ func (rep *Individuals) Find(id int64) (*entity.Individual, error) {
 	}, nil
 }
 
-func (rep *Individuals) FindByUserId(userId int64) (*[]entity.Individual, error) {
+func (rep *Individuals) FindByUserId(userId int) (*[]entity.Individual, error) {
 	r, err := rep.DB.Query("select id, name, profile_id from individuals where user_id = ?", userId)
 	if err != nil {
 		return nil, err
 	}
 	var individuals []entity.Individual
 	for r.Next() {
-		var id int64
+		var id int
 		var name string
-		var profileId int64
+		var profileId int
 
 		err := r.Scan(&id, &name, &profileId)
 		if err != nil {

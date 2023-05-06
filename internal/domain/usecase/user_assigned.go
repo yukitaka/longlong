@@ -6,13 +6,13 @@ import (
 )
 
 type UserAssigned struct {
-	UserId int64
+	UserId int
 	repository.Individuals
 	repository.Organizations
 	repository.OrganizationMembers
 }
 
-func NewUserAssigned(userId int64, individuals repository.Individuals, organizations repository.Organizations, members repository.OrganizationMembers) *UserAssigned {
+func NewUserAssigned(userId int, individuals repository.Individuals, organizations repository.Organizations, members repository.OrganizationMembers) *UserAssigned {
 	return &UserAssigned{userId, individuals, organizations, members}
 }
 

@@ -26,7 +26,7 @@ func NewOrganizationMembersRepository() rep.OrganizationMembers {
 	}
 }
 
-func (o OrganizationMembers) Find(organizationId, individualId int64) (*entity.OrganizationMember, error) {
+func (o OrganizationMembers) Find(organizationId, individualId int) (*entity.OrganizationMember, error) {
 	query := "select role from organization_members where organization_id=$1 and individual_id=$2"
 	row := o.DB.QueryRow(query, organizationId, individualId)
 
@@ -36,7 +36,7 @@ func (o OrganizationMembers) Find(organizationId, individualId int64) (*entity.O
 	}
 	roleType := value_object.Role(role)
 
-	var parentId int64
+	var parentId int
 	var organizationName string
 	row = o.DB.QueryRow("select parent_id, name from organizations where id=$1", organizationId)
 	if err := row.Scan(&parentId, &organizationName); err != nil {
@@ -44,8 +44,8 @@ func (o OrganizationMembers) Find(organizationId, individualId int64) (*entity.O
 	}
 	organization := entity.NewOrganization(parentId, organizationId, organizationName)
 
-	var userId int64
-	var profileId int64
+	var userId int
+	var profileId int
 	var individualName string
 	row = o.DB.QueryRow("select user_id, profile_id, name from individuals where id=$1", individualId)
 	if err := row.Scan(&userId, &profileId, &individualName); err != nil {
@@ -56,14 +56,14 @@ func (o OrganizationMembers) Find(organizationId, individualId int64) (*entity.O
 	return entity.NewOrganizationMember(organization, individual, roleType), nil
 }
 
-func (o OrganizationMembers) Entry(organizationId, individualId int64, role value_object.Role) error {
+func (o OrganizationMembers) Entry(organizationId, individualId int, role value_object.Role) error {
 	query := "insert into organization_members (organization_id, individual_id, role) values (?, ?, ?)"
 	_, err := o.DB.Exec(query, organizationId, individualId, role)
 
 	return err
 }
 
-func (o OrganizationMembers) Leave(individualId int64, reason string) error {
+func (o OrganizationMembers) Leave(individualId int, reason string) error {
 	//TODO implement me
 	panic("implement me")
 }
@@ -77,8 +77,8 @@ func (o OrganizationMembers) Members(organization *entity.Organization, individu
 
 	var members []entity.OrganizationMember
 	for ret.Next() {
-		var oid int64
-		var iid int64
+		var oid int
+		var iid int
 		var role int
 		err := ret.Scan(&oid, &iid, &role)
 		if err != nil {
@@ -112,10 +112,10 @@ func (o OrganizationMembers) IndividualsAssigned(individuals *[]entity.Individua
 
 	members := make([]entity.OrganizationMember, len(*individuals))
 	for rows.Next() {
-		var id int64
-		var parentId int64
+		var id int
+		var parentId int
 		var name string
-		var individualId int64
+		var individualId int
 		err = rows.Scan(&id, &parentId, &name, &individualId)
 		if err != nil {
 			return nil, err

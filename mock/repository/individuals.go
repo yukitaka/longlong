@@ -47,10 +47,10 @@ func (mr *MockIndividualsMockRecorder) Close() *gomock.Call {
 }
 
 // Create mocks base method.
-func (m *MockIndividuals) Create(name string, userId, profileId int64) (int64, error) {
+func (m *MockIndividuals) Create(name string, userId, profileId int) (int, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", name, userId, profileId)
-	ret0, _ := ret[0].(int64)
+	ret0, _ := ret[0].(int)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -62,7 +62,7 @@ func (mr *MockIndividualsMockRecorder) Create(name, userId, profileId interface{
 }
 
 // Find mocks base method.
-func (m *MockIndividuals) Find(id int64) (*entity.Individual, error) {
+func (m *MockIndividuals) Find(id int) (*entity.Individual, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Find", id)
 	ret0, _ := ret[0].(*entity.Individual)
@@ -77,7 +77,7 @@ func (mr *MockIndividualsMockRecorder) Find(id interface{}) *gomock.Call {
 }
 
 // FindByUserId mocks base method.
-func (m *MockIndividuals) FindByUserId(userId int64) (*[]entity.Individual, error) {
+func (m *MockIndividuals) FindByUserId(userId int) (*[]entity.Individual, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindByUserId", userId)
 	ret0, _ := ret[0].(*[]entity.Individual)

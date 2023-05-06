@@ -12,7 +12,7 @@ func TestNewOrganizationFinder(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	expect := int64(1)
+	expect := 1
 	organizationRep := mockRepository.NewMockOrganizations(ctrl)
 	organizationRep.EXPECT().Find(expect).Return(&entity.Organization{Id: expect, Name: "Test"}, nil)
 

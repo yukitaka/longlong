@@ -85,10 +85,10 @@ func (o *Options) Organization(cmd *cobra.Command, args []string) error {
 			}
 		}
 		if len(args) > 0 {
-			if id, err := strconv.ParseInt(args[0], 10, 64); err == nil {
+			if id, err := strconv.Atoi(args[0]); err == nil {
 				if organization, err := itr.Find(id); err == nil {
 					if outputFlag == "table" {
-						rows = append(rows, table.Row{strconv.FormatInt(organization.ParentId, 10), strconv.FormatInt(organization.Id, 10), organization.Name})
+						rows = append(rows, table.Row{strconv.Itoa(organization.ParentId), strconv.Itoa(organization.Id), organization.Name})
 					}
 					printer := cmdutil.NewPrinter(organization, columns, rows)
 					printer.Print()
@@ -98,7 +98,7 @@ func (o *Options) Organization(cmd *cobra.Command, args []string) error {
 			if organizations, err := itr.List(); err == nil {
 				if outputFlag == "table" {
 					for _, o := range *organizations {
-						rows = append(rows, table.Row{strconv.FormatInt(o.ParentId, 10), strconv.FormatInt(o.Id, 10), o.Name})
+						rows = append(rows, table.Row{strconv.Itoa(o.ParentId), strconv.Itoa(o.Id), o.Name})
 					}
 				}
 				printer := cmdutil.NewPrinter(organizations, columns, rows)

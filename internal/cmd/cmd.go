@@ -21,8 +21,8 @@ import (
 
 type config struct {
 	Authorize struct {
-		UserId         int64 `mapstructure:"user_id"`
-		OrganizationId int64 `mapstructure:"organization_id"`
+		UserId         int `mapstructure:"user_id"`
+		OrganizationId int `mapstructure:"organization_id"`
 	}
 }
 

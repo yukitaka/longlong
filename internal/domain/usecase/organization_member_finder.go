@@ -13,6 +13,6 @@ func NewOrganizationMemberFinder(members repository.OrganizationMembers) *Organi
 	return &OrganizationMemberFinder{OrganizationMembers: members}
 }
 
-func (it *OrganizationMemberFinder) FindById(organizationId, individualId int64) (*entity.OrganizationMember, error) {
+func (it *OrganizationMemberFinder) FindById(organizationId, individualId int) (*entity.OrganizationMember, error) {
 	return it.OrganizationMembers.Find(organizationId, individualId)
 }

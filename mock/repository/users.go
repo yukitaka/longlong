@@ -47,10 +47,10 @@ func (mr *MockUsersMockRecorder) Close() *gomock.Call {
 }
 
 // Create mocks base method.
-func (m *MockUsers) Create(name string) (int64, error) {
+func (m *MockUsers) Create(name string) (int, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", name)
-	ret0, _ := ret[0].(int64)
+	ret0, _ := ret[0].(int)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -62,7 +62,7 @@ func (mr *MockUsersMockRecorder) Create(name interface{}) *gomock.Call {
 }
 
 // Find mocks base method.
-func (m *MockUsers) Find(id int64) (*entity.User, error) {
+func (m *MockUsers) Find(id int) (*entity.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Find", id)
 	ret0, _ := ret[0].(*entity.User)

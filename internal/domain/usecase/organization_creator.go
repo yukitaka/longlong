@@ -14,7 +14,7 @@ func NewOrganizationCreator(organizations repository.Organizations, members repo
 	return &OrganizationCreator{organizations, members}
 }
 
-func (it *OrganizationCreator) New(name string, individual entity.Individual) (int64, error) {
+func (it *OrganizationCreator) New(name string, individual entity.Individual) (int, error) {
 	id, err := it.Organizations.Create(name, individual)
 	if err != nil {
 		return -1, err
