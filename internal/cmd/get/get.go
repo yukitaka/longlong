@@ -143,6 +143,7 @@ func (o *Options) User(cmd *cobra.Command, args []string) error {
 		if outputFlag == "table" {
 			columns = []table.Column{
 				{Title: "Organization", Width: 16},
+				{Title: "ID", Width: 4},
 				{Title: "Name", Width: 16},
 				{Title: "Role", Width: 16},
 			}
@@ -150,6 +151,7 @@ func (o *Options) User(cmd *cobra.Command, args []string) error {
 				for _, m := range ms {
 					rows = append(rows, table.Row{
 						n,
+						strconv.Itoa(int(m.Individual.Id)),
 						m.Individual.Name,
 						m.Role.String(),
 					})
