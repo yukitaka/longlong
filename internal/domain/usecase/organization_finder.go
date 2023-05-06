@@ -13,7 +13,7 @@ func NewOrganizationFinder(organizations repository.Organizations) *Organization
 	return &OrganizationFinder{Organizations: organizations}
 }
 
-func (it *OrganizationFinder) FindById(id int64) (*entity.Organization, error) {
+func (it *OrganizationFinder) FindById(id int) (*entity.Organization, error) {
 	return it.Organizations.Find(id)
 }
 

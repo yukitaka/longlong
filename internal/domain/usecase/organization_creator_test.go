@@ -12,7 +12,7 @@ func TestNewOrganizationCreator(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	expect := int64(1)
+	expect := 1
 	organizationRep := mockRepository.NewMockOrganizations(ctrl)
 	organizationRep.EXPECT().Create("TestParent", entity.Individual{UserId: 1}).Return(expect, nil)
 

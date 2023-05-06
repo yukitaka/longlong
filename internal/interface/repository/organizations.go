@@ -35,17 +35,17 @@ func (o *Organizations) Close() {
 	}
 }
 
-func (o *Organizations) Create(name string, individual entity.Individual) (int64, error) {
+func (o *Organizations) Create(name string, individual entity.Individual) (int, error) {
 	query := "select max(id) from organizations"
 	row := o.DB.QueryRow(query)
-	var nullableId sql.NullInt64
+	var nullableId sql.NullInt32
 	err := row.Scan(&nullableId)
 	if err != nil {
 		return -1, err
 	}
-	id := int64(0)
+	id := 0
 	if nullableId.Valid {
-		id = nullableId.Int64
+		id = int(nullableId.Int32)
 		id++
 	}
 
@@ -63,7 +63,7 @@ func (o *Organizations) Create(name string, individual entity.Individual) (int64
 	return id, nil
 }
 
-func (o *Organizations) Find(id int64) (*entity.Organization, error) {
+func (o *Organizations) Find(id int) (*entity.Organization, error) {
 	stmt, err := o.DB.Prepare("select name from organizations where id=?")
 	if err != nil {
 		return nil, err
@@ -108,8 +108,8 @@ func (o *Organizations) FindAll(ids []interface{}) (*[]entity.Organization, erro
 	}
 	var organizations []entity.Organization
 	for res.Next() {
-		var parentId int64
-		var id int64
+		var parentId int
+		var id int
 		var name string
 		err = res.Scan(&parentId, &id, &name)
 		if err != nil {

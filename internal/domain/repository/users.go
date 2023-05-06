@@ -6,7 +6,7 @@ import (
 )
 
 type Users interface {
-	Create(name string) (int64, error)
-	Find(id int64) (*entity.User, error)
+	Create(name string) (int, error)
+	Find(id int) (*entity.User, error)
 	Close()
 }

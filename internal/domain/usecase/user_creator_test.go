@@ -11,7 +11,7 @@ func TestNewUserCreator(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	expect := int64(1)
+	expect := 1
 	userRep := mockRepository.NewMockUsers(ctrl)
 	userRep.EXPECT().Create("Name").Return(expect, nil)
 

@@ -49,7 +49,7 @@ func (mr *MockOrganizationMembersMockRecorder) Close() *gomock.Call {
 }
 
 // Entry mocks base method.
-func (m *MockOrganizationMembers) Entry(organizationId, individualId int64, role value_object.Role) error {
+func (m *MockOrganizationMembers) Entry(organizationId, individualId int, role value_object.Role) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Entry", organizationId, individualId, role)
 	ret0, _ := ret[0].(error)
@@ -63,7 +63,7 @@ func (mr *MockOrganizationMembersMockRecorder) Entry(organizationId, individualI
 }
 
 // Find mocks base method.
-func (m *MockOrganizationMembers) Find(organizationId, individualId int64) (*entity.OrganizationMember, error) {
+func (m *MockOrganizationMembers) Find(organizationId, individualId int) (*entity.OrganizationMember, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Find", organizationId, individualId)
 	ret0, _ := ret[0].(*entity.OrganizationMember)
@@ -93,7 +93,7 @@ func (mr *MockOrganizationMembersMockRecorder) IndividualsAssigned(individual in
 }
 
 // Leave mocks base method.
-func (m *MockOrganizationMembers) Leave(individualId int64, reason string) error {
+func (m *MockOrganizationMembers) Leave(individualId int, reason string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Leave", individualId, reason)
 	ret0, _ := ret[0].(error)

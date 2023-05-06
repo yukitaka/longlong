@@ -32,17 +32,17 @@ func (rep *Users) Close() {
 	}
 }
 
-func (rep *Users) Create(name string) (int64, error) {
+func (rep *Users) Create(name string) (int, error) {
 	query := "select max(id) from users"
 	row := rep.DB.QueryRow(query)
-	var nullableId sql.NullInt64
+	var nullableId sql.NullInt32
 	err := row.Scan(&nullableId)
 	if err != nil {
 		return -1, err
 	}
-	id := int64(0)
+	id := 0
 	if nullableId.Valid {
-		id = nullableId.Int64
+		id = int(nullableId.Int32)
 		id++
 	}
 
@@ -68,7 +68,7 @@ func (rep *Users) Create(name string) (int64, error) {
 	return id, nil
 }
 
-func (rep *Users) Find(id int64) (*entity.User, error) {
+func (rep *Users) Find(id int) (*entity.User, error) {
 	//TODO implement me
 	panic("implement me")
 }

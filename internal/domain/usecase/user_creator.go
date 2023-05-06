@@ -18,7 +18,7 @@ func NewUserCreator(users repository.Users, individuals repository.Individuals, 
 	return &UserCreator{users, individuals, members}
 }
 
-func (it *UserCreator) New(operator *entity.OrganizationMember, name string, role string) (int64, error) {
+func (it *UserCreator) New(operator *entity.OrganizationMember, name string, role string) (int, error) {
 	roleType, err := value_object.ParseRole(strings.ToUpper(role))
 	if err != nil {
 		return 0, err

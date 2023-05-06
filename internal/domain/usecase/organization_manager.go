@@ -17,11 +17,11 @@ func NewOrganizationManager(organization *entity.Organization, organizations rep
 	return &OrganizationManager{organization, organizations, organizationMembers, individuals}
 }
 
-func (it *OrganizationManager) AssignIndividual(individualId int64) error {
+func (it *OrganizationManager) AssignIndividual(individualId int) error {
 	return it.OrganizationMembers.Entry(it.organization.Id, individualId, value_object.MEMBER)
 }
 
-func (it *OrganizationManager) RejectIndividual(individualId int64, reason string) error {
+func (it *OrganizationManager) RejectIndividual(individualId int, reason string) error {
 	return it.OrganizationMembers.Leave(individualId, reason)
 }
 

@@ -46,10 +46,10 @@ func (mr *MockAuthenticationsMockRecorder) Close() *gomock.Call {
 }
 
 // Create mocks base method.
-func (m *MockAuthentications) Create(identify, token string) (int64, error) {
+func (m *MockAuthentications) Create(identify, token string) (int, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", identify, token)
-	ret0, _ := ret[0].(int64)
+	ret0, _ := ret[0].(int)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -61,10 +61,10 @@ func (mr *MockAuthenticationsMockRecorder) Create(identify, token interface{}) *
 }
 
 // FindToken mocks base method.
-func (m *MockAuthentications) FindToken(identify string) (int64, string, error) {
+func (m *MockAuthentications) FindToken(identify string) (int, string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindToken", identify)
-	ret0, _ := ret[0].(int64)
+	ret0, _ := ret[0].(int)
 	ret1, _ := ret[1].(string)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2

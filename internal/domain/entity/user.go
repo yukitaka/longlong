@@ -1,9 +1,9 @@
 package entity
 
 type User struct {
-	Id int64
+	Id int
 }
 
-func NewUser(id int64) *User {
+func NewUser(id int) *User {
 	return &User{Id: id}
 }
