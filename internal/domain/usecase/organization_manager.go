@@ -21,8 +21,8 @@ func (it *OrganizationManager) AssignIndividual(individualId int) error {
 	return it.OrganizationMembers.Entry(it.organization.Id, individualId, value_object.MEMBER)
 }
 
-func (it *OrganizationManager) RejectIndividual(individualId int, reason string) error {
-	return it.OrganizationMembers.Leave(individualId, reason)
+func (it *OrganizationManager) QuitIndividual(individualId int, reason string) error {
+	return it.OrganizationMembers.Leave(it.organization.Id, individualId, reason)
 }
 
 func (it *OrganizationManager) Members() (*[]entity.OrganizationMember, error) {

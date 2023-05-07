@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/yukitaka/longlong/internal/cmd/del"
 	"github.com/yukitaka/longlong/internal/domain/entity"
 	"github.com/yukitaka/longlong/internal/domain/usecase"
 	"github.com/yukitaka/longlong/internal/interface/repository"
@@ -76,6 +77,7 @@ https://github.com/yukitaka/longlong/`,
 	cmdGroup.AddCommand(auth.NewCmdAuth("llctl", o.IOStream))
 	cmdGroup.AddCommand(get.NewCmdGet("llctl", o.IOStream, &o.Operator))
 	cmdGroup.AddCommand(put.NewCmdPut("llctl", o.IOStream, &o.Operator))
+	cmdGroup.AddCommand(del.NewCmdDelete("llctl", o.IOStream, &o.Operator))
 	cmdGroup.AddCommand(create.NewCmdCreate("llctl", o.IOStream, &o.Operator))
 
 	if len(o.Arguments) > 1 {
