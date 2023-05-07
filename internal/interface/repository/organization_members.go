@@ -63,9 +63,11 @@ func (o OrganizationMembers) Entry(organizationId, individualId int, role value_
 	return err
 }
 
-func (o OrganizationMembers) Leave(individualId int, reason string) error {
-	//TODO implement me
-	panic("implement me")
+func (o OrganizationMembers) Leave(organizationId, individualId int, reason string) error {
+	stmt := "delete from organization_members where organization_id=? and individual_id=?"
+	_, err := o.DB.Exec(stmt, organizationId, individualId)
+
+	return err
 }
 
 func (o OrganizationMembers) Members(organization *entity.Organization, individualRepository rep.Individuals) (*[]entity.OrganizationMember, error) {

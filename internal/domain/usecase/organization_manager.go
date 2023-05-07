@@ -22,7 +22,7 @@ func (it *OrganizationManager) AssignIndividual(individualId int) error {
 }
 
 func (it *OrganizationManager) RejectIndividual(individualId int, reason string) error {
-	return it.OrganizationMembers.Leave(individualId, reason)
+	return it.OrganizationMembers.Leave(it.organization.Id, individualId, reason)
 }
 
 func (it *OrganizationManager) Members() (*[]entity.OrganizationMember, error) {
