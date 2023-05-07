@@ -5,7 +5,10 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/yukitaka/longlong/internal/cli"
 	"github.com/yukitaka/longlong/internal/domain/entity"
+	"github.com/yukitaka/longlong/internal/domain/usecase"
+	"github.com/yukitaka/longlong/internal/interface/repository"
 	"github.com/yukitaka/longlong/internal/util"
+	"strconv"
 )
 
 type Options struct {
@@ -45,7 +48,33 @@ func NewCmdDelete(parent string, streams cli.IOStream, operator *entity.Organiza
 }
 
 func (o *Options) User(cmd *cobra.Command, args []string) error {
-	fmt.Printf("%v\n", args)
+	if len(args) != 1 {
+		fmt.Println("Error: must also specify a name")
+		return nil
+	}
+
+	id, err := strconv.Atoi(args[0])
+	if err != nil {
+		return err
+	}
+
+	organizationRep := repository.NewOrganizationsRepository()
+	defer organizationRep.Close()
+	memberRep := repository.NewOrganizationMembersRepository()
+	defer memberRep.Close()
+	individualRep := repository.NewIndividualsRepository()
+	defer individualRep.Close()
+
+	organization, err := organizationRep.Find(o.Operator.Organization.Id)
+	if err != nil {
+		return err
+	}
+
+	itr := usecase.NewOrganizationManager(organization, organizationRep, memberRep, individualRep)
+	err = itr.Leave(id, "Delete by "+o.Operator.Individual.Name)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
