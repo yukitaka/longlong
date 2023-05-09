@@ -71,7 +71,7 @@ func (o *Options) User(cmd *cobra.Command, args []string) error {
 	}
 
 	itr := usecase.NewOrganizationManager(organization, organizationRep, memberRep, individualRep)
-	err = itr.QuitIndividual(id, "Delete by "+o.Operator.Individual.Name)
+	err = itr.QuitIndividual(o.Operator, id, "Delete by "+o.Operator.Individual.Name)
 	if err != nil {
 		return err
 	}
