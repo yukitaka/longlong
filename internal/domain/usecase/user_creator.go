@@ -23,7 +23,7 @@ func (it *UserCreator) New(operator *entity.OrganizationMember, name string, rol
 	if err != nil {
 		return 0, err
 	}
-	if operator.Role > roleType {
+	if operator.Role.IsBelow(roleType) {
 		return -1, fmt.Errorf("New user role isn't permitted.\n")
 	}
 

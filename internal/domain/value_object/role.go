@@ -26,3 +26,11 @@ func ParseRole(name string) (Role, error) {
 
 	return -1, fmt.Errorf("Unparse string '%s' to Role\n", name)
 }
+
+func (it Role) IsAbove(target Role) bool {
+	return it < target
+}
+
+func (it Role) IsBelow(target Role) bool {
+	return it > target
+}
