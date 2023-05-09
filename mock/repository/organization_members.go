@@ -93,17 +93,17 @@ func (mr *MockOrganizationMembersMockRecorder) IndividualsAssigned(individual in
 }
 
 // Leave mocks base method.
-func (m *MockOrganizationMembers) Leave(individualId int, reason string) error {
+func (m *MockOrganizationMembers) Leave(organizationId, individualId int, reason string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Leave", individualId, reason)
+	ret := m.ctrl.Call(m, "Leave", organizationId, individualId, reason)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Leave indicates an expected call of Leave.
-func (mr *MockOrganizationMembersMockRecorder) Leave(individualId, reason interface{}) *gomock.Call {
+func (mr *MockOrganizationMembersMockRecorder) Leave(organizationId, individualId, reason interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Leave", reflect.TypeOf((*MockOrganizationMembers)(nil).Leave), individualId, reason)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Leave", reflect.TypeOf((*MockOrganizationMembers)(nil).Leave), organizationId, individualId, reason)
 }
 
 // Members mocks base method.
