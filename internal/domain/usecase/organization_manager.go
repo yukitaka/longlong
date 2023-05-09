@@ -23,7 +23,11 @@ func (it *OrganizationManager) AssignIndividual(individualId int) error {
 }
 
 func (it *OrganizationManager) QuitIndividual(operator *entity.OrganizationMember, individualId int, reason string) error {
-	if operator.Role != value_object.OWNER && operator.Role != value_object.ADMIN {
+	target, err := it.OrganizationMembers.Find(it.organization.Id, individualId)
+	if err != nil {
+		return err
+	}
+	if !operator.CanManage(target) {
 		return fmt.Errorf("error: you don't have permission to quit this organization")
 	}
 
