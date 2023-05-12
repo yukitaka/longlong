@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"github.com/yukitaka/longlong/internal/domain/entity"
+	"strconv"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -12,21 +13,26 @@ func TestNewOrganizationMemberFinder(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	organizationId := 1
-	individualId := 1
-
 	var members []entity.OrganizationMember
-	members = append(members, entity.OrganizationMember{Organization: entity.NewOrganization(0, 1, "Organization One"), Individual: entity.NewIndividual(1, 1, 1, "Individual One")})
-
 	memberRep := mockRepository.NewMockOrganizationMembers(ctrl)
-	memberRep.EXPECT().Find(organizationId, individualId).Return(&members[0], nil)
+	for oid := 1; oid <= 5; oid++ {
+		for iid := 1; iid < 5; iid++ {
+			member := entity.OrganizationMember{Organization: entity.NewOrganization(0, oid, "Organization "+strconv.Itoa(oid)), Individual: entity.NewIndividual(iid, iid, iid, "Individual "+strconv.Itoa(iid))}
+			members = append(members, member)
+			memberRep.EXPECT().Find(gomock.Any(), gomock.Any()).DoAndReturn(
+				func(oid int, iid int) (*entity.OrganizationMember, error) {
+					member := entity.OrganizationMember{Organization: entity.NewOrganization(0, oid, "Organization "+strconv.Itoa(oid)), Individual: entity.NewIndividual(iid, iid, iid, "Individual "+strconv.Itoa(iid))}
+					return &member, nil
+				}).AnyTimes()
+		}
+	}
 
 	itr := NewOrganizationMemberFinder(memberRep)
-	member, err := itr.FindById(1, 1)
+	member, err := itr.FindById(1, 2)
 	if err != nil {
 		t.Errorf("QuitIndividual() = %v\n", err)
 	}
-	if member.Organization.Id != organizationId || member.Individual.Id != individualId {
-		t.Errorf("Found member is invalid (%d, %d) expect (%d, %d)\n", member.Organization.Id, member.Individual.Id, organizationId, individualId)
+	if member.Organization.Id != 1 || member.Individual.Id != 2 {
+		t.Errorf("Found member is invalid (%d, %d) expect (1, 2)\n", member.Organization.Id, member.Individual.Id)
 	}
 }
