@@ -15,9 +15,8 @@ func TestNewOrganizationMemberFinder(t *testing.T) {
 	organizationId := 1
 	individualId := 1
 
-	members := []entity.OrganizationMember{
-		{Organization: entity.NewOrganization(0, 1, "One"), Individual: entity.NewIndividual(1, 1, 1, "One")},
-	}
+	var members []entity.OrganizationMember
+	members = append(members, entity.OrganizationMember{Organization: entity.NewOrganization(0, 1, "Organization One"), Individual: entity.NewIndividual(1, 1, 1, "Individual One")})
 
 	memberRep := mockRepository.NewMockOrganizationMembers(ctrl)
 	memberRep.EXPECT().Find(organizationId, individualId).Return(&members[0], nil)
