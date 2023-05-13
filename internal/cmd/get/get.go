@@ -118,8 +118,8 @@ func (o *Options) User(cmd *cobra.Command, args []string) error {
 	memberRep := repository.NewOrganizationMembersRepository()
 	defer memberRep.Close()
 
-	itr := usecase.NewUserAssigned(o.Operator.Individual.Id, individualRep, organizationRep, memberRep)
-	organizations, err := itr.OrganizationList()
+	itr := usecase.NewUserAssigned(individualRep, organizationRep, memberRep)
+	organizations, err := itr.OrganizationList(o.Operator)
 	if err != nil {
 		return err
 	}

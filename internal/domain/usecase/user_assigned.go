@@ -6,18 +6,17 @@ import (
 )
 
 type UserAssigned struct {
-	UserId int
 	repository.Individuals
 	repository.Organizations
 	repository.OrganizationMembers
 }
 
-func NewUserAssigned(userId int, individuals repository.Individuals, organizations repository.Organizations, members repository.OrganizationMembers) *UserAssigned {
-	return &UserAssigned{userId, individuals, organizations, members}
+func NewUserAssigned(individuals repository.Individuals, organizations repository.Organizations, members repository.OrganizationMembers) *UserAssigned {
+	return &UserAssigned{individuals, organizations, members}
 }
 
-func (it *UserAssigned) OrganizationList() (*[]entity.OrganizationMember, error) {
-	individuals, err := it.Individuals.FindByUserId(it.UserId)
+func (it *UserAssigned) OrganizationList(operator *entity.OrganizationMember) (*[]entity.OrganizationMember, error) {
+	individuals, err := it.Individuals.FindByUserId(operator.Individual.UserId)
 	if err != nil {
 		return nil, err
 	}
