@@ -16,7 +16,6 @@ import (
 	"github.com/yukitaka/longlong/internal/cmd/auth"
 	"github.com/yukitaka/longlong/internal/cmd/create"
 	"github.com/yukitaka/longlong/internal/cmd/get"
-	initialize "github.com/yukitaka/longlong/internal/cmd/init"
 	"github.com/yukitaka/longlong/internal/cmd/put"
 )
 
@@ -49,12 +48,16 @@ func NewLlctlCommand() *cobra.Command {
 	}
 
 	itr := usecase.NewOrganizationMemberFinder(repository.NewOrganizationMembersRepository())
-	member, _ := itr.FindById(conf.Authorize.OrganizationId, conf.Authorize.UserId)
+	member, err := itr.FindById(conf.Authorize.OrganizationId, conf.Authorize.UserId)
+	operator := *member
+	if err != nil {
+		panic(err)
+	}
 
 	return NewLlctlCommandWithArgs(LlctlOptions{
 		CmdHandler: NewDefaultHandler([]string{"llctl"}),
 		Arguments:  os.Args,
-		Operator:   *member,
+		Operator:   operator,
 		IOStream: cli.IOStream{
 			In:     os.Stdin,
 			Out:    os.Stdout,
@@ -73,7 +76,6 @@ llctl controls the LongLong manager.
 Find more information at:
 https://github.com/yukitaka/longlong/`,
 	}
-	cmdGroup.AddCommand(initialize.NewCmdInit("llctl", o.IOStream))
 	cmdGroup.AddCommand(auth.NewCmdAuth("llctl", o.IOStream))
 	cmdGroup.AddCommand(get.NewCmdGet("llctl", o.IOStream, &o.Operator))
 	cmdGroup.AddCommand(put.NewCmdPut("llctl", o.IOStream, &o.Operator))
