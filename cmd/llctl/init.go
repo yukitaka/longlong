@@ -1,61 +1,29 @@
-package init
+package main
 
 import (
 	"database/sql"
 	"fmt"
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/spf13/cobra"
-	"github.com/yukitaka/longlong/internal/cli"
-	"github.com/yukitaka/longlong/internal/util"
 	"golang.org/x/crypto/bcrypt"
 	"os"
 )
 
-type Options struct {
-	CmdParent string
-	cli.IOStream
-}
-
-func NewInitOptions(parent string, streams cli.IOStream) *Options {
-	return &Options{
-		CmdParent: parent,
-		IOStream:  streams,
-	}
-}
-
-func NewCmdInit(parent string, streams cli.IOStream) *cobra.Command {
-	o := NewInitOptions(parent, streams)
-
-	cmd := &cobra.Command{
-		Use:   "init",
-		Short: "Display one or many resources",
-		Run: func(cmd *cobra.Command, args []string) {
-			util.CheckErr(o.Run(args))
-		},
-	}
-
-	cmd.AddCommand(&cobra.Command{
-		Use:   "sqlite",
-		Short: "Display one or many organizations",
-		Run: func(cmd *cobra.Command, args []string) {
-			util.CheckErr(o.Sqlite())
-		},
-	})
-
-	return cmd
-}
-
-func (o *Options) Run(args []string) error {
-	fmt.Printf("Args is %v.", args)
-	return nil
-}
-
-func (o *Options) Sqlite() error {
-	err := os.Remove("./longlong.db")
+func main() {
+	err := sqlite()
 	if err != nil {
-		return err
+		fmt.Printf("Error: %v", err)
 	}
-	db, err := sql.Open("sqlite3", "./longlong.db")
+}
+
+func sqlite() error {
+	filename := "./longlong.db"
+	if _, err := os.Stat(filename); err == nil {
+		err := os.Remove(filename)
+		if err != nil {
+			return err
+		}
+	}
+	db, err := sql.Open("sqlite3", filename)
 	if err != nil {
 		return err
 	}
