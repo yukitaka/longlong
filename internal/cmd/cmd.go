@@ -5,6 +5,7 @@ import (
 	"github.com/yukitaka/longlong/internal/cmd/del"
 	"github.com/yukitaka/longlong/internal/domain/entity"
 	"github.com/yukitaka/longlong/internal/domain/usecase"
+	"github.com/yukitaka/longlong/internal/domain/value_object"
 	"github.com/yukitaka/longlong/internal/interface/repository"
 	"os"
 	"os/exec"
@@ -49,7 +50,14 @@ func NewLlctlCommand() *cobra.Command {
 	}
 
 	itr := usecase.NewOrganizationMemberFinder(repository.NewOrganizationMembersRepository())
-	member, _ := itr.FindById(conf.Authorize.OrganizationId, conf.Authorize.UserId)
+	member, err := itr.FindById(conf.Authorize.OrganizationId, conf.Authorize.UserId)
+	if err != nil {
+		member = entity.NewOrganizationMember(
+			entity.NewOrganization(0, conf.Authorize.OrganizationId, ""),
+			entity.NewIndividual(conf.Authorize.UserId, conf.Authorize.UserId, 1, ""),
+			value_object.ADMIN,
+		)
+	}
 
 	return NewLlctlCommandWithArgs(LlctlOptions{
 		CmdHandler: NewDefaultHandler([]string{"llctl"}),
