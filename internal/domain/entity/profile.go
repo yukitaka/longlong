@@ -1,11 +1,12 @@
 package entity
 
 type Profile struct {
-	Id       int
-	Name     string
-	FullName string
+	Id        int
+	NickName  string
+	FullName  string
+	Biography string
 }
 
-func NewProfile(id int, name string) *Profile {
-	return &Profile{Id: id, Name: name}
+func NewProfile(id int, nickName string, fullName string, bio string) *Profile {
+	return &Profile{Id: id, NickName: nickName, FullName: fullName, Biography: bio}
 }
