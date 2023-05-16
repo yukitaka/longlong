@@ -119,6 +119,11 @@ func (o *Options) Profile(cmd *cobra.Command, args []string) error {
 		fmt.Println("Error: must also specify a nickname and full name and bio")
 		return nil
 	}
+	itr := usecase.NewProfileCreator(repository.NewProfilesRepository())
+	_, err := itr.New(o.Operator, args[0], args[1], args[2])
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
