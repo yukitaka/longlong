@@ -55,6 +55,15 @@ func NewCmdCreate(parent string, streams cli.IOStream, member *entity.Organizati
 	userCmd.PersistentFlags().StringP("role", "r", "member", "user role")
 	cmd.AddCommand(userCmd)
 
+	profileCmd := &cobra.Command{
+		Use:   "profile",
+		Short: "Create one profile",
+		Run: func(cmd *cobra.Command, args []string) {
+			util.CheckErr(o.Profile(cmd, args))
+		},
+	}
+	cmd.AddCommand(profileCmd)
+
 	return cmd
 }
 
