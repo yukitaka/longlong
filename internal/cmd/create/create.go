@@ -104,3 +104,12 @@ func (o *Options) User(cmd *cobra.Command, args []string) error {
 
 	return nil
 }
+
+func (o *Options) Profile(cmd *cobra.Command, args []string) error {
+	if len(args) != 3 {
+		fmt.Println("Error: must also specify a nickname and full name and bio")
+		return nil
+	}
+
+	return nil
+}
