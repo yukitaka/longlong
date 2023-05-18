@@ -74,11 +74,21 @@ func (rep *Individuals) Find(id int) (*entity.Individual, error) {
 		return nil, err
 	}
 
+	user, err := NewUsersRepository().Find(userId)
+	if err != nil {
+		return nil, err
+	}
+
+	profile, err := NewProfilesRepository().Find(profileId)
+	if err != nil {
+		return nil, err
+	}
+
 	return &entity.Individual{
-		Id:        id,
-		Name:      name,
-		UserId:    userId,
-		ProfileId: profileId,
+		Id:      id,
+		Name:    name,
+		User:    *user,
+		Profile: *profile,
 	}, nil
 }
 
@@ -97,11 +107,22 @@ func (rep *Individuals) FindByUserId(userId int) (*[]entity.Individual, error) {
 		if err != nil {
 			return nil, err
 		}
+
+		user, err := NewUsersRepository().Find(userId)
+		if err != nil {
+			return nil, err
+		}
+
+		profile, err := NewProfilesRepository().Find(profileId)
+		if err != nil {
+			return nil, err
+		}
+
 		individuals = append(individuals, entity.Individual{
-			Id:        id,
-			Name:      name,
-			UserId:    userId,
-			ProfileId: profileId,
+			Id:      id,
+			Name:    name,
+			User:    *user,
+			Profile: *profile,
 		})
 	}
 

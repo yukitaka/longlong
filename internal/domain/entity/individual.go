@@ -1,12 +1,12 @@
 package entity
 
 type Individual struct {
-	Id        int
-	Name      string
-	UserId    int
-	ProfileId int
+	Id   int
+	Name string
+	User
+	Profile
 }
 
-func NewIndividual(id, userId, profileId int, name string) *Individual {
-	return &Individual{Id: id, UserId: userId, ProfileId: profileId, Name: name}
+func NewIndividual(id int, user User, profile Profile, name string) *Individual {
+	return &Individual{Id: id, User: user, Profile: profile, Name: name}
 }
