@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/yukitaka/longlong/internal/domain/entity"
 	rep "github.com/yukitaka/longlong/internal/domain/repository"
 	"github.com/yukitaka/longlong/internal/util"
 )
@@ -59,4 +60,9 @@ func (rep *Profiles) Create(nickName, fullName, bio string) (int, error) {
 	}
 
 	return id, nil
+}
+
+func (rep *Profiles) Find(id int) (*entity.Profile, error) {
+	//TODO implement me
+	panic("implement me")
 }
