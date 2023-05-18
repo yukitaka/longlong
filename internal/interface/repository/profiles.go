@@ -63,6 +63,13 @@ func (rep *Profiles) Create(nickName, fullName, bio string) (int, error) {
 }
 
 func (rep *Profiles) Find(id int) (*entity.Profile, error) {
-	//TODO implement me
-	panic("implement me")
+	query := "select nick_name, full_name, biography from profiles where id = ?"
+	row := rep.DB.QueryRow(query, id)
+	var nickName, fullName, bio string
+	err := row.Scan(&nickName, &fullName, &bio)
+	if err != nil {
+		return nil, err
+	}
+
+	return entity.NewProfile(id, nickName, fullName, bio), nil
 }
