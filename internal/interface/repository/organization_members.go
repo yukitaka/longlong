@@ -52,7 +52,16 @@ func (o OrganizationMembers) Find(organizationId, individualId int) (*entity.Org
 	if err := row.Scan(&userId, &profileId, &individualName); err != nil {
 		return nil, err
 	}
-	individual := entity.NewIndividual(individualId, userId, profileId, individualName)
+	user, err := NewUsersRepository().Find(userId)
+	if err != nil {
+		return nil, err
+	}
+	profile, err := NewProfilesRepository().Find(profileId)
+	if err != nil {
+		return nil, err
+	}
+
+	individual := entity.NewIndividual(individualId, *user, *profile, individualName)
 
 	return entity.NewOrganizationMember(organization, individual, roleType), nil
 }

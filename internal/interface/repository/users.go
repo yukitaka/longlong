@@ -70,6 +70,6 @@ func (rep *Users) Create(name string) (int, error) {
 }
 
 func (rep *Users) Find(id int) (*entity.User, error) {
-	//TODO implement me
-	panic("implement me")
+
+	return nil, nil
 }

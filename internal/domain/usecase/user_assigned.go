@@ -16,7 +16,7 @@ func NewUserAssigned(individuals repository.Individuals, organizations repositor
 }
 
 func (it *UserAssigned) OrganizationList(operator *entity.OrganizationMember) (*[]entity.OrganizationMember, error) {
-	individuals, err := it.Individuals.FindByUserId(operator.Individual.UserId)
+	individuals, err := it.Individuals.FindByUserId(operator.Individual.User.Id)
 	if err != nil {
 		return nil, err
 	}

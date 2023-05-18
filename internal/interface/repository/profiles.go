@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/yukitaka/longlong/internal/domain/entity"
 	rep "github.com/yukitaka/longlong/internal/domain/repository"
 	"github.com/yukitaka/longlong/internal/util"
 )
@@ -59,4 +60,16 @@ func (rep *Profiles) Create(nickName, fullName, bio string) (int, error) {
 	}
 
 	return id, nil
+}
+
+func (rep *Profiles) Find(id int) (*entity.Profile, error) {
+	query := "select nick_name, full_name, biography from profiles where id = ?"
+	row := rep.DB.QueryRow(query, id)
+	var nickName, fullName, bio string
+	err := row.Scan(&nickName, &fullName, &bio)
+	if err != nil {
+		return nil, err
+	}
+
+	return entity.NewProfile(id, nickName, fullName, bio), nil
 }
