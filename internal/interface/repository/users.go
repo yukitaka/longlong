@@ -70,6 +70,5 @@ func (rep *Users) Create(name string) (int, error) {
 }
 
 func (rep *Users) Find(id int) (*entity.User, error) {
-
-	return nil, nil
+	return entity.NewUser(id), nil
 }
