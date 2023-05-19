@@ -23,7 +23,7 @@ func TestAuth(t *testing.T) {
 	memberRep := mockRepository.NewMockOrganizationMembers(ctrl2)
 	authRep.EXPECT().FindToken("TestUser").Return(1, string(token), nil)
 
-	individual := entity.NewIndividual(1, 0, 0, "TestUser")
+	individual := entity.NewIndividual(1, *entity.NewUser(0), *entity.NewProfile(0, "", "", ""), "TestUser")
 	memberRep.EXPECT().IndividualsAssigned(&[]entity.Individual{*individual}).Return(&[]entity.OrganizationMember{*entity.NewOrganizationMember(entity.NewOrganization(0, 1, "TestOrganization"), individual, value_object.ADMIN)}, nil)
 	organizationRep.EXPECT().Find(1).Return(entity.NewOrganization(1, 1, "TestOrganization"), nil)
 

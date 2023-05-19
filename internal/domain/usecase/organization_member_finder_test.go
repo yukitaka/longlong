@@ -17,11 +17,13 @@ func TestNewOrganizationMemberFinder(t *testing.T) {
 	memberRep := mockRepository.NewMockOrganizationMembers(ctrl)
 	for oid := 1; oid <= 5; oid++ {
 		for iid := 1; iid < 5; iid++ {
-			member := entity.OrganizationMember{Organization: entity.NewOrganization(0, oid, "Organization "+strconv.Itoa(oid)), Individual: entity.NewIndividual(iid, iid, iid, "Individual "+strconv.Itoa(iid))}
+			user := entity.NewUser(iid)
+			profile := entity.NewProfile(iid, "", "", "")
+			member := entity.OrganizationMember{Organization: entity.NewOrganization(0, oid, "Organization "+strconv.Itoa(oid)), Individual: entity.NewIndividual(iid, *user, *profile, "Individual "+strconv.Itoa(iid))}
 			members = append(members, member)
 			memberRep.EXPECT().Find(gomock.Any(), gomock.Any()).DoAndReturn(
 				func(oid int, iid int) (*entity.OrganizationMember, error) {
-					member := entity.OrganizationMember{Organization: entity.NewOrganization(0, oid, "Organization "+strconv.Itoa(oid)), Individual: entity.NewIndividual(iid, iid, iid, "Individual "+strconv.Itoa(iid))}
+					member := entity.OrganizationMember{Organization: entity.NewOrganization(0, oid, "Organization "+strconv.Itoa(oid)), Individual: entity.NewIndividual(iid, *user, *profile, "Individual "+strconv.Itoa(iid))}
 					return &member, nil
 				}).AnyTimes()
 		}
