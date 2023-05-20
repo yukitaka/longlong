@@ -6,7 +6,6 @@ import (
 	"github.com/yukitaka/longlong/internal/cli"
 	"github.com/yukitaka/longlong/internal/domain/entity"
 	"github.com/yukitaka/longlong/internal/domain/usecase"
-	"github.com/yukitaka/longlong/internal/domain/value_object"
 	"github.com/yukitaka/longlong/internal/interface/repository"
 	"github.com/yukitaka/longlong/internal/util"
 	"strconv"
@@ -61,19 +60,18 @@ func (o *Options) Organization(cmd *cobra.Command, args []string) error {
 	var err error
 	if id, err := strconv.Atoi(args[0]); err == nil {
 		organizationRep := repository.NewOrganizationsRepository()
-		defer organizationRep.Close()
 		memberRep := repository.NewOrganizationMembersRepository()
-		defer memberRep.Close()
 		individualRep := repository.NewIndividualsRepository()
-		defer individualRep.Close()
+		rep := usecase.NewOrganizationManagerRepository(organizationRep, memberRep, individualRep)
+		defer rep.Close()
 
 		organization, err := organizationRep.Find(id)
 		if err != nil {
 			return err
 		}
-		itr := usecase.NewOrganizationManager(organization, organizationRep, memberRep, individualRep)
+		itr := usecase.NewOrganizationManager(organization, rep)
 		if individualId, err := strconv.Atoi(args[1]); err == nil {
-			if err := itr.Entry(id, individualId, value_object.MEMBER); err != nil {
+			if err := itr.AssignIndividual(individualId); err != nil {
 				return err
 			}
 		}

@@ -33,7 +33,8 @@ func TestNewOrganizationManagerMembers(t *testing.T) {
 	}
 	memberRep.EXPECT().Members(organization, individualRep).Return(members, nil)
 
-	itr := NewOrganizationManager(organization, organizationRep, memberRep, individualRep)
+	rep := NewOrganizationManagerRepository(organizationRep, memberRep, individualRep)
+	itr := NewOrganizationManager(organization, rep)
 	members, err := itr.Members()
 	if err != nil {
 		t.Errorf("QuitIndividual() = %v\n", err)

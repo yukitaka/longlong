@@ -126,7 +126,8 @@ func (o *Options) User(cmd *cobra.Command, args []string) error {
 
 	members := map[string][]entity.OrganizationMember{}
 	for _, organization := range *organizations {
-		manager := usecase.NewOrganizationManager(organization.Organization, organizationRep, memberRep, individualRep)
+		managerRep := usecase.NewOrganizationManagerRepository(organizationRep, memberRep, individualRep)
+		manager := usecase.NewOrganizationManager(organization.Organization, managerRep)
 		m, err := manager.Members()
 		if err != nil {
 			return err
