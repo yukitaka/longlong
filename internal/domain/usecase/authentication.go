@@ -7,18 +7,32 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type Authentication struct {
+type AuthenticationRepository struct {
 	repository.Authentications
 	repository.Organizations
 	repository.OrganizationMembers
 }
 
-func NewAuthentication(authentications repository.Authentications, organizations repository.Organizations, organizationMembers repository.OrganizationMembers) *Authentication {
-	return &Authentication{authentications, organizations, organizationMembers}
+func NewAuthenticationRepository(authentications repository.Authentications, organizations repository.Organizations, organizationMembers repository.OrganizationMembers) *AuthenticationRepository {
+	return &AuthenticationRepository{authentications, organizations, organizationMembers}
+}
+
+func (rep *AuthenticationRepository) Close() {
+	rep.Authentications.Close()
+	rep.Organizations.Close()
+	rep.OrganizationMembers.Close()
+}
+
+type Authentication struct {
+	repository *AuthenticationRepository
+}
+
+func NewAuthentication(repository *AuthenticationRepository) *Authentication {
+	return &Authentication{repository}
 }
 
 func (it *Authentication) Auth(organization, identify, password string) (int, error) {
-	id, token, err := it.Authentications.FindToken(identify)
+	id, token, err := it.repository.Authentications.FindToken(identify)
 	if err != nil {
 		return -1, err
 	}
@@ -27,9 +41,9 @@ func (it *Authentication) Auth(organization, identify, password string) (int, er
 		return -1, err
 	}
 
-	organizationMembers, err := it.OrganizationMembers.IndividualsAssigned(&[]entity.Individual{*entity.NewIndividual(id, entity.User{}, entity.Profile{}, identify)})
+	organizationMembers, err := it.repository.OrganizationMembers.IndividualsAssigned(&[]entity.Individual{*entity.NewIndividual(id, entity.User{}, entity.Profile{}, identify)})
 	for _, ob := range *organizationMembers {
-		o, _ := it.Organizations.Find(ob.Organization.Id)
+		o, _ := it.repository.Organizations.Find(ob.Organization.Id)
 		if o.Name == organization {
 			return id, nil
 		}
