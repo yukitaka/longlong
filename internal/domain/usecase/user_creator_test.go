@@ -1,6 +1,8 @@
 package usecase
 
 import (
+	"github.com/yukitaka/longlong/internal/domain/entity"
+	"github.com/yukitaka/longlong/internal/domain/value_object"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -16,10 +18,18 @@ func TestNewUserCreator(t *testing.T) {
 	userRep.EXPECT().Create("Name").Return(expect, nil)
 
 	individualRep := mockRepository.NewMockIndividuals(ctrl)
+	individualRep.EXPECT().Create("Name", 1, -1).Return(expect, nil)
 	memberRep := mockRepository.NewMockOrganizationMembers(ctrl)
+	memberRep.EXPECT().Entry(1, 1, value_object.MEMBER).Return(nil)
 
-	itr := NewUserCreator(userRep, individualRep, memberRep)
-	id, _ := itr.Users.Create("Name")
+	rep := NewUserCreatorRepository(userRep, individualRep, memberRep)
+	itr := NewUserCreator(rep)
+	operator := entity.NewOrganizationMember(
+		entity.NewOrganization(0, 1, "Test"),
+		entity.NewIndividual(1, *entity.NewUser(1), *entity.NewProfile(1, "", "", ""), "Test"),
+		value_object.ADMIN,
+	)
+	id, _ := itr.New(operator, "Name", "MEMBER")
 	if id != expect {
 		t.Errorf("NewUserCreator() = %v", id)
 	}
