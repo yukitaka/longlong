@@ -27,7 +27,8 @@ func TestAuth(t *testing.T) {
 	memberRep.EXPECT().IndividualsAssigned(&[]entity.Individual{*individual}).Return(&[]entity.OrganizationMember{*entity.NewOrganizationMember(entity.NewOrganization(0, 1, "TestOrganization"), individual, value_object.ADMIN)}, nil)
 	organizationRep.EXPECT().Find(1).Return(entity.NewOrganization(1, 1, "TestOrganization"), nil)
 
-	itr := NewAuthentication(authRep, organizationRep, memberRep)
+	rep := NewAuthenticationRepository(authRep, organizationRep, memberRep)
+	itr := NewAuthentication(rep)
 	id, _ := itr.Auth("TestOrganization", "TestUser", "password")
 	if id != 1 {
 		t.Errorf("Auth = %v", id)

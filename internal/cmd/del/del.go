@@ -59,18 +59,17 @@ func (o *Options) User(cmd *cobra.Command, args []string) error {
 	}
 
 	organizationRep := repository.NewOrganizationsRepository()
-	defer organizationRep.Close()
 	memberRep := repository.NewOrganizationMembersRepository()
-	defer memberRep.Close()
 	individualRep := repository.NewIndividualsRepository()
-	defer individualRep.Close()
+	rep := usecase.NewOrganizationManagerRepository(organizationRep, memberRep, individualRep)
+	defer rep.Close()
 
 	organization, err := organizationRep.Find(o.Operator.Organization.Id)
 	if err != nil {
 		return err
 	}
 
-	itr := usecase.NewOrganizationManager(organization, organizationRep, memberRep, individualRep)
+	itr := usecase.NewOrganizationManager(organization, rep)
 	err = itr.QuitIndividual(o.Operator, id, "Delete by "+o.Operator.Individual.Name)
 	if err != nil {
 		return err

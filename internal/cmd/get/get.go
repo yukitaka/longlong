@@ -112,13 +112,12 @@ func (o *Options) Organization(cmd *cobra.Command, args []string) error {
 
 func (o *Options) User(cmd *cobra.Command, args []string) error {
 	individualRep := repository.NewIndividualsRepository()
-	defer individualRep.Close()
 	organizationRep := repository.NewOrganizationsRepository()
-	defer organizationRep.Close()
 	memberRep := repository.NewOrganizationMembersRepository()
-	defer memberRep.Close()
+	rep := usecase.NewUserAssignedRepository(individualRep, organizationRep, memberRep)
+	defer rep.Close()
 
-	itr := usecase.NewUserAssigned(individualRep, organizationRep, memberRep)
+	itr := usecase.NewUserAssigned(rep)
 	organizations, err := itr.OrganizationList(o.Operator)
 	if err != nil {
 		return err
@@ -126,7 +125,8 @@ func (o *Options) User(cmd *cobra.Command, args []string) error {
 
 	members := map[string][]entity.OrganizationMember{}
 	for _, organization := range *organizations {
-		manager := usecase.NewOrganizationManager(organization.Organization, organizationRep, memberRep, individualRep)
+		managerRep := usecase.NewOrganizationManagerRepository(organizationRep, memberRep, individualRep)
+		manager := usecase.NewOrganizationManager(organization.Organization, managerRep)
 		m, err := manager.Members()
 		if err != nil {
 			return err

@@ -5,17 +5,30 @@ import (
 	"github.com/yukitaka/longlong/internal/domain/repository"
 )
 
-type OrganizationCreator struct {
+type OrganizationCreatorRepository struct {
 	repository.Organizations
 	repository.OrganizationMembers
 }
 
-func NewOrganizationCreator(organizations repository.Organizations, members repository.OrganizationMembers) *OrganizationCreator {
-	return &OrganizationCreator{organizations, members}
+func NewOrganizationCreatorRepository(organizations repository.Organizations, members repository.OrganizationMembers) *OrganizationCreatorRepository {
+	return &OrganizationCreatorRepository{organizations, members}
+}
+
+func (rep *OrganizationCreatorRepository) Close() {
+	rep.Organizations.Close()
+	rep.OrganizationMembers.Close()
+}
+
+type OrganizationCreator struct {
+	repository *OrganizationCreatorRepository
+}
+
+func NewOrganizationCreator(repository *OrganizationCreatorRepository) *OrganizationCreator {
+	return &OrganizationCreator{repository}
 }
 
 func (it *OrganizationCreator) New(name string, individual entity.Individual) (int, error) {
-	id, err := it.Organizations.Create(name, individual)
+	id, err := it.repository.Organizations.Create(name, individual)
 	if err != nil {
 		return -1, err
 	}

@@ -8,6 +8,7 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
+	entity "github.com/yukitaka/longlong/internal/domain/entity"
 )
 
 // MockProfiles is a mock of Profiles interface.
@@ -58,4 +59,19 @@ func (m *MockProfiles) Create(nickName, fullName, bio string) (int, error) {
 func (mr *MockProfilesMockRecorder) Create(nickName, fullName, bio interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockProfiles)(nil).Create), nickName, fullName, bio)
+}
+
+// Find mocks base method.
+func (m *MockProfiles) Find(id int) (*entity.Profile, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Find", id)
+	ret0, _ := ret[0].(*entity.Profile)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Find indicates an expected call of Find.
+func (mr *MockProfilesMockRecorder) Find(id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Find", reflect.TypeOf((*MockProfiles)(nil).Find), id)
 }
