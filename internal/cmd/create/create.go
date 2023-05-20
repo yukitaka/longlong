@@ -73,13 +73,13 @@ func (o *Options) Organization(args []string) error {
 		return nil
 	}
 	organizationRep := repository.NewOrganizationsRepository()
-	defer organizationRep.Close()
 	memberRep := repository.NewOrganizationMembersRepository()
-	defer memberRep.Close()
-	itr := usecase.NewOrganizationCreator(organizationRep, memberRep)
+	rep := usecase.NewOrganizationCreatorRepository(organizationRep, memberRep)
+	defer rep.Close()
+	itr := usecase.NewOrganizationCreator(rep)
 
 	name := args[0]
-	id, err := itr.Create(name, *o.Operator.Individual)
+	id, err := itr.New(name, *o.Operator.Individual)
 	if err != nil {
 		return err
 	}
