@@ -28,7 +28,8 @@ func TestNewUserAssigned(t *testing.T) {
 	memberRep.EXPECT().IndividualsAssigned(&individuals).Return(&members, nil)
 	organizationRep.EXPECT().FindAll(gomock.Any()).Return(&[]entity.Organization{*organ}, nil)
 
-	itr := NewUserAssigned(individualRep, organizationRep, memberRep)
+	rep := NewUserAssignedRepository(individualRep, organizationRep, memberRep)
+	itr := NewUserAssigned(rep)
 	organizations, _ := itr.OrganizationList(member)
 	if organizations == nil {
 		t.Error("Organization List is nil\n")

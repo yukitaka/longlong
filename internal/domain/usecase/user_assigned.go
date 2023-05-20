@@ -5,23 +5,37 @@ import (
 	"github.com/yukitaka/longlong/internal/domain/repository"
 )
 
-type UserAssigned struct {
+type UserAssignedRepository struct {
 	repository.Individuals
 	repository.Organizations
 	repository.OrganizationMembers
 }
 
-func NewUserAssigned(individuals repository.Individuals, organizations repository.Organizations, members repository.OrganizationMembers) *UserAssigned {
-	return &UserAssigned{individuals, organizations, members}
+func NewUserAssignedRepository(individuals repository.Individuals, organizations repository.Organizations, members repository.OrganizationMembers) *UserAssignedRepository {
+	return &UserAssignedRepository{individuals, organizations, members}
+}
+
+func (rep *UserAssignedRepository) Close() {
+	rep.Individuals.Close()
+	rep.Organizations.Close()
+	rep.OrganizationMembers.Close()
+}
+
+type UserAssigned struct {
+	repository *UserAssignedRepository
+}
+
+func NewUserAssigned(repository *UserAssignedRepository) *UserAssigned {
+	return &UserAssigned{repository}
 }
 
 func (it *UserAssigned) OrganizationList(operator *entity.OrganizationMember) (*[]entity.OrganizationMember, error) {
-	individuals, err := it.Individuals.FindByUserId(operator.Individual.User.Id)
+	individuals, err := it.repository.Individuals.FindByUserId(operator.Individual.User.Id)
 	if err != nil {
 		return nil, err
 	}
 
-	assigned, err := it.OrganizationMembers.IndividualsAssigned(individuals)
+	assigned, err := it.repository.OrganizationMembers.IndividualsAssigned(individuals)
 	if err != nil {
 		return nil, err
 	}
@@ -29,7 +43,7 @@ func (it *UserAssigned) OrganizationList(operator *entity.OrganizationMember) (*
 	for i, v := range *assigned {
 		organizationIds[i] = v.Organization.Id
 	}
-	organizations, err := it.Organizations.FindAll(organizationIds)
+	organizations, err := it.repository.Organizations.FindAll(organizationIds)
 	if err != nil {
 		return nil, err
 	}
