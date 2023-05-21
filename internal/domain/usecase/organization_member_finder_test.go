@@ -19,11 +19,11 @@ func TestNewOrganizationMemberFinder(t *testing.T) {
 		for iid := 1; iid < 5; iid++ {
 			user := entity.NewUser(iid)
 			profile := entity.NewProfile(iid, "", "", "")
-			member := entity.OrganizationMember{Organization: entity.NewOrganization(0, oid, "Organization "+strconv.Itoa(oid)), Individual: entity.NewIndividual(iid, *user, *profile, "Individual "+strconv.Itoa(iid))}
+			member := entity.OrganizationMember{Organization: entity.NewOrganization(0, oid, "Organization "+strconv.Itoa(oid)), Individual: entity.NewIndividual(iid, user, profile, "Individual "+strconv.Itoa(iid))}
 			members = append(members, member)
 			memberRep.EXPECT().Find(gomock.Any(), gomock.Any()).DoAndReturn(
 				func(oid int, iid int) (*entity.OrganizationMember, error) {
-					member := entity.OrganizationMember{Organization: entity.NewOrganization(0, oid, "Organization "+strconv.Itoa(oid)), Individual: entity.NewIndividual(iid, *user, *profile, "Individual "+strconv.Itoa(iid))}
+					member := entity.OrganizationMember{Organization: entity.NewOrganization(0, oid, "Organization "+strconv.Itoa(oid)), Individual: entity.NewIndividual(iid, user, profile, "Individual "+strconv.Itoa(iid))}
 					return &member, nil
 				}).AnyTimes()
 		}

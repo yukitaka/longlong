@@ -16,7 +16,7 @@ func TestNewUserAssigned(t *testing.T) {
 	organ := entity.NewOrganization(0, 1, "Test")
 	user := entity.NewUser(1)
 	profile := entity.NewProfile(1, "", "", "")
-	individuals := []entity.Individual{*entity.NewIndividual(1, *user, *profile, "Test")}
+	individuals := []entity.Individual{*entity.NewIndividual(1, user, profile, "Test")}
 	member := entity.NewOrganizationMember(organ, &individuals[0], value_object.MEMBER)
 	members := []entity.OrganizationMember{*member}
 

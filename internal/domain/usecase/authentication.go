@@ -41,7 +41,7 @@ func (it *Authentication) Auth(organization, identify, password string) (int, er
 		return -1, err
 	}
 
-	organizationMembers, err := it.repository.OrganizationMembers.IndividualsAssigned(&[]entity.Individual{*entity.NewIndividual(id, entity.User{}, entity.Profile{}, identify)})
+	organizationMembers, err := it.repository.OrganizationMembers.IndividualsAssigned(&[]entity.Individual{*entity.NewIndividual(id, &entity.User{}, &entity.Profile{}, identify)})
 	for _, ob := range *organizationMembers {
 		o, _ := it.repository.Organizations.Find(ob.Organization.Id)
 		if o.Name == organization {

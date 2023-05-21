@@ -87,8 +87,8 @@ func (rep *Individuals) Find(id int) (*entity.Individual, error) {
 	return &entity.Individual{
 		Id:      id,
 		Name:    name,
-		User:    *user,
-		Profile: *profile,
+		User:    user,
+		Profile: profile,
 	}, nil
 }
 
@@ -121,8 +121,8 @@ func (rep *Individuals) FindByUserId(userId int) (*[]entity.Individual, error) {
 		individuals = append(individuals, entity.Individual{
 			Id:      id,
 			Name:    name,
-			User:    *user,
-			Profile: *profile,
+			User:    user,
+			Profile: profile,
 		})
 	}
 

@@ -22,13 +22,13 @@ func TestNewOrganizationManagerMembers(t *testing.T) {
 	members := &[]entity.OrganizationMember{
 		{organization, entity.NewIndividual(
 			1,
-			*entity.NewUser(1),
-			*entity.NewProfile(1, "", "", ""),
+			entity.NewUser(1),
+			entity.NewProfile(1, "", "", ""),
 			"Test1"), value_object.MEMBER},
 		{organization, entity.NewIndividual(
 			2,
-			*entity.NewUser(2),
-			*entity.NewProfile(2, "", "", ""),
+			entity.NewUser(2),
+			entity.NewProfile(2, "", "", ""),
 			"Test2"), value_object.MEMBER},
 	}
 	memberRep.EXPECT().Members(organization, individualRep).Return(members, nil)
