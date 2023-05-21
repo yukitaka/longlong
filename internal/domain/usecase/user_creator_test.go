@@ -26,7 +26,7 @@ func TestNewUserCreator(t *testing.T) {
 	itr := NewUserCreator(rep)
 	operator := entity.NewOrganizationMember(
 		entity.NewOrganization(0, 1, "Test"),
-		entity.NewIndividual(1, *entity.NewUser(1), *entity.NewProfile(1, "", "", ""), "Test"),
+		entity.NewIndividual(1, entity.NewUser(1), entity.NewProfile(1, "", "", ""), "Test"),
 		value_object.ADMIN,
 	)
 	id, _ := itr.New(operator, "Name", "MEMBER")

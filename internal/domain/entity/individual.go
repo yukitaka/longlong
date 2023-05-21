@@ -3,10 +3,10 @@ package entity
 type Individual struct {
 	Id   int
 	Name string
-	User
-	Profile
+	*User
+	*Profile
 }
 
-func NewIndividual(id int, user User, profile Profile, name string) *Individual {
+func NewIndividual(id int, user *User, profile *Profile, name string) *Individual {
 	return &Individual{Id: id, User: user, Profile: profile, Name: name}
 }

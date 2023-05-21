@@ -61,7 +61,7 @@ func (o OrganizationMembers) Find(organizationId, individualId int) (*entity.Org
 		return nil, err
 	}
 
-	individual := entity.NewIndividual(individualId, *user, *profile, individualName)
+	individual := entity.NewIndividual(individualId, user, profile, individualName)
 
 	return entity.NewOrganizationMember(organization, individual, roleType), nil
 }
