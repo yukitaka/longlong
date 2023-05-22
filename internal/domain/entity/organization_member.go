@@ -1,6 +1,8 @@
 package entity
 
-import "github.com/yukitaka/longlong/internal/domain/value_object"
+import (
+	"github.com/yukitaka/longlong/internal/domain/value_object"
+)
 
 type OrganizationMember struct {
 	Organization *Organization
