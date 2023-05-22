@@ -14,6 +14,18 @@ func NewOrganizationMember(organization *Organization, individual *Individual, r
 	return &OrganizationMember{Organization: organization, Individual: individual, Role: role}
 }
 
+func (it *OrganizationMember) IsAdmin() bool {
+	return it.Role == value_object.ADMIN
+}
+
+func (it *OrganizationMember) IsOwner() bool {
+	return it.Role == value_object.OWNER
+}
+
+func (it *OrganizationMember) IsMember() bool {
+	return it.Role == value_object.MEMBER
+}
+
 func (it *OrganizationMember) CanManage(target *OrganizationMember) bool {
 	if it.Individual.Id == target.Individual.Id {
 		return false
