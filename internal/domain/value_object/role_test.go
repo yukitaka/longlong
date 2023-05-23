@@ -32,3 +32,21 @@ func TestRole_IsAbove(t *testing.T) {
 		t.Errorf("Member is above = %v, want %v", MEMBER.IsAbove(MEMBER), false)
 	}
 }
+
+func TestRole_IsBelow(t *testing.T) {
+	if OWNER.IsBelow(OWNER) {
+		t.Errorf("Owner is below owner = %v, want %v", OWNER.IsBelow(OWNER), false)
+	}
+	if OWNER.IsBelow(ADMIN) {
+		t.Errorf("Owner is below admin = %v, want %v", OWNER.IsBelow(ADMIN), false)
+	}
+	if ADMIN.IsBelow(MEMBER) {
+		t.Errorf("Admin is below member = %v, want %v", ADMIN.IsBelow(MEMBER), false)
+	}
+	if !MEMBER.IsBelow(ADMIN) {
+		t.Errorf("Member is below admin = %v, want %v", MEMBER.IsBelow(ADMIN), false)
+	}
+	if MEMBER.IsBelow(MEMBER) {
+		t.Errorf("Member is below = %v, want %v", MEMBER.IsBelow(MEMBER), false)
+	}
+}
