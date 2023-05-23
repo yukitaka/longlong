@@ -19,34 +19,31 @@ func TestParseRole(t *testing.T) {
 }
 
 func TestRole_IsAbove(t *testing.T) {
-	if OWNER.IsAbove(OWNER) {
-		t.Errorf("Owner is above owner = %v, want %v", OWNER.IsAbove(OWNER), false)
-	}
-	if !OWNER.IsAbove(ADMIN) {
-		t.Errorf("Owner is above admin = %v, want %v", OWNER.IsAbove(ADMIN), false)
-	}
-	if !ADMIN.IsAbove(MEMBER) {
-		t.Errorf("Admin is above member = %v, want %v", ADMIN.IsAbove(MEMBER), false)
-	}
-	if MEMBER.IsAbove(MEMBER) {
-		t.Errorf("Member is above = %v, want %v", MEMBER.IsAbove(MEMBER), false)
+	m := make(map[Role]map[Role]bool)
+	m[OWNER] = map[Role]bool{OWNER: false, ADMIN: true, MEMBER: true}
+	m[ADMIN] = map[Role]bool{OWNER: false, ADMIN: false, MEMBER: true}
+	m[MEMBER] = map[Role]bool{OWNER: false, ADMIN: false, MEMBER: false}
+
+	for operator, targetExpects := range m {
+		for target, correct := range targetExpects {
+			if operator.IsAbove(target) != correct {
+				t.Errorf("%s is above %s = %v, want %v", operator, target, operator.IsAbove(target), correct)
+			}
+		}
 	}
 }
 
 func TestRole_IsBelow(t *testing.T) {
-	if OWNER.IsBelow(OWNER) {
-		t.Errorf("Owner is below owner = %v, want %v", OWNER.IsBelow(OWNER), false)
-	}
-	if OWNER.IsBelow(ADMIN) {
-		t.Errorf("Owner is below admin = %v, want %v", OWNER.IsBelow(ADMIN), false)
-	}
-	if ADMIN.IsBelow(MEMBER) {
-		t.Errorf("Admin is below member = %v, want %v", ADMIN.IsBelow(MEMBER), false)
-	}
-	if !MEMBER.IsBelow(ADMIN) {
-		t.Errorf("Member is below admin = %v, want %v", MEMBER.IsBelow(ADMIN), false)
-	}
-	if MEMBER.IsBelow(MEMBER) {
-		t.Errorf("Member is below = %v, want %v", MEMBER.IsBelow(MEMBER), false)
+	m := make(map[Role]map[Role]bool)
+	m[OWNER] = map[Role]bool{OWNER: false, ADMIN: false, MEMBER: false}
+	m[ADMIN] = map[Role]bool{OWNER: true, ADMIN: false, MEMBER: false}
+	m[MEMBER] = map[Role]bool{OWNER: true, ADMIN: true, MEMBER: false}
+
+	for operator, targetExpects := range m {
+		for target, correct := range targetExpects {
+			if operator.IsBelow(target) != correct {
+				t.Errorf("%s is below %s = %v, want %v", operator, target, operator.IsBelow(target), correct)
+			}
+		}
 	}
 }
