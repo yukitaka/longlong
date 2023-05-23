@@ -17,3 +17,18 @@ func TestParseRole(t *testing.T) {
 		}
 	}
 }
+
+func TestRole_IsAbove(t *testing.T) {
+	if OWNER.IsAbove(OWNER) {
+		t.Errorf("Owner is above owner = %v, want %v", OWNER.IsAbove(OWNER), false)
+	}
+	if !OWNER.IsAbove(ADMIN) {
+		t.Errorf("Owner is above admin = %v, want %v", OWNER.IsAbove(ADMIN), false)
+	}
+	if !ADMIN.IsAbove(MEMBER) {
+		t.Errorf("Admin is above member = %v, want %v", ADMIN.IsAbove(MEMBER), false)
+	}
+	if MEMBER.IsAbove(MEMBER) {
+		t.Errorf("Member is above = %v, want %v", MEMBER.IsAbove(MEMBER), false)
+	}
+}
