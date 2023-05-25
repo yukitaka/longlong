@@ -56,7 +56,7 @@ func (rep *Users) Create(name string) (int, error) {
 	if err != nil {
 		return -1, err
 	}
-	query = "insert into profiles (id, name) values (?, ?)"
+	query = "insert into profiles (id, full_name) values (?, ?)"
 	_, err = rep.DB.Exec(query, id, name)
 	if err != nil {
 		return -1, err
