@@ -23,6 +23,7 @@ func sqlite() error {
 			return err
 		}
 	}
+	fmt.Println("Open db.")
 	db, err := sql.Open("sqlite3", filename)
 	if err != nil {
 		return err
@@ -31,6 +32,8 @@ func sqlite() error {
 		err := db.Close()
 		if err != nil {
 			fmt.Printf("Error: %v", err)
+		} else {
+			fmt.Println("Close db.")
 		}
 	}(db)
 
@@ -39,6 +42,7 @@ func sqlite() error {
 		return err
 	}
 
+	fmt.Println("Init data.")
 	query := `
 	create table authentications (id integer not null primary key, identify text not null, token text not null, individual_id integer);
 	create table organizations (id integer not null primary key, parent_id integer not null default 0, name text);
