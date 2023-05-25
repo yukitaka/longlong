@@ -98,7 +98,7 @@ func (o OrganizationMembers) Members(organization *entity.Organization, individu
 		}
 		individual, err := individualRepository.Find(iid)
 		if err != nil {
-			return nil, err
+			continue
 		}
 		members = append(members, *entity.NewOrganizationMember(organization, individual, value_object.Role(role)))
 	}

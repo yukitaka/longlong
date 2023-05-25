@@ -129,7 +129,7 @@ func (o *Options) User(cmd *cobra.Command, args []string) error {
 		manager := usecase.NewOrganizationManager(organization.Organization, managerRep)
 		m, err := manager.Members()
 		if err != nil {
-			return err
+			continue
 		}
 		if _, ok := members[organization.Organization.Name]; !ok {
 			members[organization.Organization.Name] = []entity.OrganizationMember{}
