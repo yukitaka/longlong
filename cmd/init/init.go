@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
 	"golang.org/x/crypto/bcrypt"
@@ -21,8 +22,19 @@ func main() {
 }
 
 func postgres() error {
+	err := godotenv.Load(".env")
+	if err != nil {
+		return err
+	}
+
 	fmt.Println("Open db.")
-	db, err := sql.Open("postgres", "host=127.0.0.1 port=5432 user=postgres dbname=longlong password=postgres sslmode=disable")
+	host := os.Getenv("POSTGRES_HOST")
+	dbName := os.Getenv("POSTGRES_DB")
+	user := os.Getenv("POSTGRES_USER")
+	password := os.Getenv("POSTGRES_PASSWORD")
+	port := os.Getenv("POSTGRES_PORT")
+	dsl := fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=disable", host, port, user, dbName, password)
+	db, err := sql.Open("postgres", dsl)
 	if err != nil {
 		return err
 	}
