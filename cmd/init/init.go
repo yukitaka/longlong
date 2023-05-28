@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
 	"golang.org/x/crypto/bcrypt"
 	"os"
@@ -13,6 +14,28 @@ func main() {
 	if err != nil {
 		fmt.Printf("Error: %v", err)
 	}
+	err = postgres()
+	if err != nil {
+		fmt.Printf("Error: %v", err)
+	}
+}
+
+func postgres() error {
+	fmt.Println("Open db.")
+	db, err := sql.Open("postgres", "host=127.0.0.1 port=5432 user=postgres dbname=longlong password=postgres sslmode=disable")
+	if err != nil {
+		return err
+	}
+	defer func(db *sql.DB) {
+		err := db.Close()
+		if err != nil {
+			fmt.Printf("Error: %v", err)
+		} else {
+			fmt.Println("Close db.")
+		}
+	}(db)
+
+	return initSql(db)
 }
 
 func sqlite() error {
@@ -37,6 +60,10 @@ func sqlite() error {
 		}
 	}(db)
 
+	return initSql(db)
+}
+
+func initSql(db *sql.DB) error {
 	hash, err := bcrypt.GenerateFromPassword([]byte("password"), bcrypt.DefaultCost)
 	if err != nil {
 		return err
@@ -44,6 +71,13 @@ func sqlite() error {
 
 	fmt.Println("Init data.")
 	query := `
+	drop table if exists user_profiles;
+	drop table if exists individuals;
+	drop table if exists profiles;
+	drop table if exists users;
+	drop table if exists organization_members;
+	drop table if exists organizations;
+	drop table if exists authentications;
 	create table authentications (id integer not null primary key, identify text not null, token text not null, individual_id integer);
 	create table organizations (id integer not null primary key, parent_id integer not null default 0, name text);
 	create table organization_members (organization_id integer not null, individual_id integer not null, role integer);
@@ -65,4 +99,5 @@ func sqlite() error {
 	}
 
 	return nil
+
 }
