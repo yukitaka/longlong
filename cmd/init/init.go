@@ -71,6 +71,13 @@ func initSql(db *sql.DB) error {
 
 	fmt.Println("Init data.")
 	query := `
+	drop table if exists user_profiles;
+	drop table if exists individuals;
+	drop table if exists profiles;
+	drop table if exists users;
+	drop table if exists organization_members;
+	drop table if exists organizations;
+	drop table if exists authentications;
 	create table authentications (id integer not null primary key, identify text not null, token text not null, individual_id integer);
 	create table organizations (id integer not null primary key, parent_id integer not null default 0, name text);
 	create table organization_members (organization_id integer not null, individual_id integer not null, role integer);
