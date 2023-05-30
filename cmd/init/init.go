@@ -15,9 +15,17 @@ func main() {
 	cmd := &cobra.Command{
 		Use:   "init",
 		Short: "Initialize LongLong",
+		Long: `
+Initialize LongLong.
+
+
+Find more information at:
+https://github.com/yukitaka/longlong/`,
 	}
 	cmd.AddCommand(&cobra.Command{
-		Use: "sqlite",
+		Use:     "sqlite",
+		Aliases: []string{"sqlite3"},
+		Short:   "Initialize for Sqlite",
 		Run: func(cmd *cobra.Command, args []string) {
 			err := sqlite()
 			if err != nil {
@@ -26,7 +34,9 @@ func main() {
 		},
 	})
 	cmd.AddCommand(&cobra.Command{
-		Use: "postgres",
+		Use:     "postgres",
+		Aliases: []string{"psql"},
+		Short:   "Initialize for Postgres",
 		Run: func(cmd *cobra.Command, args []string) {
 			err := postgres()
 			if err != nil {
