@@ -6,18 +6,37 @@ import (
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/spf13/cobra"
 	"golang.org/x/crypto/bcrypt"
 	"os"
 )
 
 func main() {
-	err := sqlite()
-	if err != nil {
-		fmt.Printf("Error: %v", err)
+	cmd := &cobra.Command{
+		Use:   "init",
+		Short: "Initialize LongLong",
 	}
-	err = postgres()
+	cmd.AddCommand(&cobra.Command{
+		Use: "sqlite",
+		Run: func(cmd *cobra.Command, args []string) {
+			err := sqlite()
+			if err != nil {
+				fmt.Printf("Error: %v", err)
+			}
+		},
+	})
+	cmd.AddCommand(&cobra.Command{
+		Use: "postgres",
+		Run: func(cmd *cobra.Command, args []string) {
+			err := postgres()
+			if err != nil {
+				fmt.Printf("Error: %v", err)
+			}
+		},
+	})
+	err := cmd.Execute()
 	if err != nil {
-		fmt.Printf("Error: %v", err)
+		return
 	}
 }
 
