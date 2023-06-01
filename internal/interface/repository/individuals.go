@@ -74,7 +74,7 @@ func (rep *Individuals) Find(id int) (*entity.Individual, error) {
 		return nil, err
 	}
 
-	user, err := NewUsersRepository().Find(userId)
+	user, err := NewUsersRepository(rep.DB).Find(userId)
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +108,7 @@ func (rep *Individuals) FindByUserId(userId int) (*[]entity.Individual, error) {
 			return nil, err
 		}
 
-		user, err := NewUsersRepository().Find(userId)
+		user, err := NewUsersRepository(rep.DB).Find(userId)
 		if err != nil {
 			return nil, err
 		}

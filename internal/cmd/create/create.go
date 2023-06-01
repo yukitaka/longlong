@@ -6,6 +6,7 @@ import (
 	"github.com/yukitaka/longlong/internal/cli"
 	"github.com/yukitaka/longlong/internal/domain/entity"
 	"github.com/yukitaka/longlong/internal/domain/usecase"
+	"github.com/yukitaka/longlong/internal/interface/datastore"
 	"github.com/yukitaka/longlong/internal/interface/repository"
 	"github.com/yukitaka/longlong/internal/util"
 )
@@ -95,7 +96,8 @@ func (o *Options) User(cmd *cobra.Command, args []string) error {
 	}
 
 	if role, err := cmd.PersistentFlags().GetString("role"); err == nil {
-		userRep := repository.NewUsersRepository()
+		con, _ := datastore.NewSqliteOpen()
+		userRep := repository.NewUsersRepository(con)
 		defer userRep.Close()
 		individualRep := repository.NewIndividualsRepository()
 		defer individualRep.Close()
