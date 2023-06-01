@@ -5,6 +5,7 @@ import (
 	"github.com/yukitaka/longlong/internal/cmd/del"
 	"github.com/yukitaka/longlong/internal/domain/entity"
 	"github.com/yukitaka/longlong/internal/domain/usecase"
+	"github.com/yukitaka/longlong/internal/interface/datastore"
 	"github.com/yukitaka/longlong/internal/interface/repository"
 	"os"
 	"os/exec"
@@ -47,7 +48,8 @@ func NewLlctlCommand() *cobra.Command {
 		panic(err)
 	}
 
-	itr := usecase.NewOrganizationMemberFinder(repository.NewOrganizationMembersRepository())
+	con, _ := datastore.NewSqliteOpen()
+	itr := usecase.NewOrganizationMemberFinder(repository.NewOrganizationMembersRepository(con))
 	member, err := itr.FindById(conf.Authorize.OrganizationId, conf.Authorize.UserId)
 	operator := *member
 	if err != nil {

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/yukitaka/longlong/internal/domain/entity"
 	"github.com/yukitaka/longlong/internal/domain/usecase"
+	"github.com/yukitaka/longlong/internal/interface/datastore"
 	"github.com/yukitaka/longlong/internal/interface/repository"
 	"strconv"
 
@@ -70,7 +71,8 @@ func (o *Options) Run(args []string) error {
 }
 
 func (o *Options) Organization(cmd *cobra.Command, args []string) error {
-	organizationRep := repository.NewOrganizationsRepository()
+	con, _ := datastore.NewSqliteOpen()
+	organizationRep := repository.NewOrganizationsRepository(con)
 	itr := usecase.NewOrganizationFinder(organizationRep)
 
 	var err error
@@ -111,9 +113,10 @@ func (o *Options) Organization(cmd *cobra.Command, args []string) error {
 }
 
 func (o *Options) User(cmd *cobra.Command, args []string) error {
-	individualRep := repository.NewIndividualsRepository()
-	organizationRep := repository.NewOrganizationsRepository()
-	memberRep := repository.NewOrganizationMembersRepository()
+	con, _ := datastore.NewSqliteOpen()
+	individualRep := repository.NewIndividualsRepository(con)
+	organizationRep := repository.NewOrganizationsRepository(con)
+	memberRep := repository.NewOrganizationMembersRepository(con)
 	rep := usecase.NewUserAssignedRepository(individualRep, organizationRep, memberRep)
 	defer rep.Close()
 

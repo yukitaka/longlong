@@ -6,6 +6,7 @@ import (
 	"github.com/yukitaka/longlong/internal/cli"
 	"github.com/yukitaka/longlong/internal/domain/entity"
 	"github.com/yukitaka/longlong/internal/domain/usecase"
+	"github.com/yukitaka/longlong/internal/interface/datastore"
 	"github.com/yukitaka/longlong/internal/interface/repository"
 	"github.com/yukitaka/longlong/internal/util"
 )
@@ -72,8 +73,9 @@ func (o *Options) Organization(args []string) error {
 		fmt.Println("Error: must also specify a name")
 		return nil
 	}
-	organizationRep := repository.NewOrganizationsRepository()
-	memberRep := repository.NewOrganizationMembersRepository()
+	con, _ := datastore.NewSqliteOpen()
+	organizationRep := repository.NewOrganizationsRepository(con)
+	memberRep := repository.NewOrganizationMembersRepository(con)
 	rep := usecase.NewOrganizationCreatorRepository(organizationRep, memberRep)
 	defer rep.Close()
 	itr := usecase.NewOrganizationCreator(rep)
@@ -95,11 +97,12 @@ func (o *Options) User(cmd *cobra.Command, args []string) error {
 	}
 
 	if role, err := cmd.PersistentFlags().GetString("role"); err == nil {
-		userRep := repository.NewUsersRepository()
+		con, _ := datastore.NewSqliteOpen()
+		userRep := repository.NewUsersRepository(con)
 		defer userRep.Close()
-		individualRep := repository.NewIndividualsRepository()
+		individualRep := repository.NewIndividualsRepository(con)
 		defer individualRep.Close()
-		memberRep := repository.NewOrganizationMembersRepository()
+		memberRep := repository.NewOrganizationMembersRepository(con)
 		defer memberRep.Close()
 
 		rep := usecase.NewUserCreatorRepository(userRep, individualRep, memberRep)
@@ -120,7 +123,8 @@ func (o *Options) Profile(cmd *cobra.Command, args []string) error {
 		fmt.Println("Error: must also specify a nickname and full name and bio")
 		return nil
 	}
-	itr := usecase.NewProfileCreator(repository.NewProfilesRepository())
+	con, _ := datastore.NewSqliteOpen()
+	itr := usecase.NewProfileCreator(repository.NewProfilesRepository(con))
 	_, err := itr.New(o.Operator, args[0], args[1], args[2])
 	if err != nil {
 		return err

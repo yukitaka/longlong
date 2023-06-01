@@ -6,7 +6,6 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/yukitaka/longlong/internal/domain/entity"
 	rep "github.com/yukitaka/longlong/internal/domain/repository"
-	"github.com/yukitaka/longlong/internal/util"
 )
 
 type Users struct {
@@ -14,12 +13,7 @@ type Users struct {
 	*sql.DB
 }
 
-func NewUsersRepository() rep.Users {
-	con, err := sql.Open("sqlite3", "./longlong.db")
-	if err != nil {
-		util.CheckErr(err)
-	}
-
+func NewUsersRepository(con *sql.DB) rep.Users {
 	return &Users{
 		users: make(map[int]*entity.User),
 		DB:    con,

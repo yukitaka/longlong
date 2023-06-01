@@ -8,7 +8,6 @@ import (
 	"github.com/yukitaka/longlong/internal/domain/entity"
 	rep "github.com/yukitaka/longlong/internal/domain/repository"
 	"github.com/yukitaka/longlong/internal/domain/value_object"
-	"github.com/yukitaka/longlong/internal/util"
 	"strings"
 )
 
@@ -16,20 +15,15 @@ type OrganizationMembers struct {
 	*sql.DB
 }
 
-func NewOrganizationMembersRepository() rep.OrganizationMembers {
-	con, err := sql.Open("sqlite3", "./longlong.db")
-	if err != nil {
-		util.CheckErr(err)
-	}
-
+func NewOrganizationMembersRepository(con *sql.DB) rep.OrganizationMembers {
 	return &OrganizationMembers{
 		DB: con,
 	}
 }
 
-func (o OrganizationMembers) Find(organizationId, individualId int) (*entity.OrganizationMember, error) {
+func (rep OrganizationMembers) Find(organizationId, individualId int) (*entity.OrganizationMember, error) {
 	query := "select role from organization_members where organization_id=$1 and individual_id=$2"
-	row := o.DB.QueryRow(query, organizationId, individualId)
+	row := rep.DB.QueryRow(query, organizationId, individualId)
 
 	var role int
 	if err := row.Scan(&role); err != nil {
@@ -39,7 +33,7 @@ func (o OrganizationMembers) Find(organizationId, individualId int) (*entity.Org
 
 	var parentId int
 	var organizationName string
-	row = o.DB.QueryRow("select parent_id, name from organizations where id=$1", organizationId)
+	row = rep.DB.QueryRow("select parent_id, name from organizations where id=$1", organizationId)
 	if err := row.Scan(&parentId, &organizationName); err != nil {
 		return nil, err
 	}
@@ -48,15 +42,15 @@ func (o OrganizationMembers) Find(organizationId, individualId int) (*entity.Org
 	var userId int
 	var profileId int
 	var individualName string
-	row = o.DB.QueryRow("select user_id, profile_id, name from individuals where id=$1", individualId)
+	row = rep.DB.QueryRow("select user_id, profile_id, name from individuals where id=$1", individualId)
 	if err := row.Scan(&userId, &profileId, &individualName); err != nil {
 		return nil, err
 	}
-	user, err := NewUsersRepository().Find(userId)
+	user, err := NewUsersRepository(rep.DB).Find(userId)
 	if err != nil {
 		return nil, err
 	}
-	profile, err := NewProfilesRepository().Find(profileId)
+	profile, err := NewProfilesRepository(rep.DB).Find(profileId)
 	if err != nil {
 		return nil, err
 	}
@@ -66,23 +60,23 @@ func (o OrganizationMembers) Find(organizationId, individualId int) (*entity.Org
 	return entity.NewOrganizationMember(organization, individual, roleType), nil
 }
 
-func (o OrganizationMembers) Entry(organizationId, individualId int, role value_object.Role) error {
+func (rep OrganizationMembers) Entry(organizationId, individualId int, role value_object.Role) error {
 	query := "insert into organization_members (organization_id, individual_id, role) values (?, ?, ?)"
-	_, err := o.DB.Exec(query, organizationId, individualId, role)
+	_, err := rep.DB.Exec(query, organizationId, individualId, role)
 
 	return err
 }
 
-func (o OrganizationMembers) Leave(organizationId, individualId int, reason string) error {
+func (rep OrganizationMembers) Leave(organizationId, individualId int, reason string) error {
 	stmt := "delete from organization_members where organization_id=? and individual_id=?"
-	_, err := o.DB.Exec(stmt, organizationId, individualId)
+	_, err := rep.DB.Exec(stmt, organizationId, individualId)
 
 	return err
 }
 
-func (o OrganizationMembers) Members(organization *entity.Organization, individualRepository rep.Individuals) (*[]entity.OrganizationMember, error) {
+func (rep OrganizationMembers) Members(organization *entity.Organization, individualRepository rep.Individuals) (*[]entity.OrganizationMember, error) {
 	stmt := "select organization_id, individual_id, role from organization_members where organization_id=?"
-	ret, err := o.DB.Query(stmt, organization.Id)
+	ret, err := rep.DB.Query(stmt, organization.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -106,14 +100,14 @@ func (o OrganizationMembers) Members(organization *entity.Organization, individu
 	return &members, nil
 }
 
-func (o OrganizationMembers) IndividualsAssigned(individuals *[]entity.Individual) (*[]entity.OrganizationMember, error) {
+func (rep OrganizationMembers) IndividualsAssigned(individuals *[]entity.Individual) (*[]entity.OrganizationMember, error) {
 	ids := make([]interface{}, len(*individuals))
 	for i, individual := range *individuals {
 		ids[i] = individual.Id
 	}
 
 	stmt := "select t1.id, t1.parent_id, t1.name, t.individual_id from organization_members t join organizations t1 on t.organization_id=t1.id where individual_id in (?" + strings.Repeat(",?", len(ids)-1) + ")"
-	rows, err := o.DB.Query(stmt, ids...)
+	rows, err := rep.DB.Query(stmt, ids...)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, errors.New(fmt.Sprintf("individual ids %d are nothing", ids))
@@ -146,8 +140,8 @@ func (o OrganizationMembers) IndividualsAssigned(individuals *[]entity.Individua
 	return &members, nil
 }
 
-func (o OrganizationMembers) Close() {
-	err := o.DB.Close()
+func (rep OrganizationMembers) Close() {
+	err := rep.DB.Close()
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
 	}
