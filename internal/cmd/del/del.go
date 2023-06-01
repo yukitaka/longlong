@@ -6,6 +6,7 @@ import (
 	"github.com/yukitaka/longlong/internal/cli"
 	"github.com/yukitaka/longlong/internal/domain/entity"
 	"github.com/yukitaka/longlong/internal/domain/usecase"
+	"github.com/yukitaka/longlong/internal/interface/datastore"
 	"github.com/yukitaka/longlong/internal/interface/repository"
 	"github.com/yukitaka/longlong/internal/util"
 	"strconv"
@@ -58,7 +59,8 @@ func (o *Options) User(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	organizationRep := repository.NewOrganizationsRepository()
+	con, _ := datastore.NewSqliteOpen()
+	organizationRep := repository.NewOrganizationsRepository(con)
 	memberRep := repository.NewOrganizationMembersRepository()
 	individualRep := repository.NewIndividualsRepository()
 	rep := usecase.NewOrganizationManagerRepository(organizationRep, memberRep, individualRep)

@@ -5,6 +5,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/yukitaka/longlong/internal/cli"
 	"github.com/yukitaka/longlong/internal/domain/usecase"
+	"github.com/yukitaka/longlong/internal/interface/datastore"
 	"github.com/yukitaka/longlong/internal/interface/repository"
 	"github.com/yukitaka/longlong/internal/util"
 	"golang.org/x/term"
@@ -60,8 +61,9 @@ func (o *Options) Run(args []string) error {
 }
 
 func (o *Options) Login(args []string) error {
+	con, _ := datastore.NewSqliteOpen()
 	authRep := repository.NewAuthenticationsRepository()
-	organizationRep := repository.NewOrganizationsRepository()
+	organizationRep := repository.NewOrganizationsRepository(con)
 	memberRep := repository.NewOrganizationMembersRepository()
 	rep := usecase.NewAuthenticationRepository(authRep, organizationRep, memberRep)
 	defer rep.Close()

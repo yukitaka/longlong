@@ -8,7 +8,6 @@ import (
 	"github.com/yukitaka/longlong/internal/domain/entity"
 	rep "github.com/yukitaka/longlong/internal/domain/repository"
 	"github.com/yukitaka/longlong/internal/domain/value_object"
-	"github.com/yukitaka/longlong/internal/util"
 	"strings"
 )
 
@@ -17,12 +16,7 @@ type Organizations struct {
 	*sql.DB
 }
 
-func NewOrganizationsRepository() rep.Organizations {
-	con, err := sql.Open("sqlite3", "./longlong.db")
-	if err != nil {
-		util.CheckErr(err)
-	}
-
+func NewOrganizationsRepository(con *sql.DB) rep.Organizations {
 	return &Organizations{
 		organizations: make(map[int]*entity.Organization),
 		DB:            con,

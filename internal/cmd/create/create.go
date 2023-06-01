@@ -73,7 +73,8 @@ func (o *Options) Organization(args []string) error {
 		fmt.Println("Error: must also specify a name")
 		return nil
 	}
-	organizationRep := repository.NewOrganizationsRepository()
+	con, _ := datastore.NewSqliteOpen()
+	organizationRep := repository.NewOrganizationsRepository(con)
 	memberRep := repository.NewOrganizationMembersRepository()
 	rep := usecase.NewOrganizationCreatorRepository(organizationRep, memberRep)
 	defer rep.Close()
