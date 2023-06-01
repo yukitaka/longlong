@@ -6,19 +6,13 @@ import (
 	"fmt"
 	_ "github.com/mattn/go-sqlite3"
 	rep "github.com/yukitaka/longlong/internal/domain/repository"
-	"github.com/yukitaka/longlong/internal/util"
 )
 
 type Authentications struct {
 	*sql.DB
 }
 
-func NewAuthenticationsRepository() rep.Authentications {
-	con, err := sql.Open("sqlite3", "./longlong.db")
-	if err != nil {
-		util.CheckErr(err)
-	}
-
+func NewAuthenticationsRepository(con *sql.DB) rep.Authentications {
 	return &Authentications{
 		DB: con,
 	}
