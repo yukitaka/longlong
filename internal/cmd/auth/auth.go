@@ -64,7 +64,7 @@ func (o *Options) Login(args []string) error {
 	con, _ := datastore.NewSqliteOpen()
 	authRep := repository.NewAuthenticationsRepository()
 	organizationRep := repository.NewOrganizationsRepository(con)
-	memberRep := repository.NewOrganizationMembersRepository()
+	memberRep := repository.NewOrganizationMembersRepository(con)
 	rep := usecase.NewAuthenticationRepository(authRep, organizationRep, memberRep)
 	defer rep.Close()
 

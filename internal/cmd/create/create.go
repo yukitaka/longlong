@@ -75,7 +75,7 @@ func (o *Options) Organization(args []string) error {
 	}
 	con, _ := datastore.NewSqliteOpen()
 	organizationRep := repository.NewOrganizationsRepository(con)
-	memberRep := repository.NewOrganizationMembersRepository()
+	memberRep := repository.NewOrganizationMembersRepository(con)
 	rep := usecase.NewOrganizationCreatorRepository(organizationRep, memberRep)
 	defer rep.Close()
 	itr := usecase.NewOrganizationCreator(rep)
@@ -102,7 +102,7 @@ func (o *Options) User(cmd *cobra.Command, args []string) error {
 		defer userRep.Close()
 		individualRep := repository.NewIndividualsRepository()
 		defer individualRep.Close()
-		memberRep := repository.NewOrganizationMembersRepository()
+		memberRep := repository.NewOrganizationMembersRepository(con)
 		defer memberRep.Close()
 
 		rep := usecase.NewUserCreatorRepository(userRep, individualRep, memberRep)

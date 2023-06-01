@@ -8,7 +8,6 @@ import (
 	"github.com/yukitaka/longlong/internal/domain/entity"
 	rep "github.com/yukitaka/longlong/internal/domain/repository"
 	"github.com/yukitaka/longlong/internal/domain/value_object"
-	"github.com/yukitaka/longlong/internal/util"
 	"strings"
 )
 
@@ -16,12 +15,7 @@ type OrganizationMembers struct {
 	*sql.DB
 }
 
-func NewOrganizationMembersRepository() rep.OrganizationMembers {
-	con, err := sql.Open("sqlite3", "./longlong.db")
-	if err != nil {
-		util.CheckErr(err)
-	}
-
+func NewOrganizationMembersRepository(con *sql.DB) rep.OrganizationMembers {
 	return &OrganizationMembers{
 		DB: con,
 	}
