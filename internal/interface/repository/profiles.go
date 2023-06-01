@@ -6,19 +6,13 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/yukitaka/longlong/internal/domain/entity"
 	rep "github.com/yukitaka/longlong/internal/domain/repository"
-	"github.com/yukitaka/longlong/internal/util"
 )
 
 type Profiles struct {
 	*sql.DB
 }
 
-func NewProfilesRepository() rep.Profiles {
-	con, err := sql.Open("sqlite3", "./longlong.db")
-	if err != nil {
-		util.CheckErr(err)
-	}
-
+func NewProfilesRepository(con *sql.DB) rep.Profiles {
 	return &Profiles{
 		DB: con,
 	}

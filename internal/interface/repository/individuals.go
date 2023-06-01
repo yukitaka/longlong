@@ -79,7 +79,7 @@ func (rep *Individuals) Find(id int) (*entity.Individual, error) {
 		return nil, err
 	}
 
-	profile, err := NewProfilesRepository().Find(profileId)
+	profile, err := NewProfilesRepository(rep.DB).Find(profileId)
 	if err != nil {
 		return nil, err
 	}
@@ -113,7 +113,7 @@ func (rep *Individuals) FindByUserId(userId int) (*[]entity.Individual, error) {
 			return nil, err
 		}
 
-		profile, err := NewProfilesRepository().Find(profileId)
+		profile, err := NewProfilesRepository(rep.DB).Find(profileId)
 		if err != nil {
 			return nil, err
 		}

@@ -56,7 +56,7 @@ func (rep OrganizationMembers) Find(organizationId, individualId int) (*entity.O
 	if err != nil {
 		return nil, err
 	}
-	profile, err := NewProfilesRepository().Find(profileId)
+	profile, err := NewProfilesRepository(rep.DB).Find(profileId)
 	if err != nil {
 		return nil, err
 	}
