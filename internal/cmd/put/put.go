@@ -63,7 +63,7 @@ func (o *Options) Organization(cmd *cobra.Command, args []string) error {
 	if id, err := strconv.Atoi(args[0]); err == nil {
 		organizationRep := repository.NewOrganizationsRepository(con)
 		memberRep := repository.NewOrganizationMembersRepository(con)
-		individualRep := repository.NewIndividualsRepository()
+		individualRep := repository.NewIndividualsRepository(con)
 		rep := usecase.NewOrganizationManagerRepository(organizationRep, memberRep, individualRep)
 		defer rep.Close()
 

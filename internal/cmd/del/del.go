@@ -62,7 +62,7 @@ func (o *Options) User(cmd *cobra.Command, args []string) error {
 	con, _ := datastore.NewSqliteOpen()
 	organizationRep := repository.NewOrganizationsRepository(con)
 	memberRep := repository.NewOrganizationMembersRepository(con)
-	individualRep := repository.NewIndividualsRepository()
+	individualRep := repository.NewIndividualsRepository(con)
 	rep := usecase.NewOrganizationManagerRepository(organizationRep, memberRep, individualRep)
 	defer rep.Close()
 
