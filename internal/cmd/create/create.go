@@ -1,12 +1,12 @@
 package create
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/yukitaka/longlong/internal/cli"
 	"github.com/yukitaka/longlong/internal/domain/entity"
 	"github.com/yukitaka/longlong/internal/domain/usecase"
-	"github.com/yukitaka/longlong/internal/interface/datastore"
 	"github.com/yukitaka/longlong/internal/interface/repository"
 	"github.com/yukitaka/longlong/internal/util"
 )
@@ -14,19 +14,21 @@ import (
 type Options struct {
 	CmdParent string
 	Operator  *entity.OrganizationMember
+	*sql.DB
 	cli.IOStream
 }
 
-func NewCreateOptions(parent string, streams cli.IOStream, member *entity.OrganizationMember) *Options {
+func NewCreateOptions(parent string, streams cli.IOStream, member *entity.OrganizationMember, db *sql.DB) *Options {
 	return &Options{
 		CmdParent: parent,
 		Operator:  member,
+		DB:        db,
 		IOStream:  streams,
 	}
 }
 
-func NewCmdCreate(parent string, streams cli.IOStream, member *entity.OrganizationMember) *cobra.Command {
-	o := NewCreateOptions(parent, streams, member)
+func NewCmdCreate(parent string, streams cli.IOStream, member *entity.OrganizationMember, db *sql.DB) *cobra.Command {
+	o := NewCreateOptions(parent, streams, member, db)
 
 	cmd := &cobra.Command{
 		Use:     "create",
@@ -73,9 +75,8 @@ func (o *Options) Organization(args []string) error {
 		fmt.Println("Error: must also specify a name")
 		return nil
 	}
-	con, _ := datastore.NewSqliteOpen()
-	organizationRep := repository.NewOrganizationsRepository(con)
-	memberRep := repository.NewOrganizationMembersRepository(con)
+	organizationRep := repository.NewOrganizationsRepository(o.DB)
+	memberRep := repository.NewOrganizationMembersRepository(o.DB)
 	rep := usecase.NewOrganizationCreatorRepository(organizationRep, memberRep)
 	defer rep.Close()
 	itr := usecase.NewOrganizationCreator(rep)
@@ -97,12 +98,11 @@ func (o *Options) User(cmd *cobra.Command, args []string) error {
 	}
 
 	if role, err := cmd.PersistentFlags().GetString("role"); err == nil {
-		con, _ := datastore.NewSqliteOpen()
-		userRep := repository.NewUsersRepository(con)
+		userRep := repository.NewUsersRepository(o.DB)
 		defer userRep.Close()
-		individualRep := repository.NewIndividualsRepository(con)
+		individualRep := repository.NewIndividualsRepository(o.DB)
 		defer individualRep.Close()
-		memberRep := repository.NewOrganizationMembersRepository(con)
+		memberRep := repository.NewOrganizationMembersRepository(o.DB)
 		defer memberRep.Close()
 
 		rep := usecase.NewUserCreatorRepository(userRep, individualRep, memberRep)
@@ -123,8 +123,7 @@ func (o *Options) Profile(cmd *cobra.Command, args []string) error {
 		fmt.Println("Error: must also specify a nickname and full name and bio")
 		return nil
 	}
-	con, _ := datastore.NewSqliteOpen()
-	itr := usecase.NewProfileCreator(repository.NewProfilesRepository(con))
+	itr := usecase.NewProfileCreator(repository.NewProfilesRepository(o.DB))
 	_, err := itr.New(o.Operator, args[0], args[1], args[2])
 	if err != nil {
 		return err

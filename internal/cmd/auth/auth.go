@@ -1,11 +1,11 @@
 package auth
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/yukitaka/longlong/internal/cli"
 	"github.com/yukitaka/longlong/internal/domain/usecase"
-	"github.com/yukitaka/longlong/internal/interface/datastore"
 	"github.com/yukitaka/longlong/internal/interface/repository"
 	"github.com/yukitaka/longlong/internal/util"
 	"golang.org/x/term"
@@ -14,18 +14,20 @@ import (
 
 type Options struct {
 	CmdParent string
+	*sql.DB
 	cli.IOStream
 }
 
-func NewAuthOptions(parent string, streams cli.IOStream) *Options {
+func NewAuthOptions(parent string, streams cli.IOStream, db *sql.DB) *Options {
 	return &Options{
 		CmdParent: parent,
+		DB:        db,
 		IOStream:  streams,
 	}
 }
 
-func NewCmdAuth(parent string, streams cli.IOStream) *cobra.Command {
-	o := NewAuthOptions(parent, streams)
+func NewCmdAuth(parent string, streams cli.IOStream, db *sql.DB) *cobra.Command {
+	o := NewAuthOptions(parent, streams, db)
 
 	cmd := &cobra.Command{
 		Use:     "auth",
@@ -61,10 +63,9 @@ func (o *Options) Run(args []string) error {
 }
 
 func (o *Options) Login(args []string) error {
-	con, _ := datastore.NewSqliteOpen()
-	authRep := repository.NewAuthenticationsRepository(con)
-	organizationRep := repository.NewOrganizationsRepository(con)
-	memberRep := repository.NewOrganizationMembersRepository(con)
+	authRep := repository.NewAuthenticationsRepository(o.DB)
+	organizationRep := repository.NewOrganizationsRepository(o.DB)
+	memberRep := repository.NewOrganizationMembersRepository(o.DB)
 	rep := usecase.NewAuthenticationRepository(authRep, organizationRep, memberRep)
 	defer rep.Close()
 
