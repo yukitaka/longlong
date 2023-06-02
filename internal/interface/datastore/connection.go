@@ -6,7 +6,7 @@ import (
 	"github.com/yukitaka/longlong/internal/util"
 )
 
-func NewSqliteOpen(driver string, datasource string) (*sql.DB, error) {
+func NewConnectionOpen(driver string, datasource string) (*sql.DB, error) {
 	con, err := sql.Open(driver, datasource)
 	if err != nil {
 		util.CheckErr(err)

@@ -54,7 +54,7 @@ func NewLlctlCommand() *cobra.Command {
 		panic(err)
 	}
 
-	con, _ := datastore.NewSqliteOpen(conf.Datastore.Driver, conf.Datastore.Source)
+	con, _ := datastore.NewConnectionOpen(conf.Datastore.Driver, conf.Datastore.Source)
 	itr := usecase.NewOrganizationMemberFinder(repository.NewOrganizationMembersRepository(con))
 	member, err := itr.FindById(conf.Authorize.OrganizationId, conf.Authorize.UserId)
 	operator := *member
