@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/yukitaka/longlong/internal/cmd/del"
 	"github.com/yukitaka/longlong/internal/domain/entity"
@@ -25,12 +26,17 @@ type config struct {
 		UserId         int `mapstructure:"user_id"`
 		OrganizationId int `mapstructure:"organization_id"`
 	}
+	Datastore struct {
+		Driver string `mapstructure:"driver"`
+		Source string `mapstructure:"source"`
+	}
 }
 
 type LlctlOptions struct {
 	CmdHandler Handler
 	Arguments  []string
 	Operator   entity.OrganizationMember
+	*sql.DB
 	cli.IOStream
 }
 
@@ -48,7 +54,7 @@ func NewLlctlCommand() *cobra.Command {
 		panic(err)
 	}
 
-	con, _ := datastore.NewSqliteOpen()
+	con, _ := datastore.NewSqliteOpen(conf.Datastore.Driver, conf.Datastore.Source)
 	itr := usecase.NewOrganizationMemberFinder(repository.NewOrganizationMembersRepository(con))
 	member, err := itr.FindById(conf.Authorize.OrganizationId, conf.Authorize.UserId)
 	operator := *member
@@ -60,6 +66,7 @@ func NewLlctlCommand() *cobra.Command {
 		CmdHandler: NewDefaultHandler([]string{"llctl"}),
 		Arguments:  os.Args,
 		Operator:   operator,
+		DB:         con,
 		IOStream: cli.IOStream{
 			In:     os.Stdin,
 			Out:    os.Stdout,
@@ -78,11 +85,11 @@ llctl controls the LongLong manager.
 Find more information at:
 https://github.com/yukitaka/longlong/`,
 	}
-	cmdGroup.AddCommand(auth.NewCmdAuth("llctl", o.IOStream))
-	cmdGroup.AddCommand(get.NewCmdGet("llctl", o.IOStream, &o.Operator))
-	cmdGroup.AddCommand(put.NewCmdPut("llctl", o.IOStream, &o.Operator))
-	cmdGroup.AddCommand(del.NewCmdDelete("llctl", o.IOStream, &o.Operator))
-	cmdGroup.AddCommand(create.NewCmdCreate("llctl", o.IOStream, &o.Operator))
+	cmdGroup.AddCommand(auth.NewCmdAuth("llctl", o.IOStream, o.DB))
+	cmdGroup.AddCommand(get.NewCmdGet("llctl", o.IOStream, &o.Operator, o.DB))
+	cmdGroup.AddCommand(put.NewCmdPut("llctl", o.IOStream, &o.Operator, o.DB))
+	cmdGroup.AddCommand(del.NewCmdDelete("llctl", o.IOStream, &o.Operator, o.DB))
+	cmdGroup.AddCommand(create.NewCmdCreate("llctl", o.IOStream, &o.Operator, o.DB))
 
 	if len(o.Arguments) > 1 {
 		cmdArgs := o.Arguments[1:]

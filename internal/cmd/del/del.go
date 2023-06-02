@@ -1,12 +1,12 @@
 package del
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/yukitaka/longlong/internal/cli"
 	"github.com/yukitaka/longlong/internal/domain/entity"
 	"github.com/yukitaka/longlong/internal/domain/usecase"
-	"github.com/yukitaka/longlong/internal/interface/datastore"
 	"github.com/yukitaka/longlong/internal/interface/repository"
 	"github.com/yukitaka/longlong/internal/util"
 	"strconv"
@@ -15,19 +15,21 @@ import (
 type Options struct {
 	CmdParent string
 	Operator  *entity.OrganizationMember
+	*sql.DB
 	cli.IOStream
 }
 
-func NewDeleteOptions(parent string, streams cli.IOStream, operator *entity.OrganizationMember) *Options {
+func NewDeleteOptions(parent string, streams cli.IOStream, operator *entity.OrganizationMember, db *sql.DB) *Options {
 	return &Options{
 		CmdParent: parent,
 		Operator:  operator,
+		DB:        db,
 		IOStream:  streams,
 	}
 }
 
-func NewCmdDelete(parent string, streams cli.IOStream, operator *entity.OrganizationMember) *cobra.Command {
-	o := NewDeleteOptions(parent, streams, operator)
+func NewCmdDelete(parent string, streams cli.IOStream, operator *entity.OrganizationMember, db *sql.DB) *cobra.Command {
+	o := NewDeleteOptions(parent, streams, operator, db)
 
 	cmd := &cobra.Command{
 		Use:     "delete",
@@ -59,10 +61,9 @@ func (o *Options) User(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	con, _ := datastore.NewSqliteOpen()
-	organizationRep := repository.NewOrganizationsRepository(con)
-	memberRep := repository.NewOrganizationMembersRepository(con)
-	individualRep := repository.NewIndividualsRepository(con)
+	organizationRep := repository.NewOrganizationsRepository(o.DB)
+	memberRep := repository.NewOrganizationMembersRepository(o.DB)
+	individualRep := repository.NewIndividualsRepository(o.DB)
 	rep := usecase.NewOrganizationManagerRepository(organizationRep, memberRep, individualRep)
 	defer rep.Close()
 

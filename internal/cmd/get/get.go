@@ -1,10 +1,10 @@
 package get
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/yukitaka/longlong/internal/domain/entity"
 	"github.com/yukitaka/longlong/internal/domain/usecase"
-	"github.com/yukitaka/longlong/internal/interface/datastore"
 	"github.com/yukitaka/longlong/internal/interface/repository"
 	"strconv"
 
@@ -18,19 +18,21 @@ import (
 type Options struct {
 	CmdParent string
 	Operator  *entity.OrganizationMember
+	*sql.DB
 	cli.IOStream
 }
 
-func NewGetOptions(parent string, streams cli.IOStream, operator *entity.OrganizationMember) *Options {
+func NewGetOptions(parent string, streams cli.IOStream, operator *entity.OrganizationMember, db *sql.DB) *Options {
 	return &Options{
 		CmdParent: parent,
 		Operator:  operator,
+		DB:        db,
 		IOStream:  streams,
 	}
 }
 
-func NewCmdGet(parent string, streams cli.IOStream, operator *entity.OrganizationMember) *cobra.Command {
-	o := NewGetOptions(parent, streams, operator)
+func NewCmdGet(parent string, streams cli.IOStream, operator *entity.OrganizationMember, db *sql.DB) *cobra.Command {
+	o := NewGetOptions(parent, streams, operator, db)
 
 	cmd := &cobra.Command{
 		Use:     "get",
@@ -71,8 +73,7 @@ func (o *Options) Run(args []string) error {
 }
 
 func (o *Options) Organization(cmd *cobra.Command, args []string) error {
-	con, _ := datastore.NewSqliteOpen()
-	organizationRep := repository.NewOrganizationsRepository(con)
+	organizationRep := repository.NewOrganizationsRepository(o.DB)
 	itr := usecase.NewOrganizationFinder(organizationRep)
 
 	var err error
@@ -113,10 +114,9 @@ func (o *Options) Organization(cmd *cobra.Command, args []string) error {
 }
 
 func (o *Options) User(cmd *cobra.Command, args []string) error {
-	con, _ := datastore.NewSqliteOpen()
-	individualRep := repository.NewIndividualsRepository(con)
-	organizationRep := repository.NewOrganizationsRepository(con)
-	memberRep := repository.NewOrganizationMembersRepository(con)
+	individualRep := repository.NewIndividualsRepository(o.DB)
+	organizationRep := repository.NewOrganizationsRepository(o.DB)
+	memberRep := repository.NewOrganizationMembersRepository(o.DB)
 	rep := usecase.NewUserAssignedRepository(individualRep, organizationRep, memberRep)
 	defer rep.Close()
 

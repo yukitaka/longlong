@@ -1,12 +1,12 @@
 package put
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/yukitaka/longlong/internal/cli"
 	"github.com/yukitaka/longlong/internal/domain/entity"
 	"github.com/yukitaka/longlong/internal/domain/usecase"
-	"github.com/yukitaka/longlong/internal/interface/datastore"
 	"github.com/yukitaka/longlong/internal/interface/repository"
 	"github.com/yukitaka/longlong/internal/util"
 	"strconv"
@@ -15,19 +15,21 @@ import (
 type Options struct {
 	CmdParent string
 	Operator  *entity.OrganizationMember
+	*sql.DB
 	cli.IOStream
 }
 
-func NewPutOptions(parent string, streams cli.IOStream, operator *entity.OrganizationMember) *Options {
+func NewPutOptions(parent string, streams cli.IOStream, operator *entity.OrganizationMember, db *sql.DB) *Options {
 	return &Options{
 		CmdParent: parent,
 		Operator:  operator,
+		DB:        db,
 		IOStream:  streams,
 	}
 }
 
-func NewCmdPut(parent string, streams cli.IOStream, operator *entity.OrganizationMember) *cobra.Command {
-	o := NewPutOptions(parent, streams, operator)
+func NewCmdPut(parent string, streams cli.IOStream, operator *entity.OrganizationMember, db *sql.DB) *cobra.Command {
+	o := NewPutOptions(parent, streams, operator, db)
 
 	cmd := &cobra.Command{
 		Use:     "put",
@@ -59,11 +61,10 @@ func (o *Options) Run(args []string) error {
 
 func (o *Options) Organization(cmd *cobra.Command, args []string) error {
 	var err error
-	con, _ := datastore.NewSqliteOpen()
 	if id, err := strconv.Atoi(args[0]); err == nil {
-		organizationRep := repository.NewOrganizationsRepository(con)
-		memberRep := repository.NewOrganizationMembersRepository(con)
-		individualRep := repository.NewIndividualsRepository(con)
+		organizationRep := repository.NewOrganizationsRepository(o.DB)
+		memberRep := repository.NewOrganizationMembersRepository(o.DB)
+		individualRep := repository.NewIndividualsRepository(o.DB)
 		rep := usecase.NewOrganizationManagerRepository(organizationRep, memberRep, individualRep)
 		defer rep.Close()
 
