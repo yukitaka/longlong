@@ -3,17 +3,17 @@ package repository
 import (
 	"database/sql"
 	"fmt"
-	_ "github.com/mattn/go-sqlite3"
+	"github.com/jmoiron/sqlx"
 	"github.com/yukitaka/longlong/internal/domain/entity"
 	rep "github.com/yukitaka/longlong/internal/domain/repository"
 )
 
 type Users struct {
 	users map[int]*entity.User
-	*sql.DB
+	*sqlx.DB
 }
 
-func NewUsersRepository(con *sql.DB) rep.Users {
+func NewUsersRepository(con *sqlx.DB) rep.Users {
 	return &Users{
 		users: make(map[int]*entity.User),
 		DB:    con,
@@ -29,7 +29,7 @@ func (rep *Users) Close() {
 
 func (rep *Users) Create(name string) (int, error) {
 	query := "select max(id) from users"
-	row := rep.DB.QueryRow(query)
+	row := rep.DB.QueryRowx(query)
 	var nullableId sql.NullInt32
 	err := row.Scan(&nullableId)
 	if err != nil {

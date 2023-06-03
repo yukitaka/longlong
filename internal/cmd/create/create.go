@@ -1,8 +1,8 @@
 package create
 
 import (
-	"database/sql"
 	"fmt"
+	"github.com/jmoiron/sqlx"
 	"github.com/spf13/cobra"
 	"github.com/yukitaka/longlong/internal/cli"
 	"github.com/yukitaka/longlong/internal/domain/entity"
@@ -14,11 +14,11 @@ import (
 type Options struct {
 	CmdParent string
 	Operator  *entity.OrganizationMember
-	*sql.DB
+	*sqlx.DB
 	cli.IOStream
 }
 
-func NewCreateOptions(parent string, streams cli.IOStream, member *entity.OrganizationMember, db *sql.DB) *Options {
+func NewCreateOptions(parent string, streams cli.IOStream, member *entity.OrganizationMember, db *sqlx.DB) *Options {
 	return &Options{
 		CmdParent: parent,
 		Operator:  member,
@@ -27,7 +27,7 @@ func NewCreateOptions(parent string, streams cli.IOStream, member *entity.Organi
 	}
 }
 
-func NewCmdCreate(parent string, streams cli.IOStream, member *entity.OrganizationMember, db *sql.DB) *cobra.Command {
+func NewCmdCreate(parent string, streams cli.IOStream, member *entity.OrganizationMember, db *sqlx.DB) *cobra.Command {
 	o := NewCreateOptions(parent, streams, member, db)
 
 	cmd := &cobra.Command{

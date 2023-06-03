@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"database/sql"
 	"fmt"
+	"github.com/jmoiron/sqlx"
 	"github.com/yukitaka/longlong/internal/cmd/del"
 	"github.com/yukitaka/longlong/internal/domain/entity"
 	"github.com/yukitaka/longlong/internal/domain/usecase"
@@ -36,7 +36,7 @@ type LlctlOptions struct {
 	CmdHandler Handler
 	Arguments  []string
 	Operator   entity.OrganizationMember
-	*sql.DB
+	*sqlx.DB
 	cli.IOStream
 }
 
@@ -57,10 +57,13 @@ func NewLlctlCommand() *cobra.Command {
 	con, _ := datastore.NewConnectionOpen(conf.Datastore.Driver, conf.Datastore.Source)
 	itr := usecase.NewOrganizationMemberFinder(repository.NewOrganizationMembersRepository(con))
 	member, err := itr.FindById(conf.Authorize.OrganizationId, conf.Authorize.UserId)
-	operator := *member
 	if err != nil {
-		panic(err)
+		panic("internal/cmd/cmd.go:61 " + err.Error())
 	}
+	if member == nil {
+		panic("Not found the operator.")
+	}
+	operator := *member
 
 	return NewLlctlCommandWithArgs(LlctlOptions{
 		CmdHandler: NewDefaultHandler([]string{"llctl"}),

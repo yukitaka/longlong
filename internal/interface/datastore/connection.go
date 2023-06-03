@@ -1,13 +1,14 @@
 package datastore
 
 import (
-	"database/sql"
+	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/yukitaka/longlong/internal/util"
 )
 
-func NewConnectionOpen(driver string, datasource string) (*sql.DB, error) {
-	con, err := sql.Open(driver, datasource)
+func NewConnectionOpen(driver string, datasource string) (*sqlx.DB, error) {
+	con, err := sqlx.Open(driver, datasource)
 	if err != nil {
 		util.CheckErr(err)
 	}
