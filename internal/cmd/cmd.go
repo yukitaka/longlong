@@ -57,10 +57,13 @@ func NewLlctlCommand() *cobra.Command {
 	con, _ := datastore.NewConnectionOpen(conf.Datastore.Driver, conf.Datastore.Source)
 	itr := usecase.NewOrganizationMemberFinder(repository.NewOrganizationMembersRepository(con))
 	member, err := itr.FindById(conf.Authorize.OrganizationId, conf.Authorize.UserId)
-	operator := *member
 	if err != nil {
-		panic(err)
+		panic("internal/cmd/cmd.go:61 " + err.Error())
 	}
+	if member == nil {
+		panic("Not found the operator.")
+	}
+	operator := *member
 
 	return NewLlctlCommandWithArgs(LlctlOptions{
 		CmdHandler: NewDefaultHandler([]string{"llctl"}),
