@@ -2,6 +2,7 @@ package datastore
 
 import (
 	"database/sql"
+	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/yukitaka/longlong/internal/util"
 )
