@@ -3,16 +3,17 @@ package repository
 import (
 	"database/sql"
 	"fmt"
+	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/yukitaka/longlong/internal/domain/entity"
 	rep "github.com/yukitaka/longlong/internal/domain/repository"
 )
 
 type Individuals struct {
-	*sql.DB
+	*sqlx.DB
 }
 
-func NewIndividualsRepository(con *sql.DB) rep.Individuals {
+func NewIndividualsRepository(con *sqlx.DB) rep.Individuals {
 	return &Individuals{
 		DB: con,
 	}
@@ -27,7 +28,7 @@ func (rep *Individuals) Close() {
 
 func (rep *Individuals) Create(name string, userId, profileId int) (int, error) {
 	query := "select max(id) from individuals"
-	row := rep.DB.QueryRow(query)
+	row := rep.DB.QueryRowx(query)
 	var nullableId sql.NullInt32
 	err := row.Scan(&nullableId)
 	if err != nil {
@@ -58,7 +59,7 @@ func (rep *Individuals) Create(name string, userId, profileId int) (int, error) 
 }
 
 func (rep *Individuals) Find(id int) (*entity.Individual, error) {
-	row := rep.DB.QueryRow("select name, user_id, profile_id from individuals where id = ?", id)
+	row := rep.DB.QueryRowx("select name, user_id, profile_id from individuals where id = ?", id)
 
 	var name string
 	var userId int
@@ -87,7 +88,7 @@ func (rep *Individuals) Find(id int) (*entity.Individual, error) {
 }
 
 func (rep *Individuals) FindByUserId(userId int) (*[]entity.Individual, error) {
-	r, err := rep.DB.Query("select id, name, profile_id from individuals where user_id = ?", userId)
+	r, err := rep.DB.Queryx("select id, name, profile_id from individuals where user_id = $1", userId)
 	if err != nil {
 		return nil, err
 	}

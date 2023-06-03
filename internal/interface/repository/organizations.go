@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/yukitaka/longlong/internal/domain/entity"
 	rep "github.com/yukitaka/longlong/internal/domain/repository"
@@ -13,10 +14,10 @@ import (
 
 type Organizations struct {
 	organizations map[int]*entity.Organization
-	*sql.DB
+	*sqlx.DB
 }
 
-func NewOrganizationsRepository(con *sql.DB) rep.Organizations {
+func NewOrganizationsRepository(con *sqlx.DB) rep.Organizations {
 	return &Organizations{
 		organizations: make(map[int]*entity.Organization),
 		DB:            con,
@@ -32,7 +33,7 @@ func (o *Organizations) Close() {
 
 func (o *Organizations) Create(name string, individual entity.Individual) (int, error) {
 	query := "select max(id) from organizations"
-	row := o.DB.QueryRow(query)
+	row := o.DB.QueryRowx(query)
 	var nullableId sql.NullInt32
 	err := row.Scan(&nullableId)
 	if err != nil {
@@ -59,18 +60,18 @@ func (o *Organizations) Create(name string, individual entity.Individual) (int, 
 }
 
 func (o *Organizations) Find(id int) (*entity.Organization, error) {
-	stmt, err := o.DB.Prepare("select name from organizations where id=?")
+	stmt, err := o.DB.Preparex("select name from organizations where id=?")
 	if err != nil {
 		return nil, err
 	}
-	defer func(stmt *sql.Stmt) {
+	defer func(stmt *sqlx.Stmt) {
 		err := stmt.Close()
 		if err != nil {
 			fmt.Printf("Error: %v\n", err)
 		}
 	}(stmt)
 	var name string
-	err = stmt.QueryRow(id).Scan(&name)
+	err = stmt.QueryRowx(id).Scan(&name)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, errors.New(fmt.Sprintf("organization id %d is nothing", id))
@@ -83,17 +84,17 @@ func (o *Organizations) Find(id int) (*entity.Organization, error) {
 }
 
 func (o *Organizations) FindAll(ids []interface{}) (*[]entity.Organization, error) {
-	stmt, err := o.DB.Prepare("select parent_id, id, name from organizations where id in (?" + strings.Repeat(",?", len(ids)-1) + ")")
+	stmt, err := o.DB.Preparex("select parent_id, id, name from organizations where id in ($1" + strings.Repeat(",$2", len(ids)-1) + ")")
 	if err != nil {
 		return nil, err
 	}
-	defer func(stmt *sql.Stmt) {
+	defer func(stmt *sqlx.Stmt) {
 		err := stmt.Close()
 		if err != nil {
 			fmt.Printf("Error: %v\n", err)
 		}
 	}(stmt)
-	res, err := stmt.Query(ids...)
+	res, err := stmt.Queryx(ids...)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, errors.New(fmt.Sprintf("organization ids %d are nothing", ids))
@@ -117,11 +118,11 @@ func (o *Organizations) FindAll(ids []interface{}) (*[]entity.Organization, erro
 }
 
 func (o *Organizations) List() (*[]entity.Organization, error) {
-	rows, err := o.DB.Query("select id, name from organizations")
+	rows, err := o.DB.Queryx("select id, name from organizations")
 	if err != nil {
 		return nil, err
 	}
-	defer func(rows *sql.Rows) {
+	defer func(rows *sqlx.Rows) {
 		err := rows.Close()
 		if err != nil {
 			fmt.Printf("Error: %v\n", err)

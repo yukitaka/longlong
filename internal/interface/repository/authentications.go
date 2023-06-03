@@ -4,15 +4,16 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
 	rep "github.com/yukitaka/longlong/internal/domain/repository"
 )
 
 type Authentications struct {
-	*sql.DB
+	*sqlx.DB
 }
 
-func NewAuthenticationsRepository(con *sql.DB) rep.Authentications {
+func NewAuthenticationsRepository(con *sqlx.DB) rep.Authentications {
 	return &Authentications{
 		DB: con,
 	}
@@ -27,7 +28,7 @@ func (rep *Authentications) Close() {
 
 func (rep *Authentications) Create(identify, token string) (int, error) {
 	query := "select max(id) from authentications"
-	row := rep.DB.QueryRow(query)
+	row := rep.DB.QueryRowx(query)
 	var nullableId sql.NullInt32
 	err := row.Scan(&nullableId)
 	if err != nil {
@@ -49,11 +50,11 @@ func (rep *Authentications) Create(identify, token string) (int, error) {
 }
 
 func (rep *Authentications) FindToken(identify string) (int, string, error) {
-	stmt, err := rep.DB.Prepare("select individual_id, token from authentications where identify=?")
+	stmt, err := rep.DB.Preparex("select individual_id, token from authentications where identify=?")
 	if err != nil {
 		return -1, "", err
 	}
-	defer func(stmt *sql.Stmt) {
+	defer func(stmt *sqlx.Stmt) {
 		err := stmt.Close()
 		if err != nil {
 			fmt.Printf("Error: %v\n", err)
@@ -61,7 +62,7 @@ func (rep *Authentications) FindToken(identify string) (int, string, error) {
 	}(stmt)
 	var id int
 	var token string
-	err = stmt.QueryRow(identify).Scan(&id, &token)
+	err = stmt.QueryRowx(identify).Scan(&id, &token)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return -1, "", errors.New(fmt.Sprintf("authentication identify %s is nothing", identify))

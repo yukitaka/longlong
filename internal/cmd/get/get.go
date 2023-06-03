@@ -1,8 +1,8 @@
 package get
 
 import (
-	"database/sql"
 	"fmt"
+	"github.com/jmoiron/sqlx"
 	"github.com/yukitaka/longlong/internal/domain/entity"
 	"github.com/yukitaka/longlong/internal/domain/usecase"
 	"github.com/yukitaka/longlong/internal/interface/repository"
@@ -18,11 +18,11 @@ import (
 type Options struct {
 	CmdParent string
 	Operator  *entity.OrganizationMember
-	*sql.DB
+	*sqlx.DB
 	cli.IOStream
 }
 
-func NewGetOptions(parent string, streams cli.IOStream, operator *entity.OrganizationMember, db *sql.DB) *Options {
+func NewGetOptions(parent string, streams cli.IOStream, operator *entity.OrganizationMember, db *sqlx.DB) *Options {
 	return &Options{
 		CmdParent: parent,
 		Operator:  operator,
@@ -31,7 +31,7 @@ func NewGetOptions(parent string, streams cli.IOStream, operator *entity.Organiz
 	}
 }
 
-func NewCmdGet(parent string, streams cli.IOStream, operator *entity.OrganizationMember, db *sql.DB) *cobra.Command {
+func NewCmdGet(parent string, streams cli.IOStream, operator *entity.OrganizationMember, db *sqlx.DB) *cobra.Command {
 	o := NewGetOptions(parent, streams, operator, db)
 
 	cmd := &cobra.Command{

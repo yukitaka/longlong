@@ -3,16 +3,16 @@ package repository
 import (
 	"database/sql"
 	"fmt"
-	_ "github.com/mattn/go-sqlite3"
+	"github.com/jmoiron/sqlx"
 	"github.com/yukitaka/longlong/internal/domain/entity"
 	rep "github.com/yukitaka/longlong/internal/domain/repository"
 )
 
 type Profiles struct {
-	*sql.DB
+	*sqlx.DB
 }
 
-func NewProfilesRepository(con *sql.DB) rep.Profiles {
+func NewProfilesRepository(con *sqlx.DB) rep.Profiles {
 	return &Profiles{
 		DB: con,
 	}
@@ -27,7 +27,7 @@ func (rep *Profiles) Close() {
 
 func (rep *Profiles) Create(nickName, fullName, bio string) (int, error) {
 	query := "select max(id) from profiles"
-	row := rep.DB.QueryRow(query)
+	row := rep.DB.QueryRowx(query)
 	var nullableId sql.NullInt32
 	err := row.Scan(&nullableId)
 	if err != nil {
@@ -57,10 +57,9 @@ func (rep *Profiles) Create(nickName, fullName, bio string) (int, error) {
 }
 
 func (rep *Profiles) Find(id int) (*entity.Profile, error) {
-	query := "select nick_name, full_name, biography from profiles where id = ?"
-	row := rep.DB.QueryRow(query, id)
+	query := "select nick_name, full_name, biography from profiles where id = $1"
 	var nickName, fullName, bio string
-	err := row.Scan(&nickName, &fullName, &bio)
+	err := rep.DB.QueryRowx(query, id).Scan(&nickName, &fullName, &bio)
 	if err != nil {
 		return nil, err
 	}

@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"database/sql"
 	"fmt"
+	"github.com/jmoiron/sqlx"
 	"github.com/yukitaka/longlong/internal/cmd/del"
 	"github.com/yukitaka/longlong/internal/domain/entity"
 	"github.com/yukitaka/longlong/internal/domain/usecase"
@@ -36,7 +36,7 @@ type LlctlOptions struct {
 	CmdHandler Handler
 	Arguments  []string
 	Operator   entity.OrganizationMember
-	*sql.DB
+	*sqlx.DB
 	cli.IOStream
 }
 

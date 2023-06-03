@@ -1,8 +1,8 @@
 package put
 
 import (
-	"database/sql"
 	"fmt"
+	"github.com/jmoiron/sqlx"
 	"github.com/spf13/cobra"
 	"github.com/yukitaka/longlong/internal/cli"
 	"github.com/yukitaka/longlong/internal/domain/entity"
@@ -15,11 +15,11 @@ import (
 type Options struct {
 	CmdParent string
 	Operator  *entity.OrganizationMember
-	*sql.DB
+	*sqlx.DB
 	cli.IOStream
 }
 
-func NewPutOptions(parent string, streams cli.IOStream, operator *entity.OrganizationMember, db *sql.DB) *Options {
+func NewPutOptions(parent string, streams cli.IOStream, operator *entity.OrganizationMember, db *sqlx.DB) *Options {
 	return &Options{
 		CmdParent: parent,
 		Operator:  operator,
@@ -28,7 +28,7 @@ func NewPutOptions(parent string, streams cli.IOStream, operator *entity.Organiz
 	}
 }
 
-func NewCmdPut(parent string, streams cli.IOStream, operator *entity.OrganizationMember, db *sql.DB) *cobra.Command {
+func NewCmdPut(parent string, streams cli.IOStream, operator *entity.OrganizationMember, db *sqlx.DB) *cobra.Command {
 	o := NewPutOptions(parent, streams, operator, db)
 
 	cmd := &cobra.Command{

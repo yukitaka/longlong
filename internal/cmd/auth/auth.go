@@ -1,8 +1,8 @@
 package auth
 
 import (
-	"database/sql"
 	"fmt"
+	"github.com/jmoiron/sqlx"
 	"github.com/spf13/cobra"
 	"github.com/yukitaka/longlong/internal/cli"
 	"github.com/yukitaka/longlong/internal/domain/usecase"
@@ -14,11 +14,11 @@ import (
 
 type Options struct {
 	CmdParent string
-	*sql.DB
+	*sqlx.DB
 	cli.IOStream
 }
 
-func NewAuthOptions(parent string, streams cli.IOStream, db *sql.DB) *Options {
+func NewAuthOptions(parent string, streams cli.IOStream, db *sqlx.DB) *Options {
 	return &Options{
 		CmdParent: parent,
 		DB:        db,
@@ -26,7 +26,7 @@ func NewAuthOptions(parent string, streams cli.IOStream, db *sql.DB) *Options {
 	}
 }
 
-func NewCmdAuth(parent string, streams cli.IOStream, db *sql.DB) *cobra.Command {
+func NewCmdAuth(parent string, streams cli.IOStream, db *sqlx.DB) *cobra.Command {
 	o := NewAuthOptions(parent, streams, db)
 
 	cmd := &cobra.Command{

@@ -7,6 +7,7 @@ require (
 	github.com/charmbracelet/bubbletea v0.23.2
 	github.com/charmbracelet/lipgloss v0.6.0
 	github.com/golang/mock v1.6.0
+	github.com/jmoiron/sqlx v1.3.5
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.9
 	github.com/mattn/go-sqlite3 v1.14.16
