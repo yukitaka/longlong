@@ -61,7 +61,7 @@ func (rep OrganizationMembers) Find(organizationId, individualId int) (*entity.O
 }
 
 func (rep OrganizationMembers) Entry(organizationId, individualId int, role value_object.Role) error {
-	query := "insert into organization_members (organization_id, individual_id, role) values (?, ?, ?)"
+	query := "insert into organization_members (organization_id, individual_id, role) values ($1, $2, $3)"
 	_, err := rep.DB.Exec(query, organizationId, individualId, role)
 
 	return err

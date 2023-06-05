@@ -44,7 +44,7 @@ func (rep *Individuals) Create(name string, userId, profileId int) (int, error) 
 	if err != nil {
 		return -1, err
 	}
-	query = "insert into individuals (id, name, user_id, profile_id) values (?, ?, ?, ?)"
+	query = "insert into individuals (id, name, user_id, profile_id) values ($1, $2, $3, $4)"
 	_, err = rep.DB.Exec(query, id, name, userId, profileId)
 	if err != nil {
 		fmt.Println(id)
