@@ -68,14 +68,14 @@ func (rep OrganizationMembers) Entry(organizationId, individualId int, role valu
 }
 
 func (rep OrganizationMembers) Leave(organizationId, individualId int, reason string) error {
-	stmt := "delete from organization_members where organization_id=? and individual_id=?"
+	stmt := "delete from organization_members where organization_id=$1 and individual_id=$2"
 	_, err := rep.DB.Exec(stmt, organizationId, individualId)
 
 	return err
 }
 
 func (rep OrganizationMembers) Members(organization *entity.Organization, individualRepository rep.Individuals) (*[]entity.OrganizationMember, error) {
-	stmt := "select organization_id, individual_id, role from organization_members where organization_id=?"
+	stmt := "select organization_id, individual_id, role from organization_members where organization_id=$1"
 	ret, err := rep.DB.Queryx(stmt, organization.Id)
 	if err != nil {
 		return nil, err

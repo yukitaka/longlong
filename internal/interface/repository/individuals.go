@@ -59,7 +59,7 @@ func (rep *Individuals) Create(name string, userId, profileId int) (int, error) 
 }
 
 func (rep *Individuals) Find(id int) (*entity.Individual, error) {
-	row := rep.DB.QueryRowx("select name, user_id, profile_id from individuals where id = ?", id)
+	row := rep.DB.QueryRowx("select name, user_id, profile_id from individuals where id = $1", id)
 
 	var name string
 	var userId int
