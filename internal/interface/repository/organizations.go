@@ -45,13 +45,13 @@ func (o *Organizations) Create(name string, individual entity.Individual) (int, 
 		id++
 	}
 
-	query = "insert into organizations (id, name) values (?, ?)"
+	query = "insert into organizations (id, name) values ($1, $2)"
 	_, err = o.DB.Exec(query, id, name)
 	if err != nil {
 		return -1, err
 	}
-	query = "insert into organization_members (organization_id, individual_id, role) values (?, ?, ?)"
-	_, err = o.DB.Exec(query, id, name, individual.Id, value_object.OWNER)
+	query = "insert into organization_members (organization_id, individual_id, role) values ($1, $2, $3)"
+	_, err = o.DB.Exec(query, id, individual.Id, value_object.OWNER)
 	if err != nil {
 		return -1, err
 	}
