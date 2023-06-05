@@ -43,7 +43,7 @@ func (rep *Profiles) Create(nickName, fullName, bio string) (int, error) {
 	if err != nil {
 		return -1, err
 	}
-	query = "insert into profiles (id, nick_name, full_name, biography) values (?, ?, ?, ?)"
+	query = "insert into profiles (id, nick_name, full_name, biography) values ($1, $2, $3, $4)"
 	_, err = rep.DB.Exec(query, id, nickName, fullName, bio)
 	if err != nil {
 		return -1, err
