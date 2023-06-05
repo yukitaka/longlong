@@ -40,7 +40,7 @@ func (rep *Authentications) Create(identify, token string) (int, error) {
 		id++
 	}
 
-	query = "insert into authentications (id, identify, token) values (?, ?)"
+	query = "insert into authentications (id, identify, token) values ($1, $2, $3)"
 	_, err = rep.DB.Exec(query, id, identify, token)
 	if err != nil {
 		return -1, err
@@ -50,7 +50,7 @@ func (rep *Authentications) Create(identify, token string) (int, error) {
 }
 
 func (rep *Authentications) FindToken(identify string) (int, string, error) {
-	stmt, err := rep.DB.Preparex("select individual_id, token from authentications where identify=?")
+	stmt, err := rep.DB.Preparex("select individual_id, token from authentications where identify=$1")
 	if err != nil {
 		return -1, "", err
 	}
