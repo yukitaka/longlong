@@ -60,7 +60,7 @@ func (o *Organizations) Create(name string, individual entity.Individual) (int, 
 }
 
 func (o *Organizations) Find(id int) (*entity.Organization, error) {
-	stmt, err := o.DB.Preparex("select name from organizations where id=?")
+	stmt, err := o.DB.Preparex("select name from organizations where id=$1")
 	if err != nil {
 		return nil, err
 	}
