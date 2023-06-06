@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 )
@@ -18,21 +19,79 @@ type Schedule struct {
 	WeekdayInterval int
 }
 
-func NewScheduleByCron(cron string) *Schedule {
+func (s *Schedule) SetMinute(minutes []int, interval int) error {
+	for _, m := range minutes {
+		if m < 0 || m > 59 {
+			return fmt.Errorf("Error: minute %d is out of range", m)
+		}
+	}
+	s.Minute = minutes
+	s.MinuteInterval = interval
+
+	return nil
+}
+
+func (s *Schedule) SetHour(hours []int, interval int) error {
+	for _, m := range hours {
+		if m < 0 || m > 23 {
+			return fmt.Errorf("Error: hour %d is out of range", m)
+		}
+	}
+	s.Hour = hours
+	s.HourInterval = interval
+
+	return nil
+}
+
+func (s *Schedule) SetDay(days []int, interval int) error {
+	for _, m := range days {
+		if m < 0 || m > 31 {
+			return fmt.Errorf("Error: day %d is out of range", m)
+		}
+	}
+	s.Day = days
+	s.DayInterval = interval
+
+	return nil
+}
+
+func (s *Schedule) SetMonth(months []int, interval int) error {
+	for _, m := range months {
+		if m < 0 || m > 12 {
+			return fmt.Errorf("Error: month %d is out of range", m)
+		}
+	}
+	s.Month = months
+	s.MonthInterval = interval
+
+	return nil
+}
+
+func (s *Schedule) SetWeekday(weekdays []int, interval int) error {
+	for _, m := range weekdays {
+		if m < 0 || m > 7 {
+			return fmt.Errorf("Error: weekday %d is out of range", m)
+		}
+	}
+	s.Weekday = weekdays
+	s.WeekdayInterval = interval
+
+	return nil
+}
+
+func NewScheduleByCron(cron string) (*Schedule, error) {
 	s := &Schedule{}
 	parts := strings.Split(cron, " ")
 	for i := 0; i < len(parts); i++ {
 		numbers, interval := splitNumbersAndInterval(parts[i])
+		err := error(nil)
 		switch i {
 		case 0:
-			s.Minute = numbers
-			s.MinuteInterval = interval
+			err = s.SetMinute(numbers, interval)
 		case 1:
-			s.Hour = numbers
-			s.HourInterval = interval
+			err = s.SetHour(numbers, interval)
 		case 2:
-			s.Day = numbers
-			s.DayInterval = interval
+			err = s.SetDay(numbers, interval)
 		case 3:
 			s.Month = numbers
 			s.MonthInterval = interval
@@ -40,9 +99,12 @@ func NewScheduleByCron(cron string) *Schedule {
 			s.Weekday = numbers
 			s.WeekdayInterval = interval
 		}
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	return &Schedule{}
+	return s, nil
 }
 
 func splitNumbersAndInterval(s string) ([]int, int) {
