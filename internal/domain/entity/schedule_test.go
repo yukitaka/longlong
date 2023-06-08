@@ -5,6 +5,23 @@ import (
 	"testing"
 )
 
+func TestScheduleByCron(t *testing.T) {
+	sc, _ := NewScheduleByCron("1 * * * *")
+	if sc.MinuteInterval != 1 {
+		t.Errorf("MinuteInterval is not 1: %d", sc.HourInterval)
+	}
+	if sc.Minute == nil {
+		t.Errorf("Minute is not 1: %d", sc.HourInterval)
+	}
+	sc, _ = NewScheduleByCron("1/2 * * * *")
+	if sc.MinuteInterval != 2 {
+		t.Errorf("MinuteInterval is not 2: %d", sc.MinuteInterval)
+	}
+	if sc.Minute == nil {
+		t.Errorf("Minute is not 1: %d", sc.Minute)
+	}
+}
+
 func TestSplitNumbersAndInterval(t *testing.T) {
 	type expect struct {
 		Numbers  []int
