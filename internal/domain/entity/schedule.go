@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type Schedule struct {
@@ -19,9 +20,22 @@ type Schedule struct {
 	WeekdayInterval int
 }
 
+func (s *Schedule) IsExecute(time time.Time) bool {
+	if s.MinuteInterval > 0 {
+		m := time.Minute()
+		for _, v := range s.Minute {
+			if v == -1 || v == m {
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
 func (s *Schedule) SetMinute(minutes []int, interval int) error {
 	for _, m := range minutes {
-		if m < 0 || m > 59 {
+		if m < -1 || m > 59 {
 			return fmt.Errorf("Error: minute %d is out of range", m)
 		}
 	}
@@ -33,7 +47,7 @@ func (s *Schedule) SetMinute(minutes []int, interval int) error {
 
 func (s *Schedule) SetHour(hours []int, interval int) error {
 	for _, m := range hours {
-		if m < 0 || m > 23 {
+		if m < -1 || m > 23 {
 			return fmt.Errorf("Error: hour %d is out of range", m)
 		}
 	}
@@ -45,7 +59,7 @@ func (s *Schedule) SetHour(hours []int, interval int) error {
 
 func (s *Schedule) SetDay(days []int, interval int) error {
 	for _, m := range days {
-		if m < 0 || m > 31 {
+		if m < -1 || m > 31 {
 			return fmt.Errorf("Error: day %d is out of range", m)
 		}
 	}
@@ -57,7 +71,7 @@ func (s *Schedule) SetDay(days []int, interval int) error {
 
 func (s *Schedule) SetMonth(months []int, interval int) error {
 	for _, m := range months {
-		if m < 0 || m > 12 {
+		if m < -1 || m > 12 {
 			return fmt.Errorf("Error: month %d is out of range", m)
 		}
 	}
@@ -69,7 +83,7 @@ func (s *Schedule) SetMonth(months []int, interval int) error {
 
 func (s *Schedule) SetWeekday(weekdays []int, interval int) error {
 	for _, m := range weekdays {
-		if m < 0 || m > 7 {
+		if m < -1 || m > 7 {
 			return fmt.Errorf("Error: weekday %d is out of range", m)
 		}
 	}
@@ -121,7 +135,7 @@ func splitNumbersAndInterval(s string) ([]int, int) {
 	ret := make([]int, len(numbers))
 	for i := 0; i < len(numbers); i++ {
 		if numbers[i] == "*" {
-			ret[i] = 0
+			ret[i] = -1
 		} else {
 			num, err := strconv.Atoi(numbers[i])
 			if err != nil {

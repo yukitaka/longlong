@@ -3,7 +3,40 @@ package entity
 import (
 	"reflect"
 	"testing"
+	"time"
 )
+
+func TestScheduleByCron(t *testing.T) {
+	sc, _ := NewScheduleByCron("1 * * * *")
+	if sc.MinuteInterval != 1 {
+		t.Errorf("MinuteInterval is not 1: %d", sc.HourInterval)
+	}
+	if sc.Minute == nil {
+		t.Errorf("Minute is not 1: %d", sc.HourInterval)
+	}
+	sc, _ = NewScheduleByCron("1/2 * * * *")
+	if sc.MinuteInterval != 2 {
+		t.Errorf("MinuteInterval is not 2: %d", sc.MinuteInterval)
+	}
+	if sc.Minute == nil {
+		t.Errorf("Minute is not 1: %d", sc.Minute)
+	}
+}
+
+func TestSchedule_IsExecute(t *testing.T) {
+	sc, _ := NewScheduleByCron("* * * * *")
+	if !sc.IsExecute(time.Date(2014, time.March, 19, 12, 15, 10, 0, time.UTC)) {
+		t.Errorf("Error! Schedule should be executed")
+	}
+	sc, _ = NewScheduleByCron("0,15,30,45 * * * *")
+	if !sc.IsExecute(time.Date(2014, time.March, 19, 12, 15, 10, 0, time.UTC)) {
+		t.Errorf("Error! Schedule should be executed")
+	}
+	sc, _ = NewScheduleByCron("0,30,45 * * * *")
+	if sc.IsExecute(time.Date(2014, time.March, 19, 12, 15, 10, 0, time.UTC)) {
+		t.Errorf("Error! Schedule shouldn't be executed")
+	}
+}
 
 func TestSplitNumbersAndInterval(t *testing.T) {
 	type expect struct {
@@ -12,8 +45,8 @@ func TestSplitNumbersAndInterval(t *testing.T) {
 	}
 
 	testCase := map[string]expect{
-		"*":       {[]int{0}, 1},
-		"*/10":    {[]int{0}, 10},
+		"*":       {[]int{-1}, 1},
+		"*/10":    {[]int{-1}, 10},
 		"0":       {[]int{0}, 1},
 		"0/3":     {[]int{0}, 3},
 		"31":      {[]int{31}, 1},
