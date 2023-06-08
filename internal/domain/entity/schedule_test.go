@@ -28,6 +28,14 @@ func TestSchedule_IsExecute(t *testing.T) {
 	if !sc.IsExecute(time.Date(2014, time.March, 19, 12, 15, 10, 0, time.UTC)) {
 		t.Errorf("Error! Schedule should be executed")
 	}
+	sc, _ = NewScheduleByCron("0,15,30,45 * * * *")
+	if !sc.IsExecute(time.Date(2014, time.March, 19, 12, 15, 10, 0, time.UTC)) {
+		t.Errorf("Error! Schedule should be executed")
+	}
+	sc, _ = NewScheduleByCron("0,30,45 * * * *")
+	if sc.IsExecute(time.Date(2014, time.March, 19, 12, 15, 10, 0, time.UTC)) {
+		t.Errorf("Error! Schedule shouldn't be executed")
+	}
 }
 
 func TestSplitNumbersAndInterval(t *testing.T) {
