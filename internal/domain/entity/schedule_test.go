@@ -3,6 +3,7 @@ package entity
 import (
 	"reflect"
 	"testing"
+	"time"
 )
 
 func TestScheduleByCron(t *testing.T) {
@@ -22,6 +23,13 @@ func TestScheduleByCron(t *testing.T) {
 	}
 }
 
+func TestSchedule_IsExecute(t *testing.T) {
+	sc, _ := NewScheduleByCron("* * * * *")
+	if !sc.IsExecute(time.Date(2014, time.March, 19, 12, 15, 10, 0, time.UTC)) {
+		t.Errorf("Error! Schedule should be executed")
+	}
+}
+
 func TestSplitNumbersAndInterval(t *testing.T) {
 	type expect struct {
 		Numbers  []int
@@ -29,8 +37,8 @@ func TestSplitNumbersAndInterval(t *testing.T) {
 	}
 
 	testCase := map[string]expect{
-		"*":       {[]int{0}, 1},
-		"*/10":    {[]int{0}, 10},
+		"*":       {[]int{-1}, 1},
+		"*/10":    {[]int{-1}, 10},
 		"0":       {[]int{0}, 1},
 		"0/3":     {[]int{0}, 3},
 		"31":      {[]int{31}, 1},
