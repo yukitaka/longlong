@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type Schedule struct {
@@ -17,6 +18,19 @@ type Schedule struct {
 	MinuteInterval  int
 	Weekday         []int
 	WeekdayInterval int
+}
+
+func (s *Schedule) IsExecute(time time.Time) bool {
+	if s.MinuteInterval > 0 {
+		m := time.Minute()
+		for _, v := range s.Minute {
+			if v == -1 || v == m {
+				return true
+			}
+		}
+	}
+
+	return false
 }
 
 func (s *Schedule) SetMinute(minutes []int, interval int) error {
@@ -121,7 +135,7 @@ func splitNumbersAndInterval(s string) ([]int, int) {
 	ret := make([]int, len(numbers))
 	for i := 0; i < len(numbers); i++ {
 		if numbers[i] == "*" {
-			ret[i] = 0
+			ret[i] = -1
 		} else {
 			num, err := strconv.Atoi(numbers[i])
 			if err != nil {
