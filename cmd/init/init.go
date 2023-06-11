@@ -129,7 +129,7 @@ func initSql(db *sql.DB) error {
 	create table profiles (id integer not null primary key, nick_name text, full_name text, biography text);
 	create table individuals (id integer not null primary key, name text, user_id integer, profile_id integer);
 	create table user_profiles (user_id integer not null, profile_id integer not null);
-	create table schedules (id integer not null primary key, duration_type integer, number integer, interval integer, start_at timestamp, end_at timestamp);
+	create table schedules (id integer not null primary key, duration_type varchar(16) not null, number integer, interval integer, start_at timestamp, end_at timestamp);
 	create table habits (id integer not null primary key, name text, exp integer, start_at timestamp, end_at timestamp);
 	create table habits_schedules (habit_id integer not null, schedule_id integer not null, foreign key (habit_id) references habits (id), foreign key (schedule_id) references schedules (id));
 	insert into organizations (id, name) values (1, 'longlong');
