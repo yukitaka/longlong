@@ -5,12 +5,12 @@ import (
 	rep "github.com/yukitaka/longlong/internal/domain/repository"
 )
 
-type Schedules struct {
+type Timers struct {
 	*sqlx.DB
 }
 
-func NewSchedulesRepository(con *sqlx.DB) rep.Schedule {
-	return &Schedules{
+func NewTimersRepository(con *sqlx.DB) rep.Timers {
+	return &Timers{
 		DB: con,
 	}
 }
