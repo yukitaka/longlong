@@ -32,24 +32,23 @@ func (h *Habits) Find(id int) (*entity.Habit, error) {
 	if err != nil {
 		return nil, err
 	}
-	sc, err := h.schedule(habit.Id)
+	t, err := h.timer(habit.Id)
 	if err != nil {
 		return nil, err
 	}
-	habit.Schedule = *sc
+	habit.Timer = *t
 
 	return &habit, nil
 }
 
-func (h *Habits) schedule(habit_id int) (*entity.Schedule, error) {
-	query := "select t.id, duration_type, number, interval, start_at, end_at from schedules t join habits_schedules t1 on t.id=t1.schedule_id where t.id=$1"
+func (h *Habits) timer(habit_id int) (*entity.Timer, error) {
+	query := "select t.id, duration_type, number, interval, reference_at from timers t join habits_timers t1 on t.id=t1.timer_id where t.id=$1"
 	type s struct {
 		Id           int       `db:"id"`
 		DurationType string    `db:"duration_type"`
 		Number       int       `db:"number"`
 		Interval     int       `db:"interval"`
-		StartAt      time.Time `db:"start_at"`
-		EndAt        time.Time `db:"start_at"`
+		ReferenceAt  time.Time `db:"reference_at"`
 	}
 	var ss []s
 
@@ -57,41 +56,41 @@ func (h *Habits) schedule(habit_id int) (*entity.Schedule, error) {
 	if err != nil {
 		return nil, err
 	}
-	sc := entity.Schedule{}
+	t := entity.Timer{}
 	for _, v := range ss {
 		switch v.DurationType {
 		case "month":
-			if sc.MonthInterval != 0 && sc.MonthInterval != v.Interval {
-				return nil, fmt.Errorf("invalid interval: %d %d %d", v.Id, sc.MonthInterval, v.Interval)
+			if t.MonthInterval != 0 && t.MonthInterval != v.Interval {
+				return nil, fmt.Errorf("invalid interval: %d %d %d", v.Id, t.MonthInterval, v.Interval)
 			}
-			sc.Month = append(sc.Month, v.Number)
-			sc.MonthInterval = v.Interval
+			t.Month = append(t.Month, v.Number)
+			t.MonthInterval = v.Interval
 		case "day":
-			if sc.DayInterval != 0 && sc.DayInterval != v.Interval {
-				return nil, fmt.Errorf("invalid interval: %d %d %d", v.Id, sc.DayInterval, v.Interval)
+			if t.DayInterval != 0 && t.DayInterval != v.Interval {
+				return nil, fmt.Errorf("invalid interval: %d %d %d", v.Id, t.DayInterval, v.Interval)
 			}
-			sc.Day = append(sc.Day, v.Number)
-			sc.DayInterval = v.Interval
+			t.Day = append(t.Day, v.Number)
+			t.DayInterval = v.Interval
 		case "hour":
-			if sc.HourInterval != 0 && sc.HourInterval != v.Interval {
-				return nil, fmt.Errorf("invalid interval: %d %d %d", v.Id, sc.HourInterval, v.Interval)
+			if t.HourInterval != 0 && t.HourInterval != v.Interval {
+				return nil, fmt.Errorf("invalid interval: %d %d %d", v.Id, t.HourInterval, v.Interval)
 			}
-			sc.Hour = append(sc.Hour, v.Number)
-			sc.HourInterval = v.Interval
+			t.Hour = append(t.Hour, v.Number)
+			t.HourInterval = v.Interval
 		case "minute":
-			if sc.MinuteInterval != 0 && sc.MinuteInterval != v.Interval {
-				return nil, fmt.Errorf("invalid interval: %d %d %d", v.Id, sc.MinuteInterval, v.Interval)
+			if t.MinuteInterval != 0 && t.MinuteInterval != v.Interval {
+				return nil, fmt.Errorf("invalid interval: %d %d %d", v.Id, t.MinuteInterval, v.Interval)
 			}
-			sc.Minute = append(sc.Minute, v.Number)
-			sc.MinuteInterval = v.Interval
+			t.Minute = append(t.Minute, v.Number)
+			t.MinuteInterval = v.Interval
 		case "weekday":
-			if sc.WeekdayInterval != 0 && sc.WeekdayInterval != v.Interval {
-				return nil, fmt.Errorf("invalid interval: %d %d %d", v.Id, sc.WeekdayInterval, v.Interval)
+			if t.WeekdayInterval != 0 && t.WeekdayInterval != v.Interval {
+				return nil, fmt.Errorf("invalid interval: %d %d %d", v.Id, t.WeekdayInterval, v.Interval)
 			}
-			sc.Weekday = append(sc.Weekday, v.Number)
-			sc.WeekdayInterval = v.Interval
+			t.Weekday = append(t.Weekday, v.Number)
+			t.WeekdayInterval = v.Interval
 		}
 	}
 
-	return &sc, nil
+	return &t, nil
 }

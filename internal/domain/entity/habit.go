@@ -1,17 +1,17 @@
 package entity
 
 type Habit struct {
-	Id       int
-	Schedule Schedule
-	Name     string
-	Exp      int
+	Id    int
+	Timer Timer
+	Name  string
+	Exp   int
 }
 
-func NewHabit(id int, schedule Schedule, name string, exp int) *Habit {
+func NewHabit(id int, timer Timer, name string, exp int) *Habit {
 	return &Habit{
-		Id:       id,
-		Schedule: schedule,
-		Name:     name,
-		Exp:      exp,
+		Id:    id,
+		Timer: timer,
+		Name:  name,
+		Exp:   exp,
 	}
 }

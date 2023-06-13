@@ -26,15 +26,15 @@ func TestScheduleByCron(t *testing.T) {
 func TestSchedule_IsExecute(t *testing.T) {
 	sc, _ := NewScheduleByCron("* * * * *")
 	if !sc.IsExecute(time.Date(2014, time.March, 19, 12, 15, 10, 0, time.UTC)) {
-		t.Errorf("Error! Schedule should be executed")
+		t.Errorf("Error! Timer should be executed")
 	}
 	sc, _ = NewScheduleByCron("0,15,30,45 * * * *")
 	if !sc.IsExecute(time.Date(2014, time.March, 19, 12, 15, 10, 0, time.UTC)) {
-		t.Errorf("Error! Schedule should be executed")
+		t.Errorf("Error! Timer should be executed")
 	}
 	sc, _ = NewScheduleByCron("0,30,45 * * * *")
 	if sc.IsExecute(time.Date(2014, time.March, 19, 12, 15, 10, 0, time.UTC)) {
-		t.Errorf("Error! Schedule shouldn't be executed")
+		t.Errorf("Error! Timer shouldn't be executed")
 	}
 }
 

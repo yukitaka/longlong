@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-type Schedule struct {
+type Timer struct {
 	Month           []int
 	MonthInterval   int
 	Day             []int
@@ -20,7 +20,7 @@ type Schedule struct {
 	WeekdayInterval int
 }
 
-func (s *Schedule) IsExecute(time time.Time) bool {
+func (s *Timer) IsExecute(time time.Time) bool {
 	if s.MinuteInterval > 0 {
 		m := time.Minute()
 		for _, v := range s.Minute {
@@ -33,7 +33,7 @@ func (s *Schedule) IsExecute(time time.Time) bool {
 	return false
 }
 
-func (s *Schedule) SetMinute(minutes []int, interval int) error {
+func (s *Timer) SetMinute(minutes []int, interval int) error {
 	for _, m := range minutes {
 		if m < -1 || m > 59 {
 			return fmt.Errorf("Error: minute %d is out of range", m)
@@ -45,7 +45,7 @@ func (s *Schedule) SetMinute(minutes []int, interval int) error {
 	return nil
 }
 
-func (s *Schedule) SetHour(hours []int, interval int) error {
+func (s *Timer) SetHour(hours []int, interval int) error {
 	for _, m := range hours {
 		if m < -1 || m > 23 {
 			return fmt.Errorf("Error: hour %d is out of range", m)
@@ -57,7 +57,7 @@ func (s *Schedule) SetHour(hours []int, interval int) error {
 	return nil
 }
 
-func (s *Schedule) SetDay(days []int, interval int) error {
+func (s *Timer) SetDay(days []int, interval int) error {
 	for _, m := range days {
 		if m < -1 || m > 31 {
 			return fmt.Errorf("Error: day %d is out of range", m)
@@ -69,7 +69,7 @@ func (s *Schedule) SetDay(days []int, interval int) error {
 	return nil
 }
 
-func (s *Schedule) SetMonth(months []int, interval int) error {
+func (s *Timer) SetMonth(months []int, interval int) error {
 	for _, m := range months {
 		if m < -1 || m > 12 {
 			return fmt.Errorf("Error: month %d is out of range", m)
@@ -81,7 +81,7 @@ func (s *Schedule) SetMonth(months []int, interval int) error {
 	return nil
 }
 
-func (s *Schedule) SetWeekday(weekdays []int, interval int) error {
+func (s *Timer) SetWeekday(weekdays []int, interval int) error {
 	for _, m := range weekdays {
 		if m < -1 || m > 7 {
 			return fmt.Errorf("Error: weekday %d is out of range", m)
@@ -93,8 +93,8 @@ func (s *Schedule) SetWeekday(weekdays []int, interval int) error {
 	return nil
 }
 
-func NewScheduleByCron(cron string) (*Schedule, error) {
-	s := &Schedule{}
+func NewScheduleByCron(cron string) (*Timer, error) {
+	s := &Timer{}
 	parts := strings.Split(cron, " ")
 	for i := 0; i < len(parts); i++ {
 		numbers, interval := splitNumbersAndInterval(parts[i])
