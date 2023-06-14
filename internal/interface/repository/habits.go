@@ -42,7 +42,12 @@ func (h *Habits) Find(id int) (*entity.Habit, error) {
 }
 
 func (h *Habits) Create(name, timer string) (*entity.Habit, error) {
-	return nil, nil
+	t, err := entity.NewTimerByCronSyntax(timer)
+	if err != nil {
+		return nil, err
+	}
+
+	return &entity.Habit{Name: name, Timer: *t}, nil
 }
 
 func (h *Habits) timer(habit_id int) (*entity.Timer, error) {
