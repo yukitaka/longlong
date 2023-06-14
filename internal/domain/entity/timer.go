@@ -93,7 +93,7 @@ func (s *Timer) SetWeekday(weekdays []int, interval int) error {
 	return nil
 }
 
-func NewScheduleByCron(cron string) (*Timer, error) {
+func NewTimerByCronSyntax(cron string) (*Timer, error) {
 	s := &Timer{}
 	parts := strings.Split(cron, " ")
 	for i := 0; i < len(parts); i++ {

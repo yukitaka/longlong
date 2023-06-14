@@ -6,15 +6,15 @@ import (
 	"time"
 )
 
-func TestScheduleByCron(t *testing.T) {
-	sc, _ := NewScheduleByCron("1 * * * *")
+func TestTimerByCronSyntax(t *testing.T) {
+	sc, _ := NewTimerByCronSyntax("1 * * * *")
 	if sc.MinuteInterval != 1 {
 		t.Errorf("MinuteInterval is not 1: %d", sc.HourInterval)
 	}
 	if sc.Minute == nil {
 		t.Errorf("Minute is not 1: %d", sc.HourInterval)
 	}
-	sc, _ = NewScheduleByCron("1/2 * * * *")
+	sc, _ = NewTimerByCronSyntax("1/2 * * * *")
 	if sc.MinuteInterval != 2 {
 		t.Errorf("MinuteInterval is not 2: %d", sc.MinuteInterval)
 	}
@@ -23,16 +23,16 @@ func TestScheduleByCron(t *testing.T) {
 	}
 }
 
-func TestSchedule_IsExecute(t *testing.T) {
-	sc, _ := NewScheduleByCron("* * * * *")
+func TestTimer_IsExecute(t *testing.T) {
+	sc, _ := NewTimerByCronSyntax("* * * * *")
 	if !sc.IsExecute(time.Date(2014, time.March, 19, 12, 15, 10, 0, time.UTC)) {
 		t.Errorf("Error! Timer should be executed")
 	}
-	sc, _ = NewScheduleByCron("0,15,30,45 * * * *")
+	sc, _ = NewTimerByCronSyntax("0,15,30,45 * * * *")
 	if !sc.IsExecute(time.Date(2014, time.March, 19, 12, 15, 10, 0, time.UTC)) {
 		t.Errorf("Error! Timer should be executed")
 	}
-	sc, _ = NewScheduleByCron("0,30,45 * * * *")
+	sc, _ = NewTimerByCronSyntax("0,30,45 * * * *")
 	if sc.IsExecute(time.Date(2014, time.March, 19, 12, 15, 10, 0, time.UTC)) {
 		t.Errorf("Error! Timer shouldn't be executed")
 	}
