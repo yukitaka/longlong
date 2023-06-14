@@ -5,5 +5,6 @@ import "github.com/yukitaka/longlong/internal/domain/entity"
 
 type Habits interface {
 	Find(id int) (*entity.Habit, error)
+	Create(name, timer string) (*entity.Habit, error)
 	Close()
 }
