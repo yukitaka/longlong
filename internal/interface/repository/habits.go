@@ -41,6 +41,10 @@ func (h *Habits) Find(id int) (*entity.Habit, error) {
 	return &habit, nil
 }
 
+func (h *Habits) Create(name, timer string) (*entity.Habit, error) {
+	return nil, nil
+}
+
 func (h *Habits) timer(habit_id int) (*entity.Timer, error) {
 	query := "select t.id, duration_type, number, interval, reference_at from timers t join habits_timers t1 on t.id=t1.timer_id where t.id=$1"
 	type s struct {
