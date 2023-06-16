@@ -60,6 +60,17 @@ func (h *Habits) Create(name, timer string) (*entity.Habit, error) {
 	if err != nil {
 		return nil, err
 	}
+	tx, err := h.DB.Begin()
+	if err != nil {
+		return nil, err
+	}
+	query = "insert into habits (id, name, exp) values ($1, $2, $3)"
+	_, err = h.DB.Exec(query, id, name, 0)
+	if err != nil {
+		fmt.Println(id)
+		return nil, err
+	}
+	err = tx.Commit()
 
 	return &entity.Habit{Id: id, Name: name, Timer: *t}, nil
 }
