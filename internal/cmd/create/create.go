@@ -142,7 +142,16 @@ func (o *Options) Profile(cmd *cobra.Command, args []string) error {
 }
 
 func (o *Options) Habit(cmd *cobra.Command, args []string) error {
-	fmt.Println("Call to create a habit")
+	if len(args) != 2 {
+		fmt.Println("Error: must also specify a name and timer by style of crontab")
+		return nil
+	}
+	itr := usecase.NewHabitCreator(repository.NewHabitsRepository(o.DB))
+	habit, err := itr.New(args[0], args[1])
+	if err != nil {
+		return err
+	}
+	fmt.Printf("Create a habit %s which id is %d\n", habit.Name, habit.Id)
 
 	return nil
 }
