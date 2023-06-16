@@ -58,6 +58,15 @@ func NewCmdCreate(parent string, streams cli.IOStream, member *entity.Organizati
 	userCmd.PersistentFlags().StringP("role", "r", "member", "user role")
 	cmd.AddCommand(userCmd)
 
+	habitCmd := &cobra.Command{
+		Use:   "habit",
+		Short: "Create one habit",
+		Run: func(cmd *cobra.Command, args []string) {
+			util.CheckErr(o.Habit(cmd, args))
+		},
+	}
+	cmd.AddCommand(habitCmd)
+
 	profileCmd := &cobra.Command{
 		Use:   "profile",
 		Short: "Create one profile",
@@ -128,6 +137,21 @@ func (o *Options) Profile(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
+
+	return nil
+}
+
+func (o *Options) Habit(cmd *cobra.Command, args []string) error {
+	if len(args) != 2 {
+		fmt.Println("Error: must also specify a name and timer by style of crontab")
+		return nil
+	}
+	itr := usecase.NewHabitCreator(repository.NewHabitsRepository(o.DB))
+	habit, err := itr.New(args[0], args[1])
+	if err != nil {
+		return err
+	}
+	fmt.Printf("Create a habit %s which id is %d\n", habit.Name, habit.Id)
 
 	return nil
 }
