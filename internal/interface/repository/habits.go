@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/yukitaka/longlong/internal/domain/entity"
@@ -42,12 +43,25 @@ func (h *Habits) Find(id int) (*entity.Habit, error) {
 }
 
 func (h *Habits) Create(name, timer string) (*entity.Habit, error) {
+	query := "select max(id) from habits"
+	row := h.DB.QueryRowx(query)
+	var nullableId sql.NullInt32
+	err := row.Scan(&nullableId)
+	if err != nil {
+		return nil, err
+	}
+	id := 0
+	if nullableId.Valid {
+		id = int(nullableId.Int32)
+		id++
+	}
+
 	t, err := entity.NewTimerByCronSyntax(timer)
 	if err != nil {
 		return nil, err
 	}
 
-	return &entity.Habit{Name: name, Timer: *t}, nil
+	return &entity.Habit{Id: id, Name: name, Timer: *t}, nil
 }
 
 func (h *Habits) timer(habit_id int) (*entity.Timer, error) {
