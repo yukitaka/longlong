@@ -62,7 +62,13 @@ func (h *Habits) Create(name, timer string) (*entity.Habit, error) {
 		return nil, err
 	}
 	timerIds, err := (&Timers{h.DB}).InsertTimers(t)
-	fmt.Printf("%v", timerIds)
+	for _, v := range timerIds {
+		query = "insert into habits_timers (habit_id, timer_id) values ($1, $2)"
+		_, err = h.DB.Exec(query, id, v)
+		if err != nil {
+			return nil, err
+		}
+	}
 	err = tx.Commit()
 
 	return &entity.Habit{Id: id, Name: name, Timer: *t}, nil
