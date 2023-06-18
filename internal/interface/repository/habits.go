@@ -61,38 +61,8 @@ func (h *Habits) Create(name, timer string) (*entity.Habit, error) {
 	if err != nil {
 		return nil, err
 	}
-	insertTimer := func(durationType string, numbers []int, interval int) error {
-		if interval <= 0 || len(numbers) == 0 {
-			return nil
-		}
-		id, err = h.nextId("timers")
-		if err != nil {
-			return err
-		}
-		query = "insert into timers (id, duration_type, number, interval, reference_at) values ($1, $2, $3, $4, $5)"
-		for _, v := range t.Minute {
-			_, err = h.DB.Exec(query, id, durationType, v, t.MinuteInterval, time.Now())
-			if err != nil {
-				return err
-			}
-		}
-		return nil
-	}
-	if err = insertTimer("minute", t.Minute, t.MinuteInterval); err != nil {
-		return nil, err
-	}
-	if err = insertTimer("hour", t.Hour, t.HourInterval); err != nil {
-		return nil, err
-	}
-	if err = insertTimer("day", t.Day, t.DayInterval); err != nil {
-		return nil, err
-	}
-	if err = insertTimer("month", t.Month, t.MonthInterval); err != nil {
-		return nil, err
-	}
-	if err = insertTimer("weekday", t.Weekday, t.WeekdayInterval); err != nil {
-		return nil, err
-	}
+	timerIds, err := (&Timers{h.DB}).InsertTimers(t)
+	fmt.Printf("%v", timerIds)
 	err = tx.Commit()
 
 	return &entity.Habit{Id: id, Name: name, Timer: *t}, nil
