@@ -43,17 +43,9 @@ func (h *Habits) Find(id int) (*entity.Habit, error) {
 }
 
 func (h *Habits) Create(name, timer string) (*entity.Habit, error) {
-	query := "select max(id) from habits"
-	row := h.DB.QueryRowx(query)
-	var nullableId sql.NullInt32
-	err := row.Scan(&nullableId)
+	id, err := h.nextId("habits")
 	if err != nil {
 		return nil, err
-	}
-	id := 0
-	if nullableId.Valid {
-		id = int(nullableId.Int32)
-		id++
 	}
 
 	t, err := entity.NewTimerByCronSyntax(timer)
@@ -64,10 +56,18 @@ func (h *Habits) Create(name, timer string) (*entity.Habit, error) {
 	if err != nil {
 		return nil, err
 	}
-	query = "insert into habits (id, name, exp) values ($1, $2, $3)"
+	query := "insert into habits (id, name, exp) values ($1, $2, $3)"
 	_, err = h.DB.Exec(query, id, name, 0)
 	if err != nil {
-		fmt.Println(id)
+		return nil, err
+	}
+	id, err = h.nextId("timers")
+	if err != nil {
+		return nil, err
+	}
+	query = "insert into timers (id, duration_type, number, interval, reference_at) values ($1, $2, $3, $4, $5)"
+	_, err = h.DB.Exec(query, id, "day", 1, 1, time.Now())
+	if err != nil {
 		return nil, err
 	}
 	err = tx.Commit()
@@ -127,4 +127,21 @@ func (h *Habits) timer(habit_id int) (*entity.Timer, error) {
 	}
 
 	return &t, nil
+}
+
+func (h *Habits) nextId(table string) (int, error) {
+	query := fmt.Sprintf("select max(id) from %s", table)
+	row := h.DB.QueryRowx(query)
+	var nullableId sql.NullInt32
+	err := row.Scan(&nullableId)
+	if err != nil {
+		return -1, err
+	}
+	id := 0
+	if nullableId.Valid {
+		id = int(nullableId.Int32)
+		id++
+	}
+
+	return id, nil
 }
