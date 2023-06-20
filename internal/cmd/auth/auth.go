@@ -1,15 +1,23 @@
 package auth
 
 import (
+	"context"
+	"crypto/tls"
 	"fmt"
 	"github.com/jmoiron/sqlx"
+	"github.com/joho/godotenv"
+	"github.com/skratchdot/open-golang/open"
 	"github.com/spf13/cobra"
 	"github.com/yukitaka/longlong/internal/cli"
 	"github.com/yukitaka/longlong/internal/domain/usecase"
 	"github.com/yukitaka/longlong/internal/interface/repository"
 	"github.com/yukitaka/longlong/internal/util"
+	"golang.org/x/oauth2"
 	"golang.org/x/term"
+	"net/http"
+	"os"
 	"syscall"
+	"time"
 )
 
 type Options struct {
@@ -62,7 +70,67 @@ func (o *Options) Run(args []string) error {
 	return nil
 }
 
+var (
+	conf *oauth2.Config
+	ctx  context.Context
+)
+
+func callbackOAuthHandler(w http.ResponseWriter, r *http.Request) {
+	code := r.URL.Query().Get("code")
+	fmt.Printf("Code: %s\n", code)
+
+	token, err := conf.Exchange(ctx, code)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Token: %s\n", token)
+	client := conf.Client(ctx, token)
+	resp, err := client.Get("http://localhost:9999/mypage")
+	if err == nil {
+		fmt.Println("Authentication successful")
+	} else {
+		panic(err)
+	}
+	defer resp.Body.Close()
+}
+
 func (o *Options) Login(args []string) error {
+	_ = godotenv.Load(".env")
+	fmt.Println("Start login.")
+	clientID := os.Getenv("CLIENT_ID")
+	clientSecret := os.Getenv("CLIENT_SECRET")
+
+	ctx = context.Background()
+	conf = &oauth2.Config{
+		ClientID:     clientID,
+		ClientSecret: clientSecret,
+		Scopes:       []string{"openid", "profile"},
+		Endpoint: oauth2.Endpoint{
+			AuthURL:  "https://github.com/login/oauth/authorize",
+			TokenURL: "https://github.com/login/oauth/access_token",
+		},
+		RedirectURL: "http://localhost:9999",
+	}
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	sslcli := &http.Client{Transport: tr}
+	ctx = context.WithValue(ctx, oauth2.HTTPClient, sslcli)
+	url := conf.AuthCodeURL("state", oauth2.AccessTypeOffline)
+
+	fmt.Println("You will now be taken to your browser for authentication")
+	time.Sleep(1 * time.Second)
+	open.Run(url)
+	time.Sleep(1 * time.Second)
+	fmt.Printf("Authentication URL: %s\n", url)
+
+	http.HandleFunc("/", callbackOAuthHandler)
+	http.HandleFunc("/mypage", func(w http.ResponseWriter, r *http.Request) { fmt.Fprintf(w, "mypage") })
+	err := http.ListenAndServe(":9999", nil)
+	if err != nil {
+		return err
+	}
+
 	authRep := repository.NewAuthenticationsRepository(o.DB)
 	organizationRep := repository.NewOrganizationsRepository(o.DB)
 	memberRep := repository.NewOrganizationMembersRepository(o.DB)
