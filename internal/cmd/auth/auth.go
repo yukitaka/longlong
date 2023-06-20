@@ -14,6 +14,7 @@ import (
 	"github.com/yukitaka/longlong/internal/util"
 	"golang.org/x/oauth2"
 	"golang.org/x/term"
+	"io"
 	"net/http"
 	"os"
 	"syscall"
@@ -85,13 +86,20 @@ func callbackOAuthHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Printf("Token: %s\n", token)
 	client := conf.Client(ctx, token)
-	resp, err := client.Get("http://localhost:9999/mypage")
+	res, err := client.Get("https://api.github.com/user")
 	if err == nil {
-		fmt.Println("Authentication successful")
+		fmt.Printf("Authentication successful %#v\n", res)
+		b, _ := io.ReadAll(res.Body)
+		fmt.Printf("Body: %#v\n", string(b))
 	} else {
 		panic(err)
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			panic(err)
+		}
+	}(res.Body)
 }
 
 func (o *Options) Login(args []string) error {
@@ -104,7 +112,7 @@ func (o *Options) Login(args []string) error {
 	conf = &oauth2.Config{
 		ClientID:     clientID,
 		ClientSecret: clientSecret,
-		Scopes:       []string{"openid", "profile"},
+		Scopes:       []string{"openid", "user"},
 		Endpoint: oauth2.Endpoint{
 			AuthURL:  "https://github.com/login/oauth/authorize",
 			TokenURL: "https://github.com/login/oauth/access_token",
@@ -130,6 +138,7 @@ func (o *Options) Login(args []string) error {
 	if err != nil {
 		return err
 	}
+	fmt.Println("==================================")
 
 	authRep := repository.NewAuthenticationsRepository(o.DB)
 	organizationRep := repository.NewOrganizationsRepository(o.DB)
