@@ -3,6 +3,7 @@ package auth
 import (
 	"context"
 	"crypto/tls"
+	"encoding/json"
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
@@ -89,8 +90,10 @@ func callbackOAuthHandler(w http.ResponseWriter, r *http.Request) {
 	res, err := client.Get("https://api.github.com/user")
 	if err == nil {
 		fmt.Printf("Authentication successful %#v\n", res)
-		b, _ := io.ReadAll(res.Body)
-		fmt.Printf("Body: %#v\n", string(b))
+		jsonBody := make(map[string]interface{})
+		_ = json.NewDecoder(res.Body).Decode(&jsonBody)
+
+		fmt.Printf("Body: %#v\n", jsonBody)
 	} else {
 		panic(err)
 	}
@@ -133,12 +136,10 @@ func (o *Options) Login(args []string) error {
 	fmt.Printf("Authentication URL: %s\n", url)
 
 	http.HandleFunc("/", callbackOAuthHandler)
-	http.HandleFunc("/mypage", func(w http.ResponseWriter, r *http.Request) { fmt.Fprintf(w, "mypage") })
 	err := http.ListenAndServe(":9999", nil)
 	if err != nil {
 		return err
 	}
-	fmt.Println("==================================")
 
 	authRep := repository.NewAuthenticationsRepository(o.DB)
 	organizationRep := repository.NewOrganizationsRepository(o.DB)
