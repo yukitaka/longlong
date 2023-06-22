@@ -147,6 +147,7 @@ func (o *Options) Login(args []string) error {
 			return
 		}
 	}()
+	<-procCtx.Done()
 
 	authRep := repository.NewAuthenticationsRepository(o.DB)
 	organizationRep := repository.NewOrganizationsRepository(o.DB)
