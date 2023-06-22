@@ -75,9 +75,9 @@ func (o *Options) Run(args []string) error {
 var (
 	mux              = http.NewServeMux()
 	srv              = &http.Server{Addr: ":9999", Handler: mux}
+	ctx              = context.Background()
+	procCtx, procCxl = context.WithTimeout(ctx, 3*time.Second)
 	conf             *oauth2.Config
-	ctx              context.Context
-	procCtx, procCxl = context.WithCancel(context.Background())
 )
 
 func callbackOAuthHandler(w http.ResponseWriter, r *http.Request) {
@@ -106,6 +106,22 @@ func callbackOAuthHandler(w http.ResponseWriter, r *http.Request) {
 			panic(err)
 		}
 	}(res.Body)
+
+	var (
+		shutdownCtx, shutdownCxl = context.WithTimeout(ctx, 1*time.Second)
+	)
+	defer shutdownCxl()
+
+	if err := srv.Shutdown(shutdownCtx); err != nil {
+		switch err {
+		case context.DeadlineExceeded:
+			fmt.Println("Sever shutdown timeout")
+		default:
+			fmt.Println(err)
+		}
+
+	}
+	fmt.Println("Sever has been shutdown")
 }
 
 func (o *Options) Login(args []string) error {
@@ -116,7 +132,6 @@ func (o *Options) Login(args []string) error {
 	clientID := os.Getenv("CLIENT_ID")
 	clientSecret := os.Getenv("CLIENT_SECRET")
 
-	ctx = context.Background()
 	conf = &oauth2.Config{
 		ClientID:     clientID,
 		ClientSecret: clientSecret,
