@@ -16,6 +16,7 @@ import (
 	"golang.org/x/oauth2"
 	"golang.org/x/term"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"syscall"
@@ -68,7 +69,7 @@ func NewCmdAuth(parent string, streams cli.IOStream, db *sqlx.DB) *cobra.Command
 }
 
 func (o *Options) Run(args []string) error {
-	fmt.Printf("Args is %v.", args)
+	log.Printf("Args is %v.", args)
 	return nil
 }
 
@@ -82,13 +83,13 @@ var (
 
 func callbackOAuthHandler(w http.ResponseWriter, r *http.Request) {
 	code := r.URL.Query().Get("code")
-	fmt.Printf("Code: %s\n", code)
+	log.Printf("Code: %s\n", code)
 
 	token, err := conf.Exchange(ctx, code)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Token: %s\n", token)
+	log.Printf("Token: %s\n", token)
 	client := conf.Client(ctx, token)
 	res, err := client.Get("https://api.github.com/user")
 	if err == nil {
@@ -96,7 +97,7 @@ func callbackOAuthHandler(w http.ResponseWriter, r *http.Request) {
 		jsonBody := make(map[string]interface{})
 		_ = json.NewDecoder(res.Body).Decode(&jsonBody)
 
-		fmt.Printf("Body: %#v\n", jsonBody)
+		log.Printf("Body: %#v\n", jsonBody)
 	} else {
 		panic(err)
 	}
@@ -115,20 +116,20 @@ func callbackOAuthHandler(w http.ResponseWriter, r *http.Request) {
 	if err := srv.Shutdown(shutdownCtx); err != nil {
 		switch err {
 		case context.DeadlineExceeded:
-			fmt.Println("Sever shutdown timeout")
+			log.Println("Sever shutdown timeout")
 		default:
-			fmt.Println(err)
+			log.Println(err)
 		}
 
 	}
-	fmt.Println("Sever has been shutdown")
+	log.Println("Sever has been shutdown")
 }
 
 func (o *Options) Login(args []string) error {
 	defer procCxl()
 
 	_ = godotenv.Load(".env")
-	fmt.Println("Start login.")
+	log.Println("Start login.")
 	clientID := os.Getenv("CLIENT_ID")
 	clientSecret := os.Getenv("CLIENT_SECRET")
 
@@ -172,7 +173,7 @@ func (o *Options) Login(args []string) error {
 
 	itr := usecase.NewAuthentication(rep)
 
-	fmt.Print("Password: ")
+	log.Print("Password: ")
 	pw, err := term.ReadPassword(syscall.Stdin)
 	if err != nil {
 		return err
@@ -183,7 +184,7 @@ func (o *Options) Login(args []string) error {
 		return fmt.Errorf("\nAuthentication failure (%s)", err)
 	}
 	fmt.Println()
-	fmt.Printf("Login %s %s %d.\n", args[0], args[1], id)
+	log.Printf("Login %s %s %d.\n", args[0], args[1], id)
 
 	return nil
 }
