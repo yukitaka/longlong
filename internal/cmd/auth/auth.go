@@ -16,6 +16,7 @@ import (
 	"golang.org/x/oauth2"
 	"golang.org/x/term"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"syscall"
@@ -68,24 +69,27 @@ func NewCmdAuth(parent string, streams cli.IOStream, db *sqlx.DB) *cobra.Command
 }
 
 func (o *Options) Run(args []string) error {
-	fmt.Printf("Args is %v.", args)
+	log.Printf("Args is %v.", args)
 	return nil
 }
 
 var (
-	conf *oauth2.Config
-	ctx  context.Context
+	mux              = http.NewServeMux()
+	srv              = &http.Server{Addr: ":9999", Handler: mux}
+	ctx              = context.Background()
+	procCtx, procCxl = context.WithTimeout(ctx, 3*time.Second)
+	conf             *oauth2.Config
 )
 
 func callbackOAuthHandler(w http.ResponseWriter, r *http.Request) {
 	code := r.URL.Query().Get("code")
-	fmt.Printf("Code: %s\n", code)
+	log.Printf("Code: %s\n", code)
 
 	token, err := conf.Exchange(ctx, code)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Token: %s\n", token)
+	log.Printf("Token: %s\n", token)
 	client := conf.Client(ctx, token)
 	res, err := client.Get("https://api.github.com/user")
 	if err == nil {
@@ -93,7 +97,7 @@ func callbackOAuthHandler(w http.ResponseWriter, r *http.Request) {
 		jsonBody := make(map[string]interface{})
 		_ = json.NewDecoder(res.Body).Decode(&jsonBody)
 
-		fmt.Printf("Body: %#v\n", jsonBody)
+		log.Printf("Body: %#v\n", jsonBody)
 	} else {
 		panic(err)
 	}
@@ -103,15 +107,32 @@ func callbackOAuthHandler(w http.ResponseWriter, r *http.Request) {
 			panic(err)
 		}
 	}(res.Body)
+
+	var (
+		shutdownCtx, shutdownCxl = context.WithTimeout(ctx, 1*time.Second)
+	)
+	defer shutdownCxl()
+
+	if err := srv.Shutdown(shutdownCtx); err != nil {
+		switch err {
+		case context.DeadlineExceeded:
+			log.Println("Sever shutdown timeout")
+		default:
+			log.Println(err)
+		}
+
+	}
+	log.Println("Sever has been shutdown")
 }
 
 func (o *Options) Login(args []string) error {
+	defer procCxl()
+
 	_ = godotenv.Load(".env")
-	fmt.Println("Start login.")
+	log.Println("Start login.")
 	clientID := os.Getenv("CLIENT_ID")
 	clientSecret := os.Getenv("CLIENT_SECRET")
 
-	ctx = context.Background()
 	conf = &oauth2.Config{
 		ClientID:     clientID,
 		ClientSecret: clientSecret,
@@ -135,11 +156,14 @@ func (o *Options) Login(args []string) error {
 	time.Sleep(1 * time.Second)
 	fmt.Printf("Authentication URL: %s\n", url)
 
-	http.HandleFunc("/", callbackOAuthHandler)
-	err := http.ListenAndServe(":9999", nil)
-	if err != nil {
-		return err
-	}
+	mux.HandleFunc("/", callbackOAuthHandler)
+	go func() {
+		err := srv.ListenAndServe()
+		if err != nil {
+			return
+		}
+	}()
+	<-procCtx.Done()
 
 	authRep := repository.NewAuthenticationsRepository(o.DB)
 	organizationRep := repository.NewOrganizationsRepository(o.DB)
@@ -149,7 +173,7 @@ func (o *Options) Login(args []string) error {
 
 	itr := usecase.NewAuthentication(rep)
 
-	fmt.Print("Password: ")
+	log.Print("Password: ")
 	pw, err := term.ReadPassword(syscall.Stdin)
 	if err != nil {
 		return err
@@ -160,7 +184,7 @@ func (o *Options) Login(args []string) error {
 		return fmt.Errorf("\nAuthentication failure (%s)", err)
 	}
 	fmt.Println()
-	fmt.Printf("Login %s %s %d.\n", args[0], args[1], id)
+	log.Printf("Login %s %s %d.\n", args[0], args[1], id)
 
 	return nil
 }
