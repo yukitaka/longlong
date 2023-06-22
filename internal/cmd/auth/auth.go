@@ -73,8 +73,11 @@ func (o *Options) Run(args []string) error {
 }
 
 var (
-	conf *oauth2.Config
-	ctx  context.Context
+	mux              = http.NewServeMux()
+	srv              = &http.Server{Addr: ":9999", Handler: mux}
+	conf             *oauth2.Config
+	ctx              context.Context
+	procCtx, procCxl = context.WithCancel(context.Background())
 )
 
 func callbackOAuthHandler(w http.ResponseWriter, r *http.Request) {
@@ -106,6 +109,8 @@ func callbackOAuthHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (o *Options) Login(args []string) error {
+	defer procCxl()
+
 	_ = godotenv.Load(".env")
 	fmt.Println("Start login.")
 	clientID := os.Getenv("CLIENT_ID")
@@ -135,11 +140,13 @@ func (o *Options) Login(args []string) error {
 	time.Sleep(1 * time.Second)
 	fmt.Printf("Authentication URL: %s\n", url)
 
-	http.HandleFunc("/", callbackOAuthHandler)
-	err := http.ListenAndServe(":9999", nil)
-	if err != nil {
-		return err
-	}
+	mux.HandleFunc("/", callbackOAuthHandler)
+	go func() {
+		err := srv.ListenAndServe()
+		if err != nil {
+			return
+		}
+	}()
 
 	authRep := repository.NewAuthenticationsRepository(o.DB)
 	organizationRep := repository.NewOrganizationsRepository(o.DB)
