@@ -81,7 +81,7 @@ var (
 	conf             *oauth2.Config
 )
 
-func callbackOAuthHandler(w http.ResponseWriter, r *http.Request) {
+func (o *Options) callbackOAuthHandler(w http.ResponseWriter, r *http.Request) {
 	code := r.URL.Query().Get("code")
 	log.Printf("Code: %s\n", code)
 
@@ -92,15 +92,16 @@ func callbackOAuthHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Token: %s\n", token)
 	client := conf.Client(ctx, token)
 	res, err := client.Get("https://api.github.com/user")
-	if err == nil {
-		fmt.Printf("Authentication successful %#v\n", res)
-		jsonBody := make(map[string]interface{})
-		_ = json.NewDecoder(res.Body).Decode(&jsonBody)
-
-		log.Printf("Body: %#v\n", jsonBody)
-	} else {
+	if err != nil {
 		panic(err)
 	}
+	fmt.Printf("Authentication successful %#v\n", res)
+	jsonBody := make(map[string]interface{})
+	_ = json.NewDecoder(res.Body).Decode(&jsonBody)
+	email := jsonBody["email"].(string)
+	fmt.Println("Email: ", email)
+
+	log.Printf("Body: %#v\n", jsonBody)
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
@@ -123,6 +124,14 @@ func callbackOAuthHandler(w http.ResponseWriter, r *http.Request) {
 
 	}
 	log.Println("Sever has been shutdown")
+
+	authRep := repository.NewAuthenticationsRepository(o.DB)
+	organizationRep := repository.NewOrganizationsRepository(o.DB)
+	memberRep := repository.NewOrganizationMembersRepository(o.DB)
+	rep := usecase.NewAuthenticationRepository(authRep, organizationRep, memberRep)
+	defer rep.Close()
+
+	_ = usecase.NewAuthentication(rep)
 }
 
 func (o *Options) Login(args []string) error {
@@ -156,7 +165,7 @@ func (o *Options) Login(args []string) error {
 	time.Sleep(1 * time.Second)
 	fmt.Printf("Authentication URL: %s\n", url)
 
-	mux.HandleFunc("/", callbackOAuthHandler)
+	mux.HandleFunc("/", o.callbackOAuthHandler)
 	go func() {
 		err := srv.ListenAndServe()
 		if err != nil {
