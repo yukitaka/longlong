@@ -14,12 +14,10 @@ import (
 	"github.com/yukitaka/longlong/internal/interface/repository"
 	"github.com/yukitaka/longlong/internal/util"
 	"golang.org/x/oauth2"
-	"golang.org/x/term"
 	"io"
 	"log"
 	"net/http"
 	"os"
-	"syscall"
 	"time"
 )
 
@@ -81,33 +79,29 @@ var (
 	conf             *oauth2.Config
 )
 
-func (o *Options) callbackOAuthHandler(w http.ResponseWriter, r *http.Request) {
+func (o *authData) callbackOAuth(w http.ResponseWriter, r *http.Request) {
 	code := r.URL.Query().Get("code")
 	log.Printf("Code: %s\n", code)
 
-	token, err := conf.Exchange(ctx, code)
+	oauthToken, err := conf.Exchange(ctx, code)
+	o.token <- oauthToken.AccessToken
 	if err != nil {
 		panic(err)
 	}
-	log.Printf("Token: %s\n", token)
-	client := conf.Client(ctx, token)
+	client := conf.Client(ctx, oauthToken)
 	res, err := client.Get("https://api.github.com/user")
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Authentication successful %#v\n", res)
-	jsonBody := make(map[string]interface{})
-	_ = json.NewDecoder(res.Body).Decode(&jsonBody)
-	email := jsonBody["email"].(string)
-	fmt.Println("Email: ", email)
-
-	log.Printf("Body: %#v\n", jsonBody)
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
 			panic(err)
 		}
 	}(res.Body)
+	jsonBody := make(map[string]interface{})
+	_ = json.NewDecoder(res.Body).Decode(&jsonBody)
+	o.email <- jsonBody["email"].(string)
 
 	var (
 		shutdownCtx, shutdownCxl = context.WithTimeout(ctx, 1*time.Second)
@@ -124,14 +118,40 @@ func (o *Options) callbackOAuthHandler(w http.ResponseWriter, r *http.Request) {
 
 	}
 	log.Println("Sever has been shutdown")
+}
 
-	authRep := repository.NewAuthenticationsRepository(o.DB)
-	organizationRep := repository.NewOrganizationsRepository(o.DB)
-	memberRep := repository.NewOrganizationMembersRepository(o.DB)
+func (d *authData) auth(db *sqlx.DB) {
+	var email, token string
+L:
+	for {
+		select {
+		case token = <-d.token:
+		case email = <-d.email:
+		}
+		if email != "" && token != "" {
+			break L
+		}
+	}
+
+	authRep := repository.NewAuthenticationsRepository(db)
+	organizationRep := repository.NewOrganizationsRepository(db)
+	memberRep := repository.NewOrganizationMembersRepository(db)
 	rep := usecase.NewAuthenticationRepository(authRep, organizationRep, memberRep)
 	defer rep.Close()
 
-	_ = usecase.NewAuthentication(rep)
+	itr := usecase.NewAuthentication(rep)
+
+	id, err := itr.AuthOAuth(email, token)
+	if err != nil {
+		return
+	}
+	fmt.Println()
+	log.Printf("Login %s %s %d.\n", email, token, id)
+}
+
+type authData struct {
+	email chan string
+	token chan string
 }
 
 func (o *Options) Login(args []string) error {
@@ -165,35 +185,16 @@ func (o *Options) Login(args []string) error {
 	time.Sleep(1 * time.Second)
 	fmt.Printf("Authentication URL: %s\n", url)
 
-	mux.HandleFunc("/", o.callbackOAuthHandler)
+	passer := &authData{email: make(chan (string)), token: make(chan (string))}
+	mux.HandleFunc("/", passer.callbackOAuth)
 	go func() {
 		err := srv.ListenAndServe()
 		if err != nil {
 			return
 		}
 	}()
+	passer.auth(o.DB)
 	<-procCtx.Done()
-
-	authRep := repository.NewAuthenticationsRepository(o.DB)
-	organizationRep := repository.NewOrganizationsRepository(o.DB)
-	memberRep := repository.NewOrganizationMembersRepository(o.DB)
-	rep := usecase.NewAuthenticationRepository(authRep, organizationRep, memberRep)
-	defer rep.Close()
-
-	itr := usecase.NewAuthentication(rep)
-
-	log.Print("Password: ")
-	pw, err := term.ReadPassword(syscall.Stdin)
-	if err != nil {
-		return err
-	}
-
-	id, err := itr.Auth(args[0], args[1], string(pw))
-	if err != nil {
-		return fmt.Errorf("\nAuthentication failure (%s)", err)
-	}
-	fmt.Println()
-	log.Printf("Login %s %s %d.\n", args[0], args[1], id)
 
 	return nil
 }
