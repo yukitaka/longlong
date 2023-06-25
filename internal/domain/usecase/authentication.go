@@ -31,6 +31,10 @@ func NewAuthentication(repository *AuthenticationRepository) *Authentication {
 	return &Authentication{repository}
 }
 
+func (it *Authentication) AuthOAuth(id, token string) (int, error) {
+	return -1, nil
+}
+
 func (it *Authentication) Auth(organization, identify, password string) (int, error) {
 	id, token, err := it.repository.Authentications.FindToken(identify)
 	if err != nil {

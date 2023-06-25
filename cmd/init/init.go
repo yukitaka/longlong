@@ -105,6 +105,9 @@ func sqlite() error {
 }
 
 func initSql(db *sql.DB) error {
+	_ = godotenv.Load(".env")
+	ownerID := os.Getenv("OWNER_ID")
+
 	hash, err := bcrypt.GenerateFromPassword([]byte("password"), bcrypt.DefaultCost)
 	if err != nil {
 		return err
@@ -134,13 +137,13 @@ func initSql(db *sql.DB) error {
 	create table habits_timers (habit_id integer not null, timer_id integer not null, foreign key (habit_id) references habits (id), foreign key (timer_id) references timers (id));
 	insert into organizations (id, name) values (1, 'longlong');
 	insert into users (id) values (1);
-	insert into profiles (id, nick_name, full_name, biography) values (1, 'yukitaka', 'Takayuki Sato', 'I am a software engineer.');
+	insert into profiles (id, nick_name, full_name, biography) values (1, 'admin', 'Admin', 'I am a administrator.');
 	insert into user_profiles (user_id, profile_id) values (1, 1);
-	insert into individuals (id, name, user_id, profile_id) values (1, 'yukitaka', 1, 1);
+	insert into individuals (id, name, user_id, profile_id) values (1, 'admin', 1, 1);
 	insert into organization_members (organization_id, individual_id, role) values (1, 1, 0);
-	insert into authentications (id, identify, token, individual_id) values (1, 'yukitaka', '%s', 1);
+	insert into authentications (id, identify, token, individual_id) values (1, '%s', '%s', 1);
 	`
-	_, err = db.Exec(fmt.Sprintf(query, hash))
+	_, err = db.Exec(fmt.Sprintf(query, ownerID, hash))
 	if err != nil {
 		return err
 	}
