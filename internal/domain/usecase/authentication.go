@@ -31,7 +31,7 @@ func NewAuthentication(repository *AuthenticationRepository) *Authentication {
 	return &Authentication{repository}
 }
 
-func (it *Authentication) AuthOAuth(email, token string) (int, error) {
+func (it *Authentication) AuthOAuth(id, token string) (int, error) {
 	return -1, nil
 }
 

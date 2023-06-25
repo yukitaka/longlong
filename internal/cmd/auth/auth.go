@@ -101,7 +101,7 @@ func (o *authData) callbackOAuth(w http.ResponseWriter, r *http.Request) {
 	}(res.Body)
 	jsonBody := make(map[string]interface{})
 	_ = json.NewDecoder(res.Body).Decode(&jsonBody)
-	o.email <- jsonBody["email"].(string)
+	o.login <- jsonBody["login"].(string)
 
 	var (
 		shutdownCtx, shutdownCxl = context.WithTimeout(ctx, 1*time.Second)
@@ -121,14 +121,14 @@ func (o *authData) callbackOAuth(w http.ResponseWriter, r *http.Request) {
 }
 
 func (d *authData) auth(db *sqlx.DB) {
-	var email, token string
+	var login, token string
 L:
 	for {
 		select {
+		case login = <-d.login:
 		case token = <-d.token:
-		case email = <-d.email:
 		}
-		if email != "" && token != "" {
+		if login != "" && token != "" {
 			break L
 		}
 	}
@@ -141,16 +141,16 @@ L:
 
 	itr := usecase.NewAuthentication(rep)
 
-	id, err := itr.AuthOAuth(email, token)
+	id, err := itr.AuthOAuth(login, token)
 	if err != nil {
 		return
 	}
 	fmt.Println()
-	log.Printf("Login %s %s %d.\n", email, token, id)
+	log.Printf("Login %s %s %d.\n", login, token, id)
 }
 
 type authData struct {
-	email chan string
+	login chan string
 	token chan string
 }
 
@@ -185,7 +185,7 @@ func (o *Options) Login(args []string) error {
 	time.Sleep(1 * time.Second)
 	fmt.Printf("Authentication URL: %s\n", url)
 
-	passer := &authData{email: make(chan (string)), token: make(chan (string))}
+	passer := &authData{login: make(chan (string)), token: make(chan (string))}
 	mux.HandleFunc("/", passer.callbackOAuth)
 	go func() {
 		err := srv.ListenAndServe()
