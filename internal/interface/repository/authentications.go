@@ -73,3 +73,13 @@ func (rep *Authentications) FindToken(identify string) (int, string, error) {
 
 	return id, token, nil
 }
+
+func (rep *Authentications) UpdateToken(id int, token string) error {
+	query := "update authentications set token=$1 where id=$2"
+	_, err := rep.DB.Exec(query, token, id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

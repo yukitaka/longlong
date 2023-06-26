@@ -4,5 +4,6 @@ package repository
 type Authentications interface {
 	Create(identify, token string) (int, error)
 	FindToken(identify string) (int, string, error)
+	UpdateToken(id int, token string) error
 	Close()
 }

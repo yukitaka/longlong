@@ -31,8 +31,19 @@ func NewAuthentication(repository *AuthenticationRepository) *Authentication {
 	return &Authentication{repository}
 }
 
-func (it *Authentication) AuthOAuth(id, token string) (int, error) {
-	return -1, nil
+func (it *Authentication) AuthOAuth(identify, token string) (int, error) {
+	id, dbToken, err := it.repository.Authentications.FindToken(identify)
+	if err != nil {
+		return -1, err
+	}
+	if token != dbToken {
+		err = it.repository.Authentications.UpdateToken(id, token)
+		if err != nil {
+			return id, err
+		}
+	}
+
+	return id, nil
 }
 
 func (it *Authentication) Auth(organization, identify, password string) (int, error) {

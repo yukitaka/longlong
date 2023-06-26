@@ -125,13 +125,13 @@ func (o *OAuth) callbackOAuth(w http.ResponseWriter, r *http.Request) {
 	log.Println("Sever has been shutdown")
 }
 
-func (d *OAuth) auth(db *sqlx.DB) {
+func (o *OAuth) auth(db *sqlx.DB) {
 	var login, token string
 L:
 	for {
 		select {
-		case login = <-d.login:
-		case token = <-d.token:
+		case login = <-o.login:
+		case token = <-o.token:
 		}
 		if login != "" && token != "" {
 			break L
