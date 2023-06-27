@@ -36,10 +36,10 @@ func NewCmdAuth(parent string, streams cli.IOStream, db *sqlx.DB) *cobra.Command
 	}
 
 	loginCmd := &cobra.Command{
-		Use:   "login [ORGANIZATION] [ACCOUNT]",
+		Use:   "login [ORGANIZATION]",
 		Short: "Authorize access to Longlong",
 		Args: func(cmd *cobra.Command, args []string) error {
-			if err := cobra.MinimumNArgs(2)(cmd, args); err != nil {
+			if err := cobra.MinimumNArgs(1)(cmd, args); err != nil {
 				return err
 			}
 			return nil

@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/jmoiron/sqlx"
-	"github.com/joho/godotenv"
 	"github.com/skratchdot/open-golang/open"
 	"github.com/yukitaka/longlong/internal/domain/usecase"
 	"github.com/yukitaka/longlong/internal/interface/repository"
@@ -14,7 +13,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"os"
 	"time"
 )
 
@@ -41,20 +39,7 @@ func NewOAuth() *OAuth {
 func (o *OAuth) Run(db *sqlx.DB) error {
 	defer procCxl()
 
-	_ = godotenv.Load(".env")
-	clientID := os.Getenv("CLIENT_ID")
-	clientSecret := os.Getenv("CLIENT_SECRET")
-
-	conf = &oauth2.Config{
-		ClientID:     clientID,
-		ClientSecret: clientSecret,
-		Scopes:       []string{"openid", "user"},
-		Endpoint: oauth2.Endpoint{
-			AuthURL:  "https://github.com/login/oauth/authorize",
-			TokenURL: "https://github.com/login/oauth/access_token",
-		},
-		RedirectURL: "http://localhost:9999",
-	}
+	conf = NewOAuthConf([]string{"user"})
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
