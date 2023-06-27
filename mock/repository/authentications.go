@@ -6,6 +6,7 @@ package mock_repository
 
 import (
 	reflect "reflect"
+	time "time"
 
 	gomock "github.com/golang/mock/gomock"
 )
@@ -74,4 +75,33 @@ func (m *MockAuthentications) FindToken(identify string) (int, string, error) {
 func (mr *MockAuthenticationsMockRecorder) FindToken(identify interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindToken", reflect.TypeOf((*MockAuthentications)(nil).FindToken), identify)
+}
+
+// StoreOAuth2Info mocks base method.
+func (m *MockAuthentications) StoreOAuth2Info(identify, accessToken, tokenType, refreshToken string, expiry time.Time) (bool, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "StoreOAuth2Info", identify, accessToken, tokenType, refreshToken, expiry)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// StoreOAuth2Info indicates an expected call of StoreOAuth2Info.
+func (mr *MockAuthenticationsMockRecorder) StoreOAuth2Info(identify, accessToken, tokenType, refreshToken, expiry interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "StoreOAuth2Info", reflect.TypeOf((*MockAuthentications)(nil).StoreOAuth2Info), identify, accessToken, tokenType, refreshToken, expiry)
+}
+
+// UpdateToken mocks base method.
+func (m *MockAuthentications) UpdateToken(id int, token string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateToken", id, token)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateToken indicates an expected call of UpdateToken.
+func (mr *MockAuthenticationsMockRecorder) UpdateToken(id, token interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateToken", reflect.TypeOf((*MockAuthentications)(nil).UpdateToken), id, token)
 }

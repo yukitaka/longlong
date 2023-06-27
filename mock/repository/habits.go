@@ -46,6 +46,21 @@ func (mr *MockHabitsMockRecorder) Close() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Close", reflect.TypeOf((*MockHabits)(nil).Close))
 }
 
+// Create mocks base method.
+func (m *MockHabits) Create(name, timer string) (*entity.Habit, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Create", name, timer)
+	ret0, _ := ret[0].(*entity.Habit)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Create indicates an expected call of Create.
+func (mr *MockHabitsMockRecorder) Create(name, timer interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockHabits)(nil).Create), name, timer)
+}
+
 // Find mocks base method.
 func (m *MockHabits) Find(id int) (*entity.Habit, error) {
 	m.ctrl.T.Helper()

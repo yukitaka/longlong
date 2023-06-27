@@ -122,10 +122,12 @@ func initSql(db *sql.DB) error {
 	drop table if exists organization_members;
 	drop table if exists organizations;
 	drop table if exists authentications;
+	drop table if exists oauth_authentications;
 	drop table if exists habits_timers;
 	drop table if exists timers;
 	drop table if exists habits;
 	create table authentications (id integer not null primary key, identify text not null, token text not null, individual_id integer);
+	create table oauth_authentications (identify text not null primary key, access_token text not null, token_type text not null, refresh_token text, expiry timestamp, individual_id integer);
 	create table organizations (id integer not null primary key, parent_id integer not null default 0, name text);
 	create table organization_members (organization_id integer not null, individual_id integer not null, role integer);
 	create table users (id integer not null primary key);

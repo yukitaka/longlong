@@ -135,6 +135,10 @@ L:
 
 	itr := usecase.NewAuthentication(rep)
 
+	if ok, err := itr.StoreOAuth2Info(login, token.AccessToken, token.TokenType, token.RefreshToken, token.Expiry); !ok {
+		log.Fatal(err)
+		return
+	}
 	id, err := itr.AuthOAuth(login, token.AccessToken)
 	if err != nil {
 		return
