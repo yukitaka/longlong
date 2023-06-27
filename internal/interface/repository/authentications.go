@@ -7,6 +7,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
 	rep "github.com/yukitaka/longlong/internal/domain/repository"
+	"time"
 )
 
 type Authentications struct {
@@ -82,4 +83,13 @@ func (rep *Authentications) UpdateToken(id int, token string) error {
 	}
 
 	return nil
+}
+
+func (rep *Authentications) StoreOAuth2Info(identify, accessToken, tokenType, refreshToken string, expiry time.Time) (bool, error) {
+	query := "insert into oauth_authentications (identify, access_token, token_type, refresh_token, expiry) values ($1, $2, $3, $4, $5)"
+	_, err := rep.DB.Exec(query, identify, accessToken, tokenType, refreshToken, expiry)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
 }

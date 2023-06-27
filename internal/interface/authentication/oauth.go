@@ -26,13 +26,13 @@ var (
 
 type OAuth struct {
 	login chan string
-	token chan string
+	token chan *oauth2.Token
 }
 
 func NewOAuth() *OAuth {
 	return &OAuth{
 		login: make(chan string),
-		token: make(chan string),
+		token: make(chan *oauth2.Token),
 	}
 }
 
@@ -74,7 +74,10 @@ func (o *OAuth) callbackOAuth(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Code: %s\n", code)
 
 	oauthToken, err := conf.Exchange(ctx, code)
-	o.token <- oauthToken.AccessToken
+	if err != nil {
+		log.Fatal(err)
+	}
+	o.token <- oauthToken
 	if err != nil {
 		panic(err)
 	}
@@ -111,14 +114,15 @@ func (o *OAuth) callbackOAuth(w http.ResponseWriter, r *http.Request) {
 }
 
 func (o *OAuth) auth(db *sqlx.DB) {
-	var login, token string
+	var login string
+	var token *oauth2.Token
 L:
 	for {
 		select {
 		case login = <-o.login:
 		case token = <-o.token:
 		}
-		if login != "" && token != "" {
+		if login != "" && token != nil {
 			break L
 		}
 	}
@@ -131,7 +135,11 @@ L:
 
 	itr := usecase.NewAuthentication(rep)
 
-	id, err := itr.AuthOAuth(login, token)
+	if ok, err := itr.StoreOAuth2Info(login, token.AccessToken, token.TokenType, token.RefreshToken, token.Expiry); !ok {
+		log.Fatal(err)
+		return
+	}
+	id, err := itr.AuthOAuth(login, token.AccessToken)
 	if err != nil {
 		return
 	}
