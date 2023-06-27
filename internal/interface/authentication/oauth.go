@@ -11,6 +11,7 @@ import (
 	"github.com/yukitaka/longlong/internal/domain/usecase"
 	"github.com/yukitaka/longlong/internal/interface/repository"
 	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/github"
 	"io"
 	"log"
 	"net/http"
@@ -49,11 +50,8 @@ func (o *OAuth) Run(db *sqlx.DB) error {
 		ClientID:     clientID,
 		ClientSecret: clientSecret,
 		Scopes:       []string{"openid", "user"},
-		Endpoint: oauth2.Endpoint{
-			AuthURL:  "https://github.com/login/oauth/authorize",
-			TokenURL: "https://github.com/login/oauth/access_token",
-		},
-		RedirectURL: "http://localhost:9999",
+		Endpoint:     github.Endpoint,
+		RedirectURL:  "http://localhost:9999",
 	}
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
