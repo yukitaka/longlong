@@ -25,8 +25,11 @@ var (
 )
 
 type OAuth struct {
-	login chan string
-	token chan *oauth2.Token
+	login        chan string
+	token        chan *oauth2.Token
+	AccessToken  string
+	RefreshToken string
+	Expiry       time.Time
 }
 
 func NewOAuth() *OAuth {
@@ -126,6 +129,9 @@ L:
 			break L
 		}
 	}
+	o.AccessToken = token.AccessToken
+	o.RefreshToken = token.RefreshToken
+	o.Expiry = token.Expiry
 
 	authRep := repository.NewAuthenticationsRepository(db)
 	organizationRep := repository.NewOrganizationsRepository(db)
