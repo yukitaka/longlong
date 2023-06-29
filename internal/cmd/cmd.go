@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -23,8 +24,11 @@ import (
 
 type config struct {
 	Authorize struct {
-		UserId         int `mapstructure:"user_id"`
-		OrganizationId int `mapstructure:"organization_id"`
+		UserId         int       `mapstructure:"user_id"`
+		OrganizationId int       `mapstructure:"organization_id"`
+		AccessToken    int       `mapstructure:"access_token"`
+		RefreshToken   int       `mapstructure:"refresh_token"`
+		Expiry         time.Time `mapstructure:"expiry"`
 	}
 	Datastore struct {
 		Driver string `mapstructure:"driver"`
