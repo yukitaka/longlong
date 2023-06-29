@@ -4,6 +4,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/spf13/cobra"
 	"github.com/yukitaka/longlong/internal/cli"
+	"github.com/yukitaka/longlong/internal/cmd/config"
 	"github.com/yukitaka/longlong/internal/interface/authentication"
 	"github.com/yukitaka/longlong/internal/util"
 	"log"
@@ -11,20 +12,22 @@ import (
 
 type Options struct {
 	CmdParent string
+	*config.Config
 	*sqlx.DB
 	cli.IOStream
 }
 
-func NewAuthOptions(parent string, streams cli.IOStream, db *sqlx.DB) *Options {
+func NewAuthOptions(parent string, config *config.Config, db *sqlx.DB, streams cli.IOStream) *Options {
 	return &Options{
 		CmdParent: parent,
+		Config:    config,
 		DB:        db,
 		IOStream:  streams,
 	}
 }
 
-func NewCmdAuth(parent string, streams cli.IOStream, db *sqlx.DB) *cobra.Command {
-	o := NewAuthOptions(parent, streams, db)
+func NewCmdAuth(parent string, config *config.Config, db *sqlx.DB, streams cli.IOStream) *cobra.Command {
+	o := NewAuthOptions(parent, config, db, streams)
 
 	cmd := &cobra.Command{
 		Use:     "auth",
