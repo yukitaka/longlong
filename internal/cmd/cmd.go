@@ -3,7 +3,15 @@ package cmd
 import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"github.com/yukitaka/longlong/internal/cli"
+	"github.com/yukitaka/longlong/internal/cmd/auth"
+	"github.com/yukitaka/longlong/internal/cmd/config"
+	"github.com/yukitaka/longlong/internal/cmd/create"
 	"github.com/yukitaka/longlong/internal/cmd/del"
+	"github.com/yukitaka/longlong/internal/cmd/get"
+	"github.com/yukitaka/longlong/internal/cmd/put"
 	"github.com/yukitaka/longlong/internal/domain/entity"
 	"github.com/yukitaka/longlong/internal/domain/usecase"
 	"github.com/yukitaka/longlong/internal/interface/datastore"
@@ -11,37 +19,19 @@ import (
 	"os"
 	"os/exec"
 	"strings"
-
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-	"github.com/yukitaka/longlong/internal/cli"
-	"github.com/yukitaka/longlong/internal/cmd/auth"
-	"github.com/yukitaka/longlong/internal/cmd/create"
-	"github.com/yukitaka/longlong/internal/cmd/get"
-	"github.com/yukitaka/longlong/internal/cmd/put"
 )
-
-type config struct {
-	Authorize struct {
-		UserId         int `mapstructure:"user_id"`
-		OrganizationId int `mapstructure:"organization_id"`
-	}
-	Datastore struct {
-		Driver string `mapstructure:"driver"`
-		Source string `mapstructure:"source"`
-	}
-}
 
 type LlctlOptions struct {
 	CmdHandler Handler
 	Arguments  []string
 	Operator   entity.OrganizationMember
+	*config.Config
 	*sqlx.DB
 	cli.IOStream
 }
 
 func NewLlctlCommand() *cobra.Command {
-	var conf config
+	var conf config.Config
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath("$HOME/.config/llctl")
@@ -69,6 +59,7 @@ func NewLlctlCommand() *cobra.Command {
 		CmdHandler: NewDefaultHandler([]string{"llctl"}),
 		Arguments:  os.Args,
 		Operator:   operator,
+		Config:     &conf,
 		DB:         con,
 		IOStream: cli.IOStream{
 			In:     os.Stdin,
@@ -88,7 +79,7 @@ llctl controls the LongLong manager.
 Find more information at:
 https://github.com/yukitaka/longlong/`,
 	}
-	cmdGroup.AddCommand(auth.NewCmdAuth("llctl", o.IOStream, o.DB))
+	cmdGroup.AddCommand(auth.NewCmdAuth("llctl", o.Config, o.DB, o.IOStream))
 	cmdGroup.AddCommand(get.NewCmdGet("llctl", o.IOStream, &o.Operator, o.DB))
 	cmdGroup.AddCommand(put.NewCmdPut("llctl", o.IOStream, &o.Operator, o.DB))
 	cmdGroup.AddCommand(del.NewCmdDelete("llctl", o.IOStream, &o.Operator, o.DB))
