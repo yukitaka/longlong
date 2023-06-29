@@ -3,7 +3,14 @@ package cmd
 import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"github.com/yukitaka/longlong/internal/cli"
+	"github.com/yukitaka/longlong/internal/cmd/auth"
+	"github.com/yukitaka/longlong/internal/cmd/create"
 	"github.com/yukitaka/longlong/internal/cmd/del"
+	"github.com/yukitaka/longlong/internal/cmd/get"
+	"github.com/yukitaka/longlong/internal/cmd/put"
 	"github.com/yukitaka/longlong/internal/domain/entity"
 	"github.com/yukitaka/longlong/internal/domain/usecase"
 	"github.com/yukitaka/longlong/internal/interface/datastore"
@@ -11,30 +18,7 @@ import (
 	"os"
 	"os/exec"
 	"strings"
-	"time"
-
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-	"github.com/yukitaka/longlong/internal/cli"
-	"github.com/yukitaka/longlong/internal/cmd/auth"
-	"github.com/yukitaka/longlong/internal/cmd/create"
-	"github.com/yukitaka/longlong/internal/cmd/get"
-	"github.com/yukitaka/longlong/internal/cmd/put"
 )
-
-type config struct {
-	Authorize struct {
-		UserId         int       `mapstructure:"user_id"`
-		OrganizationId int       `mapstructure:"organization_id"`
-		AccessToken    int       `mapstructure:"access_token"`
-		RefreshToken   int       `mapstructure:"refresh_token"`
-		Expiry         time.Time `mapstructure:"expiry"`
-	}
-	Datastore struct {
-		Driver string `mapstructure:"driver"`
-		Source string `mapstructure:"source"`
-	}
-}
 
 type LlctlOptions struct {
 	CmdHandler Handler
@@ -45,7 +29,7 @@ type LlctlOptions struct {
 }
 
 func NewLlctlCommand() *cobra.Command {
-	var conf config
+	var conf Config
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath("$HOME/.config/llctl")
