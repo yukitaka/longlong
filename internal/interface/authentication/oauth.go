@@ -32,10 +32,13 @@ type OAuth struct {
 	Expiry       time.Time
 }
 
-func NewOAuth() *OAuth {
+func NewOAuth(accessToken, refreshToken string, expiry time.Time) *OAuth {
 	return &OAuth{
-		login: make(chan string),
-		token: make(chan *oauth2.Token),
+		login:        make(chan string),
+		token:        make(chan *oauth2.Token),
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+		Expiry:       expiry,
 	}
 }
 
@@ -76,15 +79,24 @@ func (o *OAuth) callbackOAuth(w http.ResponseWriter, r *http.Request) {
 	code := r.URL.Query().Get("code")
 	log.Printf("Code: %s\n", code)
 
-	oauthToken, err := conf.Exchange(ctx, code)
-	if err != nil {
-		log.Fatal(err)
-	}
-	o.token <- oauthToken
-	if err != nil {
-		panic(err)
+	var oauthToken *oauth2.Token
+	if o.AccessToken != "" {
+		oauthToken = &oauth2.Token{
+			AccessToken:  o.AccessToken,
+			RefreshToken: o.RefreshToken,
+			Expiry:       o.Expiry,
+		}
+		fmt.Println("Already token")
+	} else {
+		var err error
+		oauthToken, err = conf.Exchange(ctx, code)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println("New token")
 	}
 	client := conf.Client(ctx, oauthToken)
+	o.token <- oauthToken
 	res, err := client.Get("https://api.github.com/user")
 	if err != nil {
 		panic(err)
