@@ -64,7 +64,7 @@ func (o *Options) Run(args []string) error {
 
 func (o *Options) Login(args []string) error {
 	log.Println("Start login.")
-	oauth := authentication.NewOAuth()
+	oauth := authentication.NewOAuth(o.Config.Authorize.AccessToken, o.Config.Authorize.RefreshToken, o.Config.Authorize.Expiry)
 	err := oauth.Run(o.DB)
 	o.Config.Store(oauth.AccessToken, oauth.RefreshToken, oauth.Expiry)
 	if err != nil {

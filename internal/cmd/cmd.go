@@ -48,7 +48,7 @@ func NewLlctlCommand() *cobra.Command {
 	itr := usecase.NewOrganizationMemberFinder(repository.NewOrganizationMembersRepository(con))
 	member, err := itr.FindById(conf.Authorize.OrganizationId, conf.Authorize.UserId)
 	if err != nil {
-		panic("internal/cmd/cmd.go:61 " + err.Error())
+		panic("internal/cmd/cmd.go:51 " + err.Error())
 	}
 	if member == nil {
 		panic("Not found the operator.")
