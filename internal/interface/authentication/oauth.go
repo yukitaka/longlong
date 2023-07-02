@@ -141,10 +141,20 @@ L:
 			break L
 		}
 	}
+
 	o.AccessToken = token.AccessToken
 	o.RefreshToken = token.RefreshToken
 	o.Expiry = token.Expiry
 
+	id, err := o.storeDB(db, login)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println()
+	log.Printf("Login %s %s %d.\n", login, token, id)
+}
+
+func (o *OAuth) storeDB(db *sqlx.DB, login string) (int, error) {
 	authRep := repository.NewAuthenticationsRepository(db)
 	organizationRep := repository.NewOrganizationsRepository(db)
 	memberRep := repository.NewOrganizationMembersRepository(db)
@@ -153,14 +163,13 @@ L:
 
 	itr := usecase.NewAuthentication(rep)
 
-	if ok, err := itr.StoreOAuth2Info(login, token.AccessToken, token.TokenType, token.RefreshToken, token.Expiry); !ok {
-		log.Fatal(err)
-		return
+	if ok, err := itr.StoreOAuth2Info(login, o.AccessToken, o.RefreshToken, o.Expiry); !ok {
+		return -1, err
 	}
-	id, err := itr.AuthOAuth(login, token.AccessToken)
+	id, err := itr.AuthOAuth(login, o.AccessToken)
 	if err != nil {
-		return
+		return -1, err
 	}
-	fmt.Println()
-	log.Printf("Login %s %s %d.\n", login, token, id)
+
+	return id, nil
 }
