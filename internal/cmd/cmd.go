@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"github.com/yukitaka/longlong/internal/cli"
 	"github.com/yukitaka/longlong/internal/cmd/auth"
 	"github.com/yukitaka/longlong/internal/cmd/config"
@@ -31,17 +30,9 @@ type LlctlOptions struct {
 }
 
 func NewLlctlCommand() *cobra.Command {
-	var conf config.Config
-	viper.SetConfigName("config")
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath("$HOME/.config/llctl")
-	if err := viper.ReadInConfig(); err != nil {
-		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
-			panic(fmt.Errorf("fatal error config file: %w", err))
-		}
-	}
-	if err := viper.Unmarshal(&conf); err != nil {
-		panic(err)
+	conf, err := config.LoadFromFile("config", "yaml", "$HOME/.config/llctl")
+	if err != nil {
+		panic(fmt.Errorf("fatal error config file: %w", err))
 	}
 
 	con, _ := datastore.NewConnectionOpen(conf.Datastore.Driver, conf.Datastore.Source)
