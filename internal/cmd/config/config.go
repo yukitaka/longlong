@@ -22,9 +22,9 @@ type Config struct {
 
 func LoadFromFile(name, fileType, path string) (Config, error) {
 	var conf Config
-	viper.SetConfigName("config")
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath("$HOME/.config/llctl")
+	viper.SetConfigName(name)
+	viper.SetConfigType(fileType)
+	viper.AddConfigPath(path)
 	if err := viper.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
 		}
