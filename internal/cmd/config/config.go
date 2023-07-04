@@ -1,7 +1,6 @@
 package config
 
 import (
-	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
 	"time"
 )
@@ -22,9 +21,9 @@ type Config struct {
 
 func LoadFromFile(name, fileType, path string) (Config, error) {
 	var conf Config
-	viper.SetConfigName("config")
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath("$HOME/.config/llctl")
+	viper.SetConfigName(name)
+	viper.SetConfigType(fileType)
+	viper.AddConfigPath(path)
 	if err := viper.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
 		}
@@ -41,13 +40,6 @@ func (c *Config) Store(accessToken, refreshToken string, expiry time.Time) {
 	c.Authorize.RefreshToken = refreshToken
 	c.Authorize.Expiry = expiry
 
-	data := map[string]interface{}{}
-	if err := mapstructure.Decode(c, &data); err != nil {
-		panic(err)
-	}
-	if err := viper.MergeConfigMap(data); err != nil {
-		panic(err)
-	}
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath("$HOME/.config/llctl")
