@@ -24,9 +24,17 @@ var (
 	conf             *oauth2.Config
 )
 
+type OAuthState struct {
+	login chan string
+	token chan *oauth2.Token
+}
+
+var state = &OAuthState{
+	login: make(chan string),
+	token: make(chan *oauth2.Token),
+}
+
 type OAuth struct {
-	login        chan string
-	token        chan *oauth2.Token
 	AccessToken  string
 	RefreshToken string
 	Expiry       time.Time
@@ -34,8 +42,6 @@ type OAuth struct {
 
 func NewOAuth(accessToken, refreshToken string, expiry time.Time) *OAuth {
 	return &OAuth{
-		login:        make(chan string),
-		token:        make(chan *oauth2.Token),
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 		Expiry:       expiry,
@@ -44,6 +50,13 @@ func NewOAuth(accessToken, refreshToken string, expiry time.Time) *OAuth {
 
 func (o *OAuth) Run(db *sqlx.DB) error {
 	defer procCxl()
+
+	go o.auth(db)
+	if o.AccessToken != "" {
+		if o.tryCurrentAuth() {
+			return nil
+		}
+	}
 
 	conf = NewOAuthConf([]string{"user"})
 	tr := &http.Transport{
@@ -69,7 +82,6 @@ func (o *OAuth) Run(db *sqlx.DB) error {
 			return
 		}
 	}()
-	o.auth(db)
 	<-procCtx.Done()
 
 	return nil
@@ -96,7 +108,7 @@ func (o *OAuth) callbackOAuth(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("New token")
 	}
 	client := conf.Client(ctx, oauthToken)
-	o.token <- oauthToken
+	state.token <- oauthToken
 	res, err := client.Get("https://api.github.com/user")
 	if err != nil {
 		panic(err)
@@ -108,8 +120,11 @@ func (o *OAuth) callbackOAuth(w http.ResponseWriter, r *http.Request) {
 		}
 	}(res.Body)
 	jsonBody := make(map[string]interface{})
-	_ = json.NewDecoder(res.Body).Decode(&jsonBody)
-	o.login <- jsonBody["login"].(string)
+	err = json.NewDecoder(res.Body).Decode(&jsonBody)
+	if err != nil {
+		log.Fatal(err)
+	}
+	state.login <- jsonBody["login"].(string)
 
 	var (
 		shutdownCtx, shutdownCxl = context.WithTimeout(ctx, 1*time.Second)
@@ -134,8 +149,8 @@ func (o *OAuth) auth(db *sqlx.DB) {
 L:
 	for {
 		select {
-		case login = <-o.login:
-		case token = <-o.token:
+		case login = <-state.login:
+		case token = <-state.token:
 		}
 		if login != "" && token != nil {
 			break L
@@ -172,4 +187,38 @@ func (o *OAuth) storeDB(db *sqlx.DB, login string) (int, error) {
 	}
 
 	return id, nil
+}
+
+func (o *OAuth) tryCurrentAuth() bool {
+	var oauthToken *oauth2.Token
+	if o.AccessToken != "" {
+		oauthToken = &oauth2.Token{
+			AccessToken:  o.AccessToken,
+			RefreshToken: o.RefreshToken,
+			Expiry:       o.Expiry,
+		}
+	}
+	client := conf.Client(ctx, oauthToken)
+	state.token <- oauthToken
+	res, err := client.Get("https://api.github.com/user")
+	if err != nil {
+		log.Fatal(err)
+
+		return false
+	}
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			panic(err)
+		}
+	}(res.Body)
+	jsonBody := make(map[string]interface{})
+	err = json.NewDecoder(res.Body).Decode(&jsonBody)
+	if err != nil {
+		log.Fatal(err)
+	}
+	state.login <- jsonBody["login"].(string)
+	log.Println("Current token is valid")
+
+	return true
 }
