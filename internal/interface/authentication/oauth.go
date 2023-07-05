@@ -45,6 +45,12 @@ func NewOAuth(accessToken, refreshToken string, expiry time.Time) *OAuth {
 func (o *OAuth) Run(db *sqlx.DB) error {
 	defer procCxl()
 
+	if o.AccessToken != "" {
+		if o.tryCurrentAuth() {
+			return nil
+		}
+	}
+
 	conf = NewOAuthConf([]string{"user"})
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
@@ -172,4 +178,8 @@ func (o *OAuth) storeDB(db *sqlx.DB, login string) (int, error) {
 	}
 
 	return id, nil
+}
+
+func (o *OAuth) tryCurrentAuth() bool {
+	return false
 }
