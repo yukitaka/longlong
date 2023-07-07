@@ -91,40 +91,15 @@ func (o *OAuth) callbackOAuth(w http.ResponseWriter, r *http.Request) {
 	code := r.URL.Query().Get("code")
 	log.Printf("Code: %s\n", code)
 
-	var oauthToken *oauth2.Token
-	if o.AccessToken != "" {
-		oauthToken = &oauth2.Token{
-			AccessToken:  o.AccessToken,
-			RefreshToken: o.RefreshToken,
-			Expiry:       o.Expiry,
-		}
-		fmt.Println("Already token")
-	} else {
-		var err error
-		oauthToken, err = conf.Exchange(ctx, code)
-		if err != nil {
-			log.Fatal(err)
-		}
-		fmt.Println("New token")
-	}
-	client := conf.Client(ctx, oauthToken)
-	state.token <- oauthToken
-	res, err := client.Get("https://api.github.com/user")
-	if err != nil {
-		panic(err)
-	}
-	defer func(Body io.ReadCloser) {
-		err := Body.Close()
-		if err != nil {
-			panic(err)
-		}
-	}(res.Body)
-	jsonBody := make(map[string]interface{})
-	err = json.NewDecoder(res.Body).Decode(&jsonBody)
+	oauthToken, err := conf.Exchange(ctx, code)
 	if err != nil {
 		log.Fatal(err)
 	}
-	state.login <- jsonBody["login"].(string)
+	jsonBody, err := o.getJson(oauthToken)
+	if err == nil {
+		state.token <- oauthToken
+		state.login <- jsonBody["login"].(string)
+	}
 
 	var (
 		shutdownCtx, shutdownCxl = context.WithTimeout(ctx, 1*time.Second)
@@ -198,13 +173,21 @@ func (o *OAuth) tryCurrentAuth() bool {
 			Expiry:       o.Expiry,
 		}
 	}
-	client := conf.Client(ctx, oauthToken)
-	state.token <- oauthToken
+	jsonBody, err := o.getJson(oauthToken)
+	if err == nil {
+		state.token <- oauthToken
+		state.login <- jsonBody["login"].(string)
+	}
+	log.Println("Current token is valid")
+
+	return true
+}
+
+func (o *OAuth) getJson(token *oauth2.Token) (map[string]interface{}, error) {
+	client := conf.Client(ctx, token)
 	res, err := client.Get("https://api.github.com/user")
 	if err != nil {
-		log.Fatal(err)
-
-		return false
+		return nil, err
 	}
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
@@ -217,8 +200,6 @@ func (o *OAuth) tryCurrentAuth() bool {
 	if err != nil {
 		log.Fatal(err)
 	}
-	state.login <- jsonBody["login"].(string)
-	log.Println("Current token is valid")
 
-	return true
+	return jsonBody, nil
 }
