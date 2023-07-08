@@ -1,16 +1,16 @@
-package cmd
+package ctl
 
 import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/spf13/cobra"
 	"github.com/yukitaka/longlong/internal/cli"
-	"github.com/yukitaka/longlong/internal/cmd/auth"
-	"github.com/yukitaka/longlong/internal/cmd/config"
-	"github.com/yukitaka/longlong/internal/cmd/create"
-	"github.com/yukitaka/longlong/internal/cmd/del"
-	"github.com/yukitaka/longlong/internal/cmd/get"
-	"github.com/yukitaka/longlong/internal/cmd/put"
+	"github.com/yukitaka/longlong/internal/cmd/ctl/auth"
+	"github.com/yukitaka/longlong/internal/cmd/ctl/config"
+	"github.com/yukitaka/longlong/internal/cmd/ctl/create"
+	"github.com/yukitaka/longlong/internal/cmd/ctl/del"
+	"github.com/yukitaka/longlong/internal/cmd/ctl/get"
+	"github.com/yukitaka/longlong/internal/cmd/ctl/put"
 	"github.com/yukitaka/longlong/internal/domain/entity"
 	"github.com/yukitaka/longlong/internal/domain/usecase"
 	"github.com/yukitaka/longlong/internal/interface/datastore"

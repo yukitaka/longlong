@@ -3,6 +3,7 @@ package get
 import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
+	cmdutil "github.com/yukitaka/longlong/internal/cmd/ctl/util"
 	"github.com/yukitaka/longlong/internal/domain/entity"
 	"github.com/yukitaka/longlong/internal/domain/usecase"
 	"github.com/yukitaka/longlong/internal/interface/repository"
@@ -11,7 +12,6 @@ import (
 	"github.com/charmbracelet/bubbles/table"
 	"github.com/spf13/cobra"
 	"github.com/yukitaka/longlong/internal/cli"
-	cmdutil "github.com/yukitaka/longlong/internal/cmd/util"
 	"github.com/yukitaka/longlong/internal/util"
 )
 

@@ -4,7 +4,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/spf13/cobra"
 	"github.com/yukitaka/longlong/internal/cli"
-	"github.com/yukitaka/longlong/internal/cmd/config"
+	"github.com/yukitaka/longlong/internal/cmd/ctl/config"
 	"github.com/yukitaka/longlong/internal/interface/authentication"
 	"github.com/yukitaka/longlong/internal/util"
 	"log"
