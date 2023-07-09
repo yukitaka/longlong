@@ -1,0 +1,9 @@
+go 1.19
+
+use (
+	./cli
+	./core
+)
+
+replace github.con/yukitaka/longlong/server/cli => ./cli
+replace github.con/yukitaka/longlong/server/core => ./core
