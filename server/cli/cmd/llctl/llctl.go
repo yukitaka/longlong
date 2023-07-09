@@ -2,10 +2,10 @@ package main
 
 import (
 	"github.com/yukitaka/longlong/server/cli/internal/cli"
-	"github.com/yukitaka/longlong/server/cli/internal/cmd/ctl"
+	"github.com/yukitaka/longlong/server/cli/internal/cmd"
 )
 
 func main() {
-	command := ctl.NewLlctlCommand()
+	command := cmd.NewLlctlCommand()
 	cli.Run(command)
 }

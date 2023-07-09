@@ -3,7 +3,7 @@ package get
 import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
-	cmdutil "github.com/yukitaka/longlong/server/cli/internal/cmd/ctl/util"
+	cmdutil "github.com/yukitaka/longlong/server/cli/internal/cmd/util"
 	"github.com/yukitaka/longlong/server/core/pkg/domain/entity"
 	"github.com/yukitaka/longlong/server/core/pkg/domain/usecase"
 	"github.com/yukitaka/longlong/server/core/pkg/interface/repository"
