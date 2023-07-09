@@ -1,9 +1,13 @@
 go 1.19
 
 use (
+	./admin
 	./cli
 	./core
 )
 
+replace github.con/yukitaka/longlong/server/admin => ./cli
+
 replace github.con/yukitaka/longlong/server/cli => ./cli
+
 replace github.con/yukitaka/longlong/server/core => ./core
