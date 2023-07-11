@@ -1,5 +1,9 @@
 package main
 
+import (
+	"github.com/yukitaka/longlong/server/admin/internal/cmd"
+)
+
 func main() {
-	println("Start LongLong Admin.")
+	_ = cmd.NewAdminCommand()
 }

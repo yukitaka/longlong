@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/spf13/cobra"
-	"github.com/yukitaka/longlong/server/cli/internal/cli"
+	"github.com/yukitaka/longlong/server/core/pkg/cli"
 	"github.com/yukitaka/longlong/server/core/pkg/domain/entity"
 	"github.com/yukitaka/longlong/server/core/pkg/domain/usecase"
 	"github.com/yukitaka/longlong/server/core/pkg/interface/repository"
