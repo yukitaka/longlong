@@ -1,5 +1,11 @@
 package main
 
+import (
+	"fmt"
+	"github.com/yukitaka/longlong/server/admin/internal/cmd"
+)
+
 func main() {
-	println("Start LongLong Admin.")
+	command := cmd.NewAdminCommand()
+	fmt.Printf("%#v", command)
 }
