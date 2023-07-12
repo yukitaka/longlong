@@ -3,9 +3,9 @@ package auth
 import (
 	"github.com/jmoiron/sqlx"
 	"github.com/spf13/cobra"
-	"github.com/yukitaka/longlong/server/cli/internal/cmd/config"
 	"github.com/yukitaka/longlong/server/core/pkg/cli"
 	"github.com/yukitaka/longlong/server/core/pkg/interface/authentication"
+	"github.com/yukitaka/longlong/server/core/pkg/interface/config"
 	"github.com/yukitaka/longlong/server/core/pkg/util"
 	"log"
 )
