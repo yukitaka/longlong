@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
+	"github.com/yukitaka/longlong/server/admin/internal/cmd/initialize"
 	"github.com/yukitaka/longlong/server/core/pkg/cli"
 	"github.com/yukitaka/longlong/server/core/pkg/cmd"
 	"os"
@@ -38,6 +39,7 @@ https://github.com/yukitaka/longlong/`,
 			fmt.Printf("LongLong version %s\n", "0.0.1")
 		},
 	})
+	cmdGroup.AddCommand(initialize.NewCmdInit("lladmin", nil, o.IOStream))
 
 	if len(o.Arguments) > 1 {
 		cmdArgs := o.Arguments[1:]

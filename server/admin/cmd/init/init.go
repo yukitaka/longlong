@@ -13,7 +13,7 @@ import (
 
 func main() {
 	cmd := &cobra.Command{
-		Use:   "init",
+		Use:   "initialize",
 		Short: "Initialize LongLong",
 		Long: `
 Initialize LongLong.
