@@ -35,7 +35,6 @@ https://github.com/yukitaka/longlong/`,
 		Use:   "version",
 		Short: "Print the version number of LongLong",
 		Run: func(cmd *cobra.Command, args []string) {
-			panic("hoge")
 			fmt.Printf("LongLong version %s\n", "0.0.1")
 		},
 	})
