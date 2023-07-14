@@ -35,7 +35,7 @@ func LoadFromFile(name, fileType, path string) (Config, error) {
 	return conf, nil
 }
 
-func (c *Config) Store(accessToken, refreshToken string, expiry time.Time) {
+func (c *Config) StoreAuth(accessToken, refreshToken string, expiry time.Time) {
 	c.Authorize.AccessToken = accessToken
 	c.Authorize.RefreshToken = refreshToken
 	c.Authorize.Expiry = expiry
