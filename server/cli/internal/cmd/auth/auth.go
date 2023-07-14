@@ -66,10 +66,10 @@ func (o *Options) Login(args []string) error {
 	log.Println("Start login.")
 	oauth := authentication.NewOAuth(o.Config.Authorize.AccessToken, o.Config.Authorize.RefreshToken, o.Config.Authorize.Expiry)
 	err := oauth.Run(o.DB)
-	o.Config.StoreAuth(oauth.AccessToken, oauth.RefreshToken, oauth.Expiry)
 	if err != nil {
 		return err
 	}
+	o.Config.SetAuth(oauth.AccessToken, oauth.RefreshToken, oauth.Expiry)
 
-	return nil
+	return o.Config.Store()
 }

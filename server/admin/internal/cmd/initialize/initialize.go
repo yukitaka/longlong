@@ -1,7 +1,6 @@
 package initialize
 
 import (
-	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/spf13/cobra"
 	"github.com/yukitaka/longlong/server/core/pkg/cli"
@@ -58,7 +57,7 @@ func (o *Options) Run(driver, source string) error {
 	}
 	o.DB = open
 
-	fmt.Printf("%#v\n", o.DB)
+	o.Config.SetDatastore(driver, source)
 
-	return nil
+	return o.Config.Store()
 }
