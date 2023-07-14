@@ -54,7 +54,8 @@ func (o *Options) Run(driver, source string) error {
 		return err
 	}
 	o.DB = open
-	fmt.Printf("%v\n", o.DB)
+
+	fmt.Printf("%#v\n", o.DB)
 
 	return nil
 }

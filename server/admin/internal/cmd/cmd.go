@@ -6,19 +6,27 @@ import (
 	"github.com/yukitaka/longlong/server/admin/internal/cmd/initialize"
 	"github.com/yukitaka/longlong/server/core/pkg/cli"
 	"github.com/yukitaka/longlong/server/core/pkg/cmd"
+	"github.com/yukitaka/longlong/server/core/pkg/interface/config"
 	"os"
 )
 
 type AdminOptions struct {
 	CmdHandler cmd.Handler
 	Arguments  []string
+	*config.Config
 	cli.IOStream
 }
 
 func NewAdminCommand() *cobra.Command {
+	conf, err := config.LoadFromFile("config", "yaml", "$HOME/.config/llctl")
+	if err != nil {
+		panic(fmt.Errorf("fatal error config file: %w", err))
+	}
+
 	return NewAdminCommandWithArgs(AdminOptions{
 		CmdHandler: cmd.NewDefaultHandler([]string{"lladmin"}),
 		Arguments:  os.Args,
+		Config:     &conf,
 	})
 }
 
