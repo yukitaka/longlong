@@ -35,16 +35,23 @@ func LoadFromFile(name, fileType, path string) (Config, error) {
 	return conf, nil
 }
 
-func (c *Config) Store(accessToken, refreshToken string, expiry time.Time) {
+func (c *Config) SetAuth(accessToken, refreshToken string, expiry time.Time) {
 	c.Authorize.AccessToken = accessToken
 	c.Authorize.RefreshToken = refreshToken
 	c.Authorize.Expiry = expiry
+}
 
+func (c *Config) SetDatastore(driver, source string) {
+	c.Datastore.Driver = driver
+	c.Datastore.Source = source
+}
+
+func (c *Config) Store() error {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath("$HOME/.config/llctl")
 	viper.Set("authorize", c.Authorize)
-	if err := viper.WriteConfig(); err != nil {
-		panic(err)
-	}
+	viper.Set("datastore", c.Datastore)
+
+	return viper.WriteConfig()
 }
