@@ -5,18 +5,20 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/spf13/cobra"
 	"github.com/yukitaka/longlong/server/core/pkg/cli"
+	"github.com/yukitaka/longlong/server/core/pkg/interface/config"
 	"github.com/yukitaka/longlong/server/core/pkg/interface/datastore"
 	"github.com/yukitaka/longlong/server/core/pkg/util"
 )
 
 type Options struct {
 	CmdParent string
+	*config.Config
 	*sqlx.DB
 	cli.IOStream
 }
 
-func NewCmdInit(parent string, streams cli.IOStream) *cobra.Command {
-	o := newInitOptions(parent, streams)
+func NewCmdInit(parent string, config *config.Config, streams cli.IOStream) *cobra.Command {
+	o := newInitOptions(parent, config, streams)
 
 	cmd := &cobra.Command{
 		Use:     "initialize",
@@ -41,9 +43,10 @@ func NewCmdInit(parent string, streams cli.IOStream) *cobra.Command {
 	return cmd
 }
 
-func newInitOptions(parent string, streams cli.IOStream) *Options {
+func newInitOptions(parent string, config *config.Config, streams cli.IOStream) *Options {
 	return &Options{
 		CmdParent: parent,
+		Config:    config,
 		IOStream:  streams,
 	}
 }

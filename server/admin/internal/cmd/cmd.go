@@ -47,7 +47,7 @@ https://github.com/yukitaka/longlong/`,
 			fmt.Printf("LongLong version %s\n", "0.0.1")
 		},
 	})
-	cmdGroup.AddCommand(initialize.NewCmdInit("lladmin", o.IOStream))
+	cmdGroup.AddCommand(initialize.NewCmdInit("lladmin", o.Config, o.IOStream))
 
 	if len(o.Arguments) > 1 {
 		cmdArgs := o.Arguments[1:]
