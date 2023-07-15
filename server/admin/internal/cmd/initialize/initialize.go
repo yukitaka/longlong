@@ -58,6 +58,12 @@ func (o *Options) Run(driver, source string) error {
 	o.DB = open
 
 	o.Config.SetDatastore(driver, source)
+	if err := o.Config.Store(); err != nil {
+		return err
+	}
+	if err := NewDatabase(open).Init(); err != nil {
+		return err
+	}
 
-	return o.Config.Store()
+	return nil
 }
