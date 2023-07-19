@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
+	"github.com/yukitaka/longlong/server/admin/internal/cmd/debug"
 	"github.com/yukitaka/longlong/server/admin/internal/cmd/initialize"
 	"github.com/yukitaka/longlong/server/admin/internal/cmd/server"
 	"github.com/yukitaka/longlong/server/core/pkg/cli"
@@ -50,6 +51,7 @@ https://github.com/yukitaka/longlong/`,
 	})
 	cmdGroup.AddCommand(initialize.NewCmdInit("lladmin", o.Config, o.IOStream))
 	cmdGroup.AddCommand(server.NewCmdServer("lladmin", o.IOStream))
+	cmdGroup.AddCommand(debug.NewCmdDebug("lladmin", o.IOStream))
 
 	if len(o.Arguments) > 1 {
 		cmdArgs := o.Arguments[1:]
