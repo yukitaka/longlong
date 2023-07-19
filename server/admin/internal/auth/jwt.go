@@ -2,10 +2,7 @@ package auth
 
 import (
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/labstack/echo/v4"
 	"github.com/yukitaka/longlong/server/core/pkg/domain/entity"
-	"net/http"
-	"strconv"
 	"time"
 )
 
@@ -14,10 +11,7 @@ type jwtCustomClaims struct {
 	jwt.RegisteredClaims
 }
 
-func CreateToken(c echo.Context) error {
-	individualId, _ := strconv.Atoi(c.FormValue("individualId"))
-	organizationId, _ := strconv.Atoi(c.FormValue("organizationId"))
-
+func CreateToken(individualId, organizationId int) (string, error) {
 	claims := &jwtCustomClaims{
 		UserIdentify: entity.UserIdentify{
 			IndividualId:   individualId,
@@ -32,10 +26,8 @@ func CreateToken(c echo.Context) error {
 
 	t, err := token.SignedString([]byte("secret"))
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	return c.JSON(http.StatusOK, echo.Map{
-		"token": t,
-	})
+	return t, nil
 }

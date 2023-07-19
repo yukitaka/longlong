@@ -1,8 +1,12 @@
 package debug
 
 import (
+	"fmt"
 	"github.com/spf13/cobra"
+	"github.com/yukitaka/longlong/server/admin/internal/auth"
 	"github.com/yukitaka/longlong/server/core/pkg/cli"
+	"github.com/yukitaka/longlong/server/core/pkg/util"
+	"strconv"
 )
 
 type Options struct {
@@ -11,10 +15,34 @@ type Options struct {
 }
 
 func NewCmdDebug(parent string, streams cli.IOStream) *cobra.Command {
+	o := newDebugOptions(parent, streams)
+
 	cmd := &cobra.Command{
 		Use:   "debug",
 		Short: "Debug Longlong",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			util.CheckErr(o.Run(args))
+			return nil
+		},
 	}
 
 	return cmd
+}
+
+func newDebugOptions(parent string, streams cli.IOStream) *Options {
+	return &Options{
+		CmdParent: parent,
+		IOStream:  streams,
+	}
+}
+
+func (o *Options) Run(args []string) error {
+	individualId, _ := strconv.Atoi(args[0])
+	organizationId, _ := strconv.Atoi(args[1])
+	token, err := auth.CreateToken(individualId, organizationId)
+	if err != nil {
+		return err
+	}
+	fmt.Println(token)
+	return nil
 }
