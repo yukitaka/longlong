@@ -3,8 +3,8 @@ package debug
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"github.com/yukitaka/longlong/server/admin/internal/auth"
 	"github.com/yukitaka/longlong/server/core/pkg/cli"
+	"github.com/yukitaka/longlong/server/core/pkg/interface/server"
 	"github.com/yukitaka/longlong/server/core/pkg/util"
 	"strconv"
 )
@@ -39,7 +39,7 @@ func newDebugOptions(parent string, streams cli.IOStream) *Options {
 func (o *Options) Run(args []string) error {
 	individualId, _ := strconv.Atoi(args[0])
 	organizationId, _ := strconv.Atoi(args[1])
-	token, err := auth.CreateToken(individualId, organizationId)
+	token, err := server.CreateToken(individualId, organizationId)
 	if err != nil {
 		return err
 	}
