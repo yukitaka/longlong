@@ -2,8 +2,8 @@ package server
 
 import (
 	"github.com/spf13/cobra"
+	"github.com/yukitaka/longlong/server/admin/internal/interface/server"
 	"github.com/yukitaka/longlong/server/core/pkg/cli"
-	"github.com/yukitaka/longlong/server/core/pkg/interface/server"
 	"github.com/yukitaka/longlong/server/core/pkg/util"
 )
 
