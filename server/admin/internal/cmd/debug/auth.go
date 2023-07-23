@@ -2,7 +2,6 @@ package debug
 
 import (
 	"fmt"
-	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
 	"github.com/yukitaka/longlong/server/admin/internal/interface/server"
 	"github.com/yukitaka/longlong/server/core/pkg/cli"
@@ -39,14 +38,14 @@ func newDebugOptions(parent string, streams cli.IOStream) *Options {
 }
 
 func (o *Options) Run(args []string) error {
-	err := godotenv.Load(".env")
+	secret, err := util.GetEnvironmentValue("JWT_SECRET")
 	if err != nil {
 		panic(err)
 	}
 
 	individualId, _ := strconv.Atoi(args[0])
 	organizationId, _ := strconv.Atoi(args[1])
-	token, err := server.CreateToken(individualId, organizationId, os.Getenv("SECRET"))
+	token, err := server.CreateToken(individualId, organizationId, os.Getenv(secret))
 	if err != nil {
 		return err
 	}
