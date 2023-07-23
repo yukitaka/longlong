@@ -11,7 +11,7 @@ type JwtCustomClaims struct {
 	jwt.RegisteredClaims
 }
 
-func CreateToken(individualId, organizationId int) (string, error) {
+func CreateToken(individualId, organizationId int, secret string) (string, error) {
 	claims := &JwtCustomClaims{
 		UserIdentify: entity.UserIdentify{
 			IndividualId:   individualId,
@@ -24,7 +24,7 @@ func CreateToken(individualId, organizationId int) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	t, err := token.SignedString([]byte("secret"))
+	t, err := token.SignedString([]byte(secret))
 	if err != nil {
 		return "", err
 	}
