@@ -6,6 +6,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/yukitaka/longlong/server/core/pkg/domain/entity"
+	"github.com/yukitaka/longlong/server/core/pkg/util"
 	"net/http"
 	"strconv"
 )
@@ -19,12 +20,14 @@ func NewServer() *Server {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
+	secret, _ := util.GetEnvironmentValue("JWT_SECRET")
+
 	r := e.Group("/api/v1")
 	config := echojwt.Config{
 		NewClaimsFunc: func(c echo.Context) jwt.Claims {
 			return new(JwtCustomClaims)
 		},
-		SigningKey: []byte("secret"),
+		SigningKey: []byte(secret),
 	}
 	r.Use(echojwt.WithConfig(config))
 	r.GET("", v1)

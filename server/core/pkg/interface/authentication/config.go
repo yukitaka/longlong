@@ -1,17 +1,16 @@
 package authentication
 
 import (
-	"github.com/joho/godotenv"
+	"github.com/yukitaka/longlong/server/core/pkg/util"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/github"
-	"os"
 )
 
 func NewOAuthConf(scopes []string) *oauth2.Config {
-	_ = godotenv.Load(".env")
+	ev, _ := util.NewEnvironmentValue()
 
-	clientID := os.Getenv("CLIENT_ID")
-	clientSecret := os.Getenv("CLIENT_SECRET")
+	clientID := ev.Get("CLIENT_ID")
+	clientSecret := ev.Get("CLIENT_SECRET")
 
 	return &oauth2.Config{
 		ClientID:     clientID,
