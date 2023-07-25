@@ -11,6 +11,11 @@ import (
 	"strconv"
 )
 
+type loginRequest struct {
+	Id       string `json:"id"`
+	Password string `json:"password"`
+}
+
 type Server struct {
 	*echo.Echo
 }
@@ -22,6 +27,8 @@ func NewServer() *Server {
 
 	secret, _ := util.GetEnvironmentValue("JWT_SECRET")
 
+	e.POST("/login", login)
+
 	r := e.Group("/api/v1")
 	config := echojwt.Config{
 		NewClaimsFunc: func(c echo.Context) jwt.Claims {
@@ -31,12 +38,22 @@ func NewServer() *Server {
 	}
 	r.Use(echojwt.WithConfig(config))
 	r.GET("", v1)
+	r.GET("/organization", organization)
 
 	return &Server{e}
 }
 
 func (s *Server) Run(port int) {
 	s.Logger.Fatal(s.Start(":" + strconv.Itoa(port)))
+}
+
+func login(c echo.Context) error {
+	l := new(loginRequest)
+	if err := c.Bind(l); err != nil {
+		return c.JSON(http.StatusBadRequest, "bad request")
+	}
+
+	return c.JSON(http.StatusOK, l)
 }
 
 func v1(c echo.Context) error {
@@ -46,4 +63,8 @@ func v1(c echo.Context) error {
 	organizationId := claims.OrganizationId
 
 	return c.JSON(http.StatusOK, entity.UserIdentify{IndividualId: individualId, OrganizationId: organizationId})
+}
+
+func organization(c echo.Context) error {
+	return c.JSON(http.StatusOK, "OK")
 }
