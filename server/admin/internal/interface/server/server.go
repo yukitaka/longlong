@@ -11,6 +11,11 @@ import (
 	"strconv"
 )
 
+type loginRequest struct {
+	Id       string `json:"id"`
+	Password string `json:"password"`
+}
+
 type Server struct {
 	*echo.Echo
 }
@@ -43,7 +48,12 @@ func (s *Server) Run(port int) {
 }
 
 func login(c echo.Context) error {
-	return c.JSON(http.StatusOK, "ok")
+	l := new(loginRequest)
+	if err := c.Bind(l); err != nil {
+		return c.JSON(http.StatusBadRequest, "bad request")
+	}
+
+	return c.JSON(http.StatusOK, l)
 }
 
 func v1(c echo.Context) error {
