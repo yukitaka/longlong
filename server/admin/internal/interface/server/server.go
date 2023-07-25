@@ -31,6 +31,7 @@ func NewServer() *Server {
 	}
 	r.Use(echojwt.WithConfig(config))
 	r.GET("", v1)
+	r.GET("/organization", organization)
 
 	return &Server{e}
 }
@@ -46,4 +47,8 @@ func v1(c echo.Context) error {
 	organizationId := claims.OrganizationId
 
 	return c.JSON(http.StatusOK, entity.UserIdentify{IndividualId: individualId, OrganizationId: organizationId})
+}
+
+func organization(c echo.Context) error {
+	return c.JSON(http.StatusOK, "OK")
 }
