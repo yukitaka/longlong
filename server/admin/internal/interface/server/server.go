@@ -22,6 +22,8 @@ func NewServer() *Server {
 
 	secret, _ := util.GetEnvironmentValue("JWT_SECRET")
 
+	e.POST("/login", login)
+
 	r := e.Group("/api/v1")
 	config := echojwt.Config{
 		NewClaimsFunc: func(c echo.Context) jwt.Claims {
@@ -38,6 +40,10 @@ func NewServer() *Server {
 
 func (s *Server) Run(port int) {
 	s.Logger.Fatal(s.Start(":" + strconv.Itoa(port)))
+}
+
+func login(c echo.Context) error {
+	return c.JSON(http.StatusOK, "ok")
 }
 
 func v1(c echo.Context) error {
