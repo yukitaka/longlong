@@ -34,7 +34,8 @@ func NewServer() *Server {
 		NewClaimsFunc: func(c echo.Context) jwt.Claims {
 			return new(JwtCustomClaims)
 		},
-		SigningKey: []byte(secret),
+		SigningMethod: jwt.SigningMethodHS256.Name,
+		SigningKey:    []byte(secret),
 	}
 	r.Use(echojwt.WithConfig(config))
 	r.GET("", v1)

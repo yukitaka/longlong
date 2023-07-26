@@ -21,7 +21,6 @@ func CreateToken(individualId, organizationId int, secret string) (string, error
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 72)),
 		},
 	}
-
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	t, err := token.SignedString([]byte(secret))
