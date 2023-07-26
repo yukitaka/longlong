@@ -6,7 +6,6 @@ import (
 	"github.com/yukitaka/longlong/server/admin/internal/interface/server"
 	"github.com/yukitaka/longlong/server/core/pkg/cli"
 	"github.com/yukitaka/longlong/server/core/pkg/util"
-	"os"
 	"strconv"
 )
 
@@ -45,7 +44,7 @@ func (o *Options) Run(args []string) error {
 
 	individualId, _ := strconv.Atoi(args[0])
 	organizationId, _ := strconv.Atoi(args[1])
-	token, err := server.CreateToken(individualId, organizationId, os.Getenv(secret))
+	token, err := server.CreateToken(individualId, organizationId, secret)
 	if err != nil {
 		return err
 	}
