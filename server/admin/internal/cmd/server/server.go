@@ -5,6 +5,7 @@ import (
 	"github.com/yukitaka/longlong/server/admin/internal/interface/server"
 	"github.com/yukitaka/longlong/server/core/pkg/cli"
 	"github.com/yukitaka/longlong/server/core/pkg/interface/config"
+	"github.com/yukitaka/longlong/server/core/pkg/interface/datastore"
 	"github.com/yukitaka/longlong/server/core/pkg/util"
 )
 
@@ -44,6 +45,11 @@ func newServerOptions(parent string, config *config.Config, streams cli.IOStream
 }
 
 func (o *Options) Run(port int) error {
+	_, err := datastore.NewConnectionOpen(o.Config.Datastore.Driver, o.Config.Datastore.Source)
+	if err != nil {
+		return err
+	}
+
 	s := server.NewServer()
 	s.Run(port)
 	return nil
