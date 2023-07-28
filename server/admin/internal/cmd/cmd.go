@@ -50,7 +50,7 @@ https://github.com/yukitaka/longlong/`,
 		},
 	})
 	cmdGroup.AddCommand(initialize.NewCmdInit("lladmin", o.Config, o.IOStream))
-	cmdGroup.AddCommand(server.NewCmdServer("lladmin", o.IOStream))
+	cmdGroup.AddCommand(server.NewCmdServer("lladmin", o.Config, o.IOStream))
 	cmdGroup.AddCommand(debug.NewCmdDebug("lladmin", o.IOStream))
 
 	if len(o.Arguments) > 1 {
