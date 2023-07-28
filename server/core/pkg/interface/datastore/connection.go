@@ -7,11 +7,15 @@ import (
 	"github.com/yukitaka/longlong/server/core/pkg/util"
 )
 
-func NewConnectionOpen(driver string, datasource string) (*sqlx.DB, error) {
+type Connection struct {
+	*sqlx.DB
+}
+
+func NewConnectionOpen(driver string, datasource string) (*Connection, error) {
 	con, err := sqlx.Open(driver, datasource)
 	if err != nil {
 		util.CheckErr(err)
 	}
 
-	return con, err
+	return &Connection{con}, err
 }

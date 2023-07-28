@@ -1,7 +1,6 @@
 package initialize
 
 import (
-	"github.com/jmoiron/sqlx"
 	"github.com/spf13/cobra"
 	"github.com/yukitaka/longlong/server/core/pkg/cli"
 	"github.com/yukitaka/longlong/server/core/pkg/interface/config"
@@ -12,7 +11,7 @@ import (
 type Options struct {
 	CmdParent string
 	*config.Config
-	*sqlx.DB
+	*datastore.Connection
 	cli.IOStream
 }
 
@@ -55,7 +54,7 @@ func (o *Options) Run(driver, source string) error {
 	if err != nil {
 		return err
 	}
-	o.DB = open
+	o.Connection = open
 
 	o.Config.SetDatastore(driver, source)
 	if err := o.Config.Store(); err != nil {
