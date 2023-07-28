@@ -5,6 +5,7 @@ import (
 	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/yukitaka/longlong/server/core/pkg/util"
+	"log"
 )
 
 type Connection struct {
@@ -18,4 +19,12 @@ func NewConnectionOpen(driver string, datasource string) (*Connection, error) {
 	}
 
 	return &Connection{con}, err
+}
+
+func (con *Connection) Close() {
+	err := con.DB.Close()
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
 }

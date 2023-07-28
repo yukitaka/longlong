@@ -50,17 +50,19 @@ func newInitOptions(parent string, config *config.Config, streams cli.IOStream) 
 }
 
 func (o *Options) Run(driver, source string) error {
-	open, err := datastore.NewConnectionOpen(driver, source)
+	con, err := datastore.NewConnectionOpen(driver, source)
 	if err != nil {
 		return err
 	}
-	o.Connection = open
+	defer con.Close()
+
+	o.Connection = con
 
 	o.Config.SetDatastore(driver, source)
 	if err := o.Config.Store(); err != nil {
 		return err
 	}
-	if err := NewDatabase(open).Init(); err != nil {
+	if err := NewDatabase(con).Init(); err != nil {
 		return err
 	}
 

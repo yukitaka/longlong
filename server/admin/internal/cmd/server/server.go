@@ -45,10 +45,11 @@ func newServerOptions(parent string, config *config.Config, streams cli.IOStream
 }
 
 func (o *Options) Run(port int) error {
-	_, err := datastore.NewConnectionOpen(o.Config.Datastore.Driver, o.Config.Datastore.Source)
+	con, err := datastore.NewConnectionOpen(o.Config.Datastore.Driver, o.Config.Datastore.Source)
 	if err != nil {
 		return err
 	}
+	defer con.Close()
 
 	s := server.NewServer()
 	s.Run(port)
