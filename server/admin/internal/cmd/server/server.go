@@ -52,6 +52,6 @@ func (o *Options) Run(port int) error {
 	defer con.Close()
 
 	s := server.NewServer()
-	s.Run(port)
+	s.Run(port, con)
 	return nil
 }

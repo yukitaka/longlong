@@ -6,6 +6,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/yukitaka/longlong/server/core/pkg/domain/entity"
+	"github.com/yukitaka/longlong/server/core/pkg/interface/datastore"
 	"github.com/yukitaka/longlong/server/core/pkg/util"
 	"net/http"
 	"strconv"
@@ -18,6 +19,7 @@ type loginRequest struct {
 
 type Server struct {
 	*echo.Echo
+	*datastore.Connection
 }
 
 func NewServer() *Server {
@@ -41,10 +43,12 @@ func NewServer() *Server {
 	r.GET("", v1)
 	r.GET("/organization", organization)
 
-	return &Server{e}
+	return &Server{Echo: e}
 }
 
-func (s *Server) Run(port int) {
+func (s *Server) Run(port int, con *datastore.Connection) {
+	s.Connection = con
+
 	s.Logger.Fatal(s.Start(":" + strconv.Itoa(port)))
 }
 
