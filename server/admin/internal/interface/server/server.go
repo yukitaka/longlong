@@ -5,7 +5,6 @@ import (
 	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/yukitaka/longlong/server/core/pkg/domain/entity"
 	"github.com/yukitaka/longlong/server/core/pkg/domain/usecase"
 	"github.com/yukitaka/longlong/server/core/pkg/interface/datastore"
 	"github.com/yukitaka/longlong/server/core/pkg/interface/repository"
@@ -42,7 +41,6 @@ func NewServer() *Server {
 		SigningKey:    []byte(secret),
 	}
 	r.Use(echojwt.WithConfig(config))
-	r.GET("", v1)
 	r.GET("/organization", organization)
 
 	return &Server{Echo: e}
@@ -63,24 +61,24 @@ func login(c echo.Context) error {
 	return c.JSON(http.StatusOK, l)
 }
 
-func v1(c echo.Context) error {
-	user := c.Get("user").(*jwt.Token)
-	claims := user.Claims.(*JwtCustomClaims)
-	individualId := claims.IndividualId
-	organizationId := claims.OrganizationId
-
-	return c.JSON(http.StatusOK, entity.UserIdentify{IndividualId: individualId, OrganizationId: organizationId})
-}
-
 func organization(c echo.Context) error {
+	organizationId, _ := userData(c)
+
 	rep := repository.NewOrganizationsRepository(c.Get("datastore").(*datastore.Connection).DB)
 	itr := usecase.NewOrganizationFinder(rep)
-	org, err := itr.FindById(1)
+	org, err := itr.FindById(organizationId)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 
 	return c.JSON(http.StatusOK, org)
+}
+
+func userData(c echo.Context) (individualId, organizationId int) {
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(*JwtCustomClaims)
+
+	return claims.IndividualId, claims.OrganizationId
 }
 
 func datastoreMiddleware(con *datastore.Connection) echo.MiddlewareFunc {
