@@ -47,7 +47,7 @@ func NewServer() *Server {
 }
 
 func (s *Server) Run(port int, con *datastore.Connection) {
-	s.Connection = con
+	s.Echo.Use(datastoreMiddleware(con))
 
 	s.Logger.Fatal(s.Start(":" + strconv.Itoa(port)))
 }
@@ -72,4 +72,13 @@ func v1(c echo.Context) error {
 
 func organization(c echo.Context) error {
 	return c.JSON(http.StatusOK, "OK")
+}
+
+func datastoreMiddleware(con *datastore.Connection) echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			c.Set("datastore", con)
+			return next(c)
+		}
+	}
 }
