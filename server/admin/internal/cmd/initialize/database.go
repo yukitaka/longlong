@@ -1,15 +1,15 @@
 package initialize
 
 import (
-	"github.com/jmoiron/sqlx"
+	"github.com/yukitaka/longlong/server/core/pkg/interface/datastore"
 )
 
 type Database struct {
-	*sqlx.DB
+	*datastore.Connection
 }
 
-func NewDatabase(db *sqlx.DB) *Database {
-	return &Database{db}
+func NewDatabase(con *datastore.Connection) *Database {
+	return &Database{con}
 }
 
 func (d *Database) Init() error {
