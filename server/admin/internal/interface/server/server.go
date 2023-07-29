@@ -6,7 +6,9 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/yukitaka/longlong/server/core/pkg/domain/entity"
+	"github.com/yukitaka/longlong/server/core/pkg/domain/usecase"
 	"github.com/yukitaka/longlong/server/core/pkg/interface/datastore"
+	"github.com/yukitaka/longlong/server/core/pkg/interface/repository"
 	"github.com/yukitaka/longlong/server/core/pkg/util"
 	"net/http"
 	"strconv"
@@ -71,7 +73,14 @@ func v1(c echo.Context) error {
 }
 
 func organization(c echo.Context) error {
-	return c.JSON(http.StatusOK, "OK")
+	rep := repository.NewOrganizationsRepository(c.Get("datastore").(*datastore.Connection).DB)
+	itr := usecase.NewOrganizationFinder(rep)
+	org, err := itr.FindById(1)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+
+	return c.JSON(http.StatusOK, org)
 }
 
 func datastoreMiddleware(con *datastore.Connection) echo.MiddlewareFunc {
