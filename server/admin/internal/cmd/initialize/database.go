@@ -1,6 +1,8 @@
 package initialize
 
 import (
+	"fmt"
+	"github.com/yukitaka/longlong/server/core/pkg/interface/authentication"
 	"github.com/yukitaka/longlong/server/core/pkg/interface/datastore"
 )
 
@@ -13,7 +15,11 @@ func NewDatabase(con *datastore.Connection) *Database {
 }
 
 func (d *Database) Init() error {
-	query := `
+	cryptedPassword, err := authentication.Encrypt("Passw0rd")
+	if err != nil {
+		return err
+	}
+	query := fmt.Sprintf(`
 	drop table if exists user_profiles;
 	drop table if exists individuals;
 	drop table if exists profiles;
@@ -41,8 +47,9 @@ func (d *Database) Init() error {
 	insert into profiles (id, nick_name, full_name, biography) values (1, 'admin', 'Admin', 'I am a administrator.');
 	insert into user_profiles (user_id, profile_id) values (1, 1);
 	insert into individuals (id, name, user_id, profile_id) values (1, 'admin', 1, 1);
+    insert into authentications (id, identify, token, individual_id) values (1, 'admin', '%s', 1);
 	insert into organization_members (organization_id, individual_id, role) values (1, 1, 0);
-	`
+	`, cryptedPassword)
 	if _, err := d.Exec(query); err != nil {
 		return err
 	}
