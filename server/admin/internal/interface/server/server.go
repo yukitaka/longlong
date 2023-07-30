@@ -66,12 +66,17 @@ func login(c echo.Context) error {
 		repository.NewOrganizationsRepository(db),
 		repository.NewOrganizationMembersRepository(db))
 	itr := usecase.NewAuthentication(rep)
-	auth, err := itr.Auth(l.Organization, l.Id, l.Password)
+	individualId, organizationId, err := itr.Auth(l.Organization, l.Id, l.Password)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err)
 	}
+	secret, err := util.GetEnvironmentValue("JWT_SECRET")
+	if err != nil {
+		panic(err)
+	}
+	token, err := CreateToken(individualId, organizationId, secret)
 
-	return c.JSON(http.StatusOK, auth)
+	return c.JSON(http.StatusOK, map[string]string{"token": token})
 }
 
 func organization(c echo.Context) error {

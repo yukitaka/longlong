@@ -51,23 +51,23 @@ func (it *Authentication) AuthOAuth(identify, token string) (int, error) {
 	return id, nil
 }
 
-func (it *Authentication) Auth(organization, identify, password string) (int, error) {
+func (it *Authentication) Auth(organization, identify, password string) (int, int, error) {
 	id, token, err := it.repository.Authentications.FindToken(identify)
 	if err != nil {
-		return -1, err
+		return -1, -1, err
 	}
 	err = bcrypt.CompareHashAndPassword([]byte(token), []byte(password))
 	if err != nil {
-		return -1, err
+		return -1, -1, err
 	}
 
 	organizationMembers, err := it.repository.OrganizationMembers.IndividualsAssigned(&[]entity.Individual{*entity.NewIndividual(id, &entity.User{}, &entity.Profile{}, identify)})
 	for _, ob := range *organizationMembers {
 		o, _ := it.repository.Organizations.Find(ob.Organization.Id)
 		if o.Name == organization {
-			return id, nil
+			return id, o.Id, nil
 		}
 	}
 
-	return -1, fmt.Errorf("Error: organization %s not allowed", organization)
+	return -1, -1, fmt.Errorf("Error: organization %s not allowed", organization)
 }
