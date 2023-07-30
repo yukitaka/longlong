@@ -73,8 +73,32 @@ func (o *Organizations) Find(id int) (*entity.Organization, error) {
 	var name string
 	err = stmt.QueryRowx(id).Scan(&name)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			return nil, errors.New(fmt.Sprintf("organization id %d is nothing", id))
+		} else {
+			return nil, err
+		}
+	}
+
+	return entity.NewOrganization(0, id, name), nil
+}
+
+func (o *Organizations) FindByName(name string) (*entity.Organization, error) {
+	stmt, err := o.DB.Preparex("select id from organizations where name=$1")
+	if err != nil {
+		return nil, err
+	}
+	defer func(stmt *sqlx.Stmt) {
+		err := stmt.Close()
+		if err != nil {
+			fmt.Printf("Error: %v\n", err)
+		}
+	}(stmt)
+	var id int
+	err = stmt.QueryRowx(name).Scan(&id)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, errors.New(fmt.Sprintf("organization name %s is nothing", name))
 		} else {
 			return nil, err
 		}
