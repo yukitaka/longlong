@@ -14,8 +14,9 @@ import (
 )
 
 type loginRequest struct {
-	Id       string `json:"id"`
-	Password string `json:"password"`
+	Id           string `json:"id"`
+	Organization string `json:"organization"`
+	Password     string `json:"password"`
 }
 
 type Server struct {
@@ -58,7 +59,19 @@ func login(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, "bad request")
 	}
 
-	return c.JSON(http.StatusOK, l)
+	db := c.Get("datastore").(*datastore.Connection).DB
+
+	rep := usecase.NewAuthenticationRepository(
+		repository.NewAuthenticationsRepository(db),
+		repository.NewOrganizationsRepository(db),
+		repository.NewOrganizationMembersRepository(db))
+	itr := usecase.NewAuthentication(rep)
+	auth, err := itr.Auth(l.Organization, l.Id, l.Password)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, err)
+	}
+
+	return c.JSON(http.StatusOK, auth)
 }
 
 func organization(c echo.Context) error {
