@@ -1,4 +1,4 @@
-package server
+package jwt
 
 import (
 	"github.com/golang-jwt/jwt/v5"
@@ -6,13 +6,13 @@ import (
 	"time"
 )
 
-type JwtCustomClaims struct {
+type CustomClaims struct {
 	entity.UserIdentify
 	jwt.RegisteredClaims
 }
 
 func CreateToken(individualId, organizationId int, secret string) (string, error) {
-	claims := &JwtCustomClaims{
+	claims := &CustomClaims{
 		UserIdentify: entity.UserIdentify{
 			IndividualId:   individualId,
 			OrganizationId: organizationId,
