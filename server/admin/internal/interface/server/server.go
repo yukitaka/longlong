@@ -5,6 +5,7 @@ import (
 	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/yukitaka/longlong/server/core/pkg/domain/entity"
 	"github.com/yukitaka/longlong/server/core/pkg/domain/usecase"
 	"github.com/yukitaka/longlong/server/core/pkg/interface/datastore"
 	"github.com/yukitaka/longlong/server/core/pkg/interface/repository"
@@ -81,11 +82,7 @@ func login(c echo.Context) error {
 }
 
 func organization(c echo.Context) error {
-	organizationId, _ := userData(c)
-
-	rep := repository.NewOrganizationsRepository(c.Get("datastore").(*datastore.Connection).DB)
-	itr := usecase.NewOrganizationFinder(rep)
-	org, err := itr.FindById(organizationId)
+	org, err := userOrganization(c)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
@@ -94,7 +91,34 @@ func organization(c echo.Context) error {
 }
 
 func members(c echo.Context) error {
-	return c.JSON(http.StatusOK, "OK")
+	org, err := userOrganization(c)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+
+	db := c.Get("datastore").(*datastore.Connection).DB
+	rep := usecase.NewOrganizationManagerRepository(
+		repository.NewOrganizationsRepository(db),
+		repository.NewOrganizationMembersRepository(db),
+		repository.NewIndividualsRepository(db),
+	)
+	itr := usecase.NewOrganizationManager(org, rep)
+	members, err := itr.Members()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+
+	return c.JSON(http.StatusOK, members)
+}
+
+func userOrganization(c echo.Context) (*entity.Organization, error) {
+	organizationId, _ := userData(c)
+	db := c.Get("datastore").(*datastore.Connection).DB
+
+	rep := repository.NewOrganizationsRepository(db)
+	itr := usecase.NewOrganizationFinder(rep)
+
+	return itr.FindById(organizationId)
 }
 
 func userData(c echo.Context) (individualId, organizationId int) {
