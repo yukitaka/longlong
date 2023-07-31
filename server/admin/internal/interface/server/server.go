@@ -43,6 +43,7 @@ func NewServer() *Server {
 	}
 	r.Use(echojwt.WithConfig(config))
 	r.GET("/organization", organization)
+	r.GET("/members", members)
 
 	return &Server{Echo: e}
 }
@@ -90,6 +91,10 @@ func organization(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, org)
+}
+
+func members(c echo.Context) error {
+	return c.JSON(http.StatusOK, "OK")
 }
 
 func userData(c echo.Context) (individualId, organizationId int) {
