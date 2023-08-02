@@ -5,9 +5,9 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"github.com/jmoiron/sqlx"
 	"github.com/skratchdot/open-golang/open"
 	"github.com/yukitaka/longlong/server/core/pkg/domain/usecase"
+	"github.com/yukitaka/longlong/server/core/pkg/interface/datastore"
 	"github.com/yukitaka/longlong/server/core/pkg/interface/repository"
 	"golang.org/x/oauth2"
 	"io"
@@ -48,10 +48,10 @@ func NewOAuth(accessToken, refreshToken string, expiry time.Time) *OAuth {
 	}
 }
 
-func (o *OAuth) Run(db *sqlx.DB) error {
+func (o *OAuth) Run(con *datastore.Connection) error {
 	defer procCxl()
 
-	go o.auth(db)
+	go o.auth(con)
 	if o.AccessToken != "" {
 		if o.tryCurrentAuth() {
 			return nil
@@ -118,7 +118,7 @@ func (o *OAuth) callbackOAuth(w http.ResponseWriter, r *http.Request) {
 	log.Println("Sever has been shutdown")
 }
 
-func (o *OAuth) auth(db *sqlx.DB) {
+func (o *OAuth) auth(con *datastore.Connection) {
 	var login string
 	var token *oauth2.Token
 L:
@@ -136,7 +136,7 @@ L:
 	o.RefreshToken = token.RefreshToken
 	o.Expiry = token.Expiry
 
-	id, err := o.storeDB(db, login)
+	id, err := o.storeDB(con, login)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -144,10 +144,10 @@ L:
 	log.Printf("Login %s %s %d.\n", login, token, id)
 }
 
-func (o *OAuth) storeDB(db *sqlx.DB, login string) (int, error) {
-	authRep := repository.NewAuthenticationsRepository(db)
-	organizationRep := repository.NewOrganizationsRepository(db)
-	memberRep := repository.NewOrganizationMembersRepository(db)
+func (o *OAuth) storeDB(con *datastore.Connection, login string) (int, error) {
+	authRep := repository.NewAuthenticationsRepository(con)
+	organizationRep := repository.NewOrganizationsRepository(con)
+	memberRep := repository.NewOrganizationMembersRepository(con)
 	rep := usecase.NewAuthenticationRepository(authRep, organizationRep, memberRep)
 	defer rep.Close()
 

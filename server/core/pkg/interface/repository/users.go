@@ -2,29 +2,25 @@ package repository
 
 import (
 	"database/sql"
-	"fmt"
-	"github.com/jmoiron/sqlx"
 	"github.com/yukitaka/longlong/server/core/pkg/domain/entity"
 	rep "github.com/yukitaka/longlong/server/core/pkg/domain/repository"
+	"github.com/yukitaka/longlong/server/core/pkg/interface/datastore"
 )
 
 type Users struct {
 	users map[int]*entity.User
-	*sqlx.DB
+	*datastore.Connection
 }
 
-func NewUsersRepository(con *sqlx.DB) rep.Users {
+func NewUsersRepository(con *datastore.Connection) rep.Users {
 	return &Users{
-		users: make(map[int]*entity.User),
-		DB:    con,
+		users:      make(map[int]*entity.User),
+		Connection: con,
 	}
 }
 
 func (rep *Users) Close() {
-	err := rep.DB.Close()
-	if err != nil {
-		fmt.Printf("Error: %v\n", err)
-	}
+	rep.Connection.Close()
 }
 
 func (rep *Users) Create(name string) (int, error) {

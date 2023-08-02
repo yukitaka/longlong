@@ -3,35 +3,39 @@ package repository
 import (
 	"database/sql"
 	"fmt"
-	"github.com/jmoiron/sqlx"
 	"github.com/yukitaka/longlong/server/core/pkg/domain/entity"
 	rep "github.com/yukitaka/longlong/server/core/pkg/domain/repository"
+	"github.com/yukitaka/longlong/server/core/pkg/interface/datastore"
 	"time"
 )
 
 type Timers struct {
-	*sqlx.DB
+	*datastore.Connection
 }
 
-func NewTimersRepository(con *sqlx.DB) rep.Timers {
+func NewTimersRepository(con *datastore.Connection) rep.Timers {
 	return &Timers{
-		DB: con,
+		Connection: con,
 	}
 }
 
-func (t *Timers) InsertTimers(timer *entity.Timer) ([]int, error) {
+func (rep *Timers) Close() {
+	rep.Connection.Close()
+}
+
+func (rep *Timers) InsertTimers(timer *entity.Timer) ([]int, error) {
 	var ids []int
 	insertTimer := func(durationType string, numbers []int, interval int) error {
 		if interval <= 0 || len(numbers) == 0 {
 			return nil
 		}
-		id, err := t.nextId("timers")
+		id, err := rep.nextId("timers")
 		if err != nil {
 			return err
 		}
 		query := "insert into timers (id, duration_type, number, interval, reference_at) values ($1, $2, $3, $4, $5)"
 		for _, v := range numbers {
-			_, err = t.DB.Exec(query, id, durationType, v, interval, time.Now())
+			_, err = rep.DB.Exec(query, id, durationType, v, interval, time.Now())
 			if err != nil {
 				return err
 			}
@@ -58,9 +62,9 @@ func (t *Timers) InsertTimers(timer *entity.Timer) ([]int, error) {
 	return ids, nil
 }
 
-func (t *Timers) nextId(table string) (int, error) {
+func (rep *Timers) nextId(table string) (int, error) {
 	query := fmt.Sprintf("select max(id) from %s", table)
-	row := t.DB.QueryRowx(query)
+	row := rep.DB.QueryRowx(query)
 	var nullableId sql.NullInt32
 	err := row.Scan(&nullableId)
 	if err != nil {
