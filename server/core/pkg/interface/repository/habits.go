@@ -19,18 +19,18 @@ func NewHabitsRepository(con *datastore.Connection) rep.Habits {
 	}
 }
 
-func (h *Habits) Close() {
-	h.Connection.Close()
+func (rep *Habits) Close() {
+	rep.Connection.Close()
 }
 
-func (h *Habits) Find(id int) (*entity.Habit, error) {
+func (rep *Habits) Find(id int) (*entity.Habit, error) {
 	query := "select id, name, exp from habits where id=$1"
 	habit := entity.Habit{}
-	err := h.DB.Get(&habit, query, id)
+	err := rep.DB.Get(&habit, query, id)
 	if err != nil {
 		return nil, err
 	}
-	t, err := h.timer(habit.Id)
+	t, err := rep.timer(habit.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -39,8 +39,8 @@ func (h *Habits) Find(id int) (*entity.Habit, error) {
 	return &habit, nil
 }
 
-func (h *Habits) Create(name, timer string) (*entity.Habit, error) {
-	id, err := h.nextId("habits")
+func (rep *Habits) Create(name, timer string) (*entity.Habit, error) {
+	id, err := rep.nextId("habits")
 	if err != nil {
 		return nil, err
 	}
@@ -49,19 +49,19 @@ func (h *Habits) Create(name, timer string) (*entity.Habit, error) {
 	if err != nil {
 		return nil, err
 	}
-	tx, err := h.DB.Begin()
+	tx, err := rep.DB.Begin()
 	if err != nil {
 		return nil, err
 	}
 	query := "insert into habits (id, name, exp) values ($1, $2, $3)"
-	_, err = h.DB.Exec(query, id, name, 0)
+	_, err = rep.DB.Exec(query, id, name, 0)
 	if err != nil {
 		return nil, err
 	}
-	timerIds, err := (&Timers{h.Connection}).InsertTimers(t)
+	timerIds, err := (&Timers{rep.Connection}).InsertTimers(t)
 	for _, v := range timerIds {
 		query = "insert into habits_timers (habit_id, timer_id) values ($1, $2)"
-		_, err = h.DB.Exec(query, id, v)
+		_, err = rep.DB.Exec(query, id, v)
 		if err != nil {
 			return nil, err
 		}
@@ -71,7 +71,7 @@ func (h *Habits) Create(name, timer string) (*entity.Habit, error) {
 	return &entity.Habit{Id: id, Name: name, Timer: *t}, nil
 }
 
-func (h *Habits) timer(habit_id int) (*entity.Timer, error) {
+func (rep *Habits) timer(habit_id int) (*entity.Timer, error) {
 	query := "select t.id, duration_type, number, interval, reference_at from timers t join habits_timers t1 on t.id=t1.timer_id where t.id=$1"
 	type s struct {
 		Id           int       `db:"id"`
@@ -82,7 +82,7 @@ func (h *Habits) timer(habit_id int) (*entity.Timer, error) {
 	}
 	var ss []s
 
-	err := h.DB.Select(&ss, query, habit_id)
+	err := rep.DB.Select(&ss, query, habit_id)
 	if err != nil {
 		return nil, err
 	}
@@ -125,9 +125,9 @@ func (h *Habits) timer(habit_id int) (*entity.Timer, error) {
 	return &t, nil
 }
 
-func (h *Habits) nextId(table string) (int, error) {
+func (rep *Habits) nextId(table string) (int, error) {
 	query := fmt.Sprintf("select max(id) from %s", table)
-	row := h.DB.QueryRowx(query)
+	row := rep.DB.QueryRowx(query)
 	var nullableId sql.NullInt32
 	err := row.Scan(&nullableId)
 	if err != nil {

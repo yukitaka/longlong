@@ -25,13 +25,13 @@ func NewOrganizationsRepository(con *datastore.Connection) rep.Organizations {
 	}
 }
 
-func (o *Organizations) Close() {
-	o.Connection.Close()
+func (rep *Organizations) Close() {
+	rep.Connection.Close()
 }
 
-func (o *Organizations) Create(name string, individual entity.Individual) (int, error) {
+func (rep *Organizations) Create(name string, individual entity.Individual) (int, error) {
 	query := "select max(id) from organizations"
-	row := o.DB.QueryRowx(query)
+	row := rep.DB.QueryRowx(query)
 	var nullableId sql.NullInt32
 	err := row.Scan(&nullableId)
 	if err != nil {
@@ -44,12 +44,12 @@ func (o *Organizations) Create(name string, individual entity.Individual) (int, 
 	}
 
 	query = "insert into organizations (id, name) values ($1, $2)"
-	_, err = o.DB.Exec(query, id, name)
+	_, err = rep.DB.Exec(query, id, name)
 	if err != nil {
 		return -1, err
 	}
 	query = "insert into organization_members (organization_id, individual_id, role) values ($1, $2, $3)"
-	_, err = o.DB.Exec(query, id, individual.Id, value_object.OWNER)
+	_, err = rep.DB.Exec(query, id, individual.Id, value_object.OWNER)
 	if err != nil {
 		return -1, err
 	}
@@ -57,8 +57,8 @@ func (o *Organizations) Create(name string, individual entity.Individual) (int, 
 	return id, nil
 }
 
-func (o *Organizations) Find(id int) (*entity.Organization, error) {
-	stmt, err := o.DB.Preparex("select name from organizations where id=$1")
+func (rep *Organizations) Find(id int) (*entity.Organization, error) {
+	stmt, err := rep.DB.Preparex("select name from organizations where id=$1")
 	if err != nil {
 		return nil, err
 	}
@@ -81,8 +81,8 @@ func (o *Organizations) Find(id int) (*entity.Organization, error) {
 	return entity.NewOrganization(0, id, name), nil
 }
 
-func (o *Organizations) FindByName(name string) (*entity.Organization, error) {
-	stmt, err := o.DB.Preparex("select id from organizations where name=$1")
+func (rep *Organizations) FindByName(name string) (*entity.Organization, error) {
+	stmt, err := rep.DB.Preparex("select id from organizations where name=$1")
 	if err != nil {
 		return nil, err
 	}
@@ -105,8 +105,8 @@ func (o *Organizations) FindByName(name string) (*entity.Organization, error) {
 	return entity.NewOrganization(0, id, name), nil
 }
 
-func (o *Organizations) FindAll(ids []interface{}) (*[]entity.Organization, error) {
-	stmt, err := o.DB.Preparex("select parent_id, id, name from organizations where id in ($1" + strings.Repeat(",$2", len(ids)-1) + ")")
+func (rep *Organizations) FindAll(ids []interface{}) (*[]entity.Organization, error) {
+	stmt, err := rep.DB.Preparex("select parent_id, id, name from organizations where id in ($1" + strings.Repeat(",$2", len(ids)-1) + ")")
 	if err != nil {
 		return nil, err
 	}
@@ -139,8 +139,8 @@ func (o *Organizations) FindAll(ids []interface{}) (*[]entity.Organization, erro
 	return &organizations, nil
 }
 
-func (o *Organizations) List() (*[]entity.Organization, error) {
-	rows, err := o.DB.Queryx("select id, name from organizations")
+func (rep *Organizations) List() (*[]entity.Organization, error) {
+	rows, err := rep.DB.Queryx("select id, name from organizations")
 	if err != nil {
 		return nil, err
 	}
