@@ -22,10 +22,7 @@ func NewAuthenticationsRepository(con *datastore.Connection) rep.Authentications
 }
 
 func (rep *Authentications) Close() {
-	err := rep.DB.Close()
-	if err != nil {
-		fmt.Printf("Error: %v\n", err)
-	}
+	rep.Connection.Close()
 }
 
 func (rep *Authentications) Create(identify, token string) (int, error) {

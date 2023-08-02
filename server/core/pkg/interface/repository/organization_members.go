@@ -141,8 +141,5 @@ func (rep OrganizationMembers) IndividualsAssigned(individuals *[]entity.Individ
 }
 
 func (rep OrganizationMembers) Close() {
-	err := rep.DB.Close()
-	if err != nil {
-		fmt.Printf("Error: %v\n", err)
-	}
+	rep.Connection.Close()
 }

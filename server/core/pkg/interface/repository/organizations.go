@@ -26,10 +26,7 @@ func NewOrganizationsRepository(con *datastore.Connection) rep.Organizations {
 }
 
 func (o *Organizations) Close() {
-	err := o.DB.Close()
-	if err != nil {
-		fmt.Printf("Error: %v\n", err)
-	}
+	o.Connection.Close()
 }
 
 func (o *Organizations) Create(name string, individual entity.Individual) (int, error) {

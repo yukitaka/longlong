@@ -19,6 +19,10 @@ func NewTimersRepository(con *datastore.Connection) rep.Timers {
 	}
 }
 
+func (t *Timers) Close() {
+	t.Connection.Close()
+}
+
 func (t *Timers) InsertTimers(timer *entity.Timer) ([]int, error) {
 	var ids []int
 	insertTimer := func(durationType string, numbers []int, interval int) error {

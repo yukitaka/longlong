@@ -20,10 +20,7 @@ func NewIndividualsRepository(con *datastore.Connection) rep.Individuals {
 }
 
 func (rep *Individuals) Close() {
-	err := rep.DB.Close()
-	if err != nil {
-		fmt.Printf("Error: %v\n", err)
-	}
+	rep.Connection.Close()
 }
 
 func (rep *Individuals) Create(name string, userId, profileId int) (int, error) {

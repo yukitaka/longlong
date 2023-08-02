@@ -20,10 +20,7 @@ func NewHabitsRepository(con *datastore.Connection) rep.Habits {
 }
 
 func (h *Habits) Close() {
-	err := h.DB.Close()
-	if err != nil {
-		fmt.Printf("Error: %v\n", err)
-	}
+	h.Connection.Close()
 }
 
 func (h *Habits) Find(id int) (*entity.Habit, error) {

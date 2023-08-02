@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"fmt"
 	"github.com/yukitaka/longlong/server/core/pkg/domain/entity"
 	rep "github.com/yukitaka/longlong/server/core/pkg/domain/repository"
 	"github.com/yukitaka/longlong/server/core/pkg/interface/datastore"
@@ -19,10 +18,7 @@ func NewProfilesRepository(con *datastore.Connection) rep.Profiles {
 }
 
 func (rep *Profiles) Close() {
-	err := rep.DB.Close()
-	if err != nil {
-		fmt.Printf("Error: %v\n", err)
-	}
+	rep.Connection.Close()
 }
 
 func (rep *Profiles) Create(nickName, fullName, bio string) (int, error) {
