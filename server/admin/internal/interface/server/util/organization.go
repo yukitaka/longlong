@@ -10,9 +10,9 @@ import (
 
 func OrganizationFromContext(c echo.Context) (*entity.Organization, error) {
 	organizationId, _ := UserData(c)
-	db := c.Get("datastore").(*datastore.Connection).DB
+	con := c.Get("datastore").(*datastore.Connection)
 
-	rep := repository.NewOrganizationsRepository(db)
+	rep := repository.NewOrganizationsRepository(con)
 	itr := usecase.NewOrganizationFinder(rep)
 
 	return itr.FindById(organizationId)

@@ -3,19 +3,19 @@ package repository
 import (
 	"database/sql"
 	"fmt"
-	"github.com/jmoiron/sqlx"
 	"github.com/yukitaka/longlong/server/core/pkg/domain/entity"
 	rep "github.com/yukitaka/longlong/server/core/pkg/domain/repository"
+	"github.com/yukitaka/longlong/server/core/pkg/interface/datastore"
 	"time"
 )
 
 type Habits struct {
-	*sqlx.DB
+	*datastore.Connection
 }
 
-func NewHabitsRepository(con *sqlx.DB) rep.Habits {
+func NewHabitsRepository(con *datastore.Connection) rep.Habits {
 	return &Habits{
-		DB: con,
+		Connection: con,
 	}
 }
 
@@ -61,7 +61,7 @@ func (h *Habits) Create(name, timer string) (*entity.Habit, error) {
 	if err != nil {
 		return nil, err
 	}
-	timerIds, err := (&Timers{h.DB}).InsertTimers(t)
+	timerIds, err := (&Timers{h.Connection}).InsertTimers(t)
 	for _, v := range timerIds {
 		query = "insert into habits_timers (habit_id, timer_id) values ($1, $2)"
 		_, err = h.DB.Exec(query, id, v)

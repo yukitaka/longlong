@@ -22,12 +22,12 @@ func Login(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, "bad request")
 	}
 
-	db := c.Get("datastore").(*datastore.Connection).DB
+	con := c.Get("datastore").(*datastore.Connection)
 
 	rep := usecase.NewAuthenticationRepository(
-		repository.NewAuthenticationsRepository(db),
-		repository.NewOrganizationsRepository(db),
-		repository.NewOrganizationMembersRepository(db))
+		repository.NewAuthenticationsRepository(con),
+		repository.NewOrganizationsRepository(con),
+		repository.NewOrganizationMembersRepository(con))
 	itr := usecase.NewAuthentication(rep)
 	individualId, organizationId, err := itr.Auth(l.Organization, l.Id, l.Password)
 	if err != nil {

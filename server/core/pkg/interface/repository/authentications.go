@@ -7,16 +7,17 @@ import (
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
 	rep "github.com/yukitaka/longlong/server/core/pkg/domain/repository"
+	"github.com/yukitaka/longlong/server/core/pkg/interface/datastore"
 	"time"
 )
 
 type Authentications struct {
-	*sqlx.DB
+	*datastore.Connection
 }
 
-func NewAuthenticationsRepository(con *sqlx.DB) rep.Authentications {
+func NewAuthenticationsRepository(con *datastore.Connection) rep.Authentications {
 	return &Authentications{
-		DB: con,
+		Connection: con,
 	}
 }
 

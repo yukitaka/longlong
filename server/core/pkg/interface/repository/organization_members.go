@@ -4,20 +4,20 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/jmoiron/sqlx"
 	"github.com/yukitaka/longlong/server/core/pkg/domain/entity"
 	rep "github.com/yukitaka/longlong/server/core/pkg/domain/repository"
 	"github.com/yukitaka/longlong/server/core/pkg/domain/value_object"
+	"github.com/yukitaka/longlong/server/core/pkg/interface/datastore"
 	"strings"
 )
 
 type OrganizationMembers struct {
-	*sqlx.DB
+	*datastore.Connection
 }
 
-func NewOrganizationMembersRepository(con *sqlx.DB) rep.OrganizationMembers {
+func NewOrganizationMembersRepository(con *datastore.Connection) rep.OrganizationMembers {
 	return &OrganizationMembers{
-		DB: con,
+		Connection: con,
 	}
 }
 
@@ -46,11 +46,11 @@ func (rep OrganizationMembers) Find(organizationId, individualId int) (*entity.O
 	if err := row.Scan(&userId, &profileId, &individualName); err != nil {
 		return nil, err
 	}
-	user, err := NewUsersRepository(rep.DB).Find(userId)
+	user, err := NewUsersRepository(rep.Connection).Find(userId)
 	if err != nil {
 		return nil, err
 	}
-	profile, err := NewProfilesRepository(rep.DB).Find(profileId)
+	profile, err := NewProfilesRepository(rep.Connection).Find(profileId)
 	if err != nil {
 		return nil, err
 	}

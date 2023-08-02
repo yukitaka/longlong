@@ -3,19 +3,19 @@ package repository
 import (
 	"database/sql"
 	"fmt"
-	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/yukitaka/longlong/server/core/pkg/domain/entity"
 	rep "github.com/yukitaka/longlong/server/core/pkg/domain/repository"
+	"github.com/yukitaka/longlong/server/core/pkg/interface/datastore"
 )
 
 type Individuals struct {
-	*sqlx.DB
+	*datastore.Connection
 }
 
-func NewIndividualsRepository(con *sqlx.DB) rep.Individuals {
+func NewIndividualsRepository(con *datastore.Connection) rep.Individuals {
 	return &Individuals{
-		DB: con,
+		Connection: con,
 	}
 }
 
@@ -69,12 +69,12 @@ func (rep *Individuals) Find(id int) (*entity.Individual, error) {
 		return nil, err
 	}
 
-	user, err := NewUsersRepository(rep.DB).Find(userId)
+	user, err := NewUsersRepository(rep.Connection).Find(userId)
 	if err != nil {
 		return nil, err
 	}
 
-	profile, err := NewProfilesRepository(rep.DB).Find(profileId)
+	profile, err := NewProfilesRepository(rep.Connection).Find(profileId)
 	if err != nil {
 		return nil, err
 	}
@@ -103,12 +103,12 @@ func (rep *Individuals) FindByUserId(userId int) (*[]entity.Individual, error) {
 			return nil, err
 		}
 
-		user, err := NewUsersRepository(rep.DB).Find(userId)
+		user, err := NewUsersRepository(rep.Connection).Find(userId)
 		if err != nil {
 			return nil, err
 		}
 
-		profile, err := NewProfilesRepository(rep.DB).Find(profileId)
+		profile, err := NewProfilesRepository(rep.Connection).Find(profileId)
 		if err != nil {
 			return nil, err
 		}

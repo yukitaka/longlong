@@ -9,18 +9,19 @@ import (
 	"github.com/yukitaka/longlong/server/core/pkg/domain/entity"
 	rep "github.com/yukitaka/longlong/server/core/pkg/domain/repository"
 	"github.com/yukitaka/longlong/server/core/pkg/domain/value_object"
+	"github.com/yukitaka/longlong/server/core/pkg/interface/datastore"
 	"strings"
 )
 
 type Organizations struct {
 	organizations map[int]*entity.Organization
-	*sqlx.DB
+	*datastore.Connection
 }
 
-func NewOrganizationsRepository(con *sqlx.DB) rep.Organizations {
+func NewOrganizationsRepository(con *datastore.Connection) rep.Organizations {
 	return &Organizations{
 		organizations: make(map[int]*entity.Organization),
-		DB:            con,
+		Connection:    con,
 	}
 }
 

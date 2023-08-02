@@ -15,11 +15,11 @@ func Members(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 
-	db := c.Get("datastore").(*datastore.Connection).DB
+	con := c.Get("datastore").(*datastore.Connection)
 	rep := usecase.NewOrganizationManagerRepository(
-		repository.NewOrganizationsRepository(db),
-		repository.NewOrganizationMembersRepository(db),
-		repository.NewIndividualsRepository(db),
+		repository.NewOrganizationsRepository(con),
+		repository.NewOrganizationMembersRepository(con),
+		repository.NewIndividualsRepository(con),
 	)
 	itr := usecase.NewOrganizationManager(org, rep)
 	members, err := itr.Members()

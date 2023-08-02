@@ -3,19 +3,19 @@ package repository
 import (
 	"database/sql"
 	"fmt"
-	"github.com/jmoiron/sqlx"
 	"github.com/yukitaka/longlong/server/core/pkg/domain/entity"
 	rep "github.com/yukitaka/longlong/server/core/pkg/domain/repository"
+	"github.com/yukitaka/longlong/server/core/pkg/interface/datastore"
 	"time"
 )
 
 type Timers struct {
-	*sqlx.DB
+	*datastore.Connection
 }
 
-func NewTimersRepository(con *sqlx.DB) rep.Timers {
+func NewTimersRepository(con *datastore.Connection) rep.Timers {
 	return &Timers{
-		DB: con,
+		Connection: con,
 	}
 }
 
