@@ -31,7 +31,7 @@ func (d *Database) Init() error {
 	drop table if exists habits_timers;
 	drop table if exists timers;
 	drop table if exists habits;
-	create table authentications (id integer not null primary key, identify text not null, token text not null, individual_id integer);
+	create table authentications (id integer not null primary key, organization_id integer is not null, identify text not null, token text not null, individual_id integer);
 	create table oauth_authentications (identify text not null primary key, access_token text not null, refresh_token text, expiry timestamp, individual_id integer);
 	create table organizations (id integer not null primary key, parent_id integer not null default 0, name text);
 	create table organization_members (organization_id integer not null, individual_id integer not null, role integer);
@@ -47,7 +47,7 @@ func (d *Database) Init() error {
 	insert into profiles (id, nick_name, full_name, biography) values (1, 'admin', 'Admin', 'I am a administrator.');
 	insert into user_profiles (user_id, profile_id) values (1, 1);
 	insert into individuals (id, name, user_id, profile_id) values (1, 'admin', 1, 1);
-    insert into authentications (id, identify, token, individual_id) values (1, 'admin', '%s', 1);
+    insert into authentications (id, organization_id, identify, token, individual_id) values (1, 1, 'admin', '%s', 1);
 	insert into organization_members (organization_id, individual_id, role) values (1, 1, 0);
 	`, cryptedPassword)
 	if _, err := d.Exec(query); err != nil {

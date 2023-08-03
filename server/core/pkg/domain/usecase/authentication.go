@@ -37,7 +37,7 @@ func (it *Authentication) StoreOAuth2Info(identify, accessToken, refreshToken st
 }
 
 func (it *Authentication) AuthOAuth(identify, token string) (int, error) {
-	id, dbToken, err := it.repository.Authentications.FindToken(identify)
+	id, dbToken, err := it.repository.Authentications.FindToken(-1, identify)
 	if err != nil {
 		return -1, err
 	}
@@ -52,7 +52,11 @@ func (it *Authentication) AuthOAuth(identify, token string) (int, error) {
 }
 
 func (it *Authentication) Auth(organization, identify, password string) (int, int, error) {
-	id, token, err := it.repository.Authentications.FindToken(identify)
+	org, err := it.repository.Organizations.FindByName(organization)
+	if err != nil {
+		return -1, -1, err
+	}
+	id, token, err := it.repository.Authentications.FindToken(org.Id, identify)
 	if err != nil {
 		return -1, -1, err
 	}
