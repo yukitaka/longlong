@@ -36,6 +36,7 @@ func NewServer() *Server {
 	}
 	r.Use(echojwt.WithConfig(config))
 	r.GET("/organization", api.Organization)
+	r.POST("/members", api.AddMembers)
 	r.GET("/members", api.Members)
 
 	return &Server{Echo: e}
