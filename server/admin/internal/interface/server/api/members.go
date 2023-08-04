@@ -37,10 +37,23 @@ func Members(c echo.Context) error {
 }
 
 func AddMembers(c echo.Context) error {
+	org, err := serverutil.OrganizationFromContext(c)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+
 	m := new(addRequest)
 	if err := c.Bind(m); err != nil {
 		return c.JSON(http.StatusBadRequest, "bad request")
 	}
 
-	return c.JSON(http.StatusCreated, fmt.Sprintf("%s is created on %s", m.Id, "organizationname"))
+	con := c.Get("datastore").(*datastore.Connection)
+	rep := usecase.NewAuthenticationRepository(repository.NewAuthenticationsRepository(con), repository.NewOrganizationsRepository(con), repository.NewOrganizationMembersRepository(con))
+	itr := usecase.NewAuthentication(rep)
+	_, err = itr.Store(org.Id, m.Id, m.Password)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, err)
+	}
+
+	return c.JSON(http.StatusCreated, fmt.Sprintf("%s is created on %s", m.Id, org.Name))
 }
