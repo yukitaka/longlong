@@ -5,6 +5,7 @@ import (
 	"github.com/labstack/echo/v4"
 	serverutil "github.com/yukitaka/longlong/server/admin/internal/interface/server/util"
 	"github.com/yukitaka/longlong/server/core/pkg/domain/usecase"
+	"github.com/yukitaka/longlong/server/core/pkg/interface/authentication"
 	"github.com/yukitaka/longlong/server/core/pkg/interface/datastore"
 	"github.com/yukitaka/longlong/server/core/pkg/interface/repository"
 	"net/http"
@@ -50,7 +51,13 @@ func AddMembers(c echo.Context) error {
 	con := c.Get("datastore").(*datastore.Connection)
 	rep := usecase.NewAuthenticationRepository(repository.NewAuthenticationsRepository(con), repository.NewOrganizationsRepository(con), repository.NewOrganizationMembersRepository(con))
 	itr := usecase.NewAuthentication(rep)
-	_, err = itr.Store(org.Id, m.Id, m.Password)
+
+	pass, err := authentication.Encrypt(m.Password)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, err)
+	}
+
+	_, err = itr.Store(org.Id, m.Id, pass)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err)
 	}
