@@ -3,14 +3,16 @@ package usecase
 import (
 	"github.com/yukitaka/longlong/server/core/pkg/domain/entity"
 	"github.com/yukitaka/longlong/server/core/pkg/domain/repository"
+	"github.com/yukitaka/longlong/server/core/pkg/interface/datastore"
+	rep "github.com/yukitaka/longlong/server/core/pkg/interface/repository"
 )
 
 type OrganizationMemberFinder struct {
 	repository.OrganizationMembers
 }
 
-func NewOrganizationMemberFinder(members repository.OrganizationMembers) *OrganizationMemberFinder {
-	return &OrganizationMemberFinder{OrganizationMembers: members}
+func NewOrganizationMemberFinder(con *datastore.Connection) *OrganizationMemberFinder {
+	return &OrganizationMemberFinder{OrganizationMembers: rep.NewOrganizationMembersRepository(con)}
 }
 
 func (it *OrganizationMemberFinder) FindById(organizationId, individualId int) (*entity.OrganizationMember, error) {

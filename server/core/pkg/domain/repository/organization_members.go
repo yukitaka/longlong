@@ -12,5 +12,4 @@ type OrganizationMembers interface {
 	Leave(organizationId, individualId int, reason string) error
 	Members(organization *entity.Organization, individualRepository Individuals) (*[]entity.OrganizationMember, error)
 	IndividualsAssigned(individual *[]entity.Individual) (*[]entity.OrganizationMember, error)
-	Close()
 }

@@ -19,10 +19,6 @@ func NewHabitsRepository(con *datastore.Connection) rep.Habits {
 	}
 }
 
-func (rep *Habits) Close() {
-	rep.Connection.Close()
-}
-
 func (rep *Habits) Find(id int) (*entity.Habit, error) {
 	query := "select id, name, exp from habits where id=$1"
 	habit := entity.Habit{}
