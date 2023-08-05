@@ -106,6 +106,28 @@ func (rep *Authentications) UpdateToken(id int, token string) error {
 	return nil
 }
 
+func (rep *Authentications) Store(organizationId int, identify, token string) (bool, error) {
+	query := "select max(id) from authentications"
+	row := rep.DB.QueryRowx(query)
+	var nullableId sql.NullInt32
+	err := row.Scan(&nullableId)
+	if err != nil {
+		return false, err
+	}
+	id := 0
+	if nullableId.Valid {
+		id = int(nullableId.Int32)
+		id++
+	}
+
+	query = "insert into authentications (id, organization_id, identify, token) values ($1, $2, $3, $4)"
+	_, err = rep.DB.Exec(query, id, organizationId, identify, token)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
 func (rep *Authentications) StoreOAuth2Info(identify, accessToken, refreshToken string, expiry time.Time) (bool, error) {
 	query := "insert into oauth_authentications (identify, access_token, refresh_token, expiry) values ($1, $2, $3, $4)"
 	_, err := rep.DB.Exec(query, identify, accessToken, refreshToken, expiry)

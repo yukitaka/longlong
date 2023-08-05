@@ -32,6 +32,10 @@ func NewAuthentication(repository *AuthenticationRepository) *Authentication {
 	return &Authentication{repository}
 }
 
+func (it *Authentication) Store(organizationId int, identify, token string) (bool, error) {
+	return it.repository.Authentications.Store(organizationId, identify, token)
+}
+
 func (it *Authentication) StoreOAuth2Info(identify, accessToken, refreshToken string, expiry time.Time) (bool, error) {
 	return it.repository.Authentications.StoreOAuth2Info(identify, accessToken, refreshToken, expiry)
 }

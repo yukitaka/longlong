@@ -31,7 +31,7 @@ func (d *Database) Init() error {
 	drop table if exists habits_timers;
 	drop table if exists timers;
 	drop table if exists habits;
-	create table authentications (id integer not null primary key, organization_id integer is not null, identify text not null, token text not null, individual_id integer);
+	create table authentications (id integer not null primary key, organization_id integer not null, identify text not null, token text not null, individual_id integer);
 	create table oauth_authentications (identify text not null primary key, access_token text not null, refresh_token text, expiry timestamp, individual_id integer);
 	create table organizations (id integer not null primary key, parent_id integer not null default 0, name text);
 	create table organization_members (organization_id integer not null, individual_id integer not null, role integer);
