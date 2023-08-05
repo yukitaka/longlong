@@ -8,7 +8,6 @@ import (
 	"github.com/skratchdot/open-golang/open"
 	"github.com/yukitaka/longlong/server/core/pkg/domain/usecase"
 	"github.com/yukitaka/longlong/server/core/pkg/interface/datastore"
-	"github.com/yukitaka/longlong/server/core/pkg/interface/repository"
 	"golang.org/x/oauth2"
 	"io"
 	"log"
@@ -145,13 +144,8 @@ L:
 }
 
 func (o *OAuth) storeDB(con *datastore.Connection, login string) (int, error) {
-	authRep := repository.NewAuthenticationsRepository(con)
-	organizationRep := repository.NewOrganizationsRepository(con)
-	memberRep := repository.NewOrganizationMembersRepository(con)
-	rep := usecase.NewAuthenticationRepository(authRep, organizationRep, memberRep)
-	defer rep.Close()
-
-	itr := usecase.NewAuthentication(rep)
+	itr := usecase.NewAuthentication(con)
+	defer itr.Close()
 
 	if ok, err := itr.StoreOAuth2Info(login, o.AccessToken, o.RefreshToken, o.Expiry); !ok {
 		return -1, err

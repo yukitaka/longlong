@@ -4,49 +4,47 @@ import (
 	"fmt"
 	"github.com/yukitaka/longlong/server/core/pkg/domain/entity"
 	"github.com/yukitaka/longlong/server/core/pkg/domain/repository"
+	"github.com/yukitaka/longlong/server/core/pkg/interface/datastore"
+	rep "github.com/yukitaka/longlong/server/core/pkg/interface/repository"
 	"golang.org/x/crypto/bcrypt"
 	"time"
 )
 
-type AuthenticationRepository struct {
+type Authentication struct {
 	repository.Authentications
 	repository.Organizations
 	repository.OrganizationMembers
 }
 
-func NewAuthenticationRepository(authentications repository.Authentications, organizations repository.Organizations, organizationMembers repository.OrganizationMembers) *AuthenticationRepository {
-	return &AuthenticationRepository{authentications, organizations, organizationMembers}
+func (it *Authentication) Close() {
+	it.Authentications.Close()
+	it.Organizations.Close()
+	it.OrganizationMembers.Close()
 }
 
-func (rep *AuthenticationRepository) Close() {
-	rep.Authentications.Close()
-	rep.Organizations.Close()
-	rep.OrganizationMembers.Close()
-}
-
-type Authentication struct {
-	repository *AuthenticationRepository
-}
-
-func NewAuthentication(repository *AuthenticationRepository) *Authentication {
-	return &Authentication{repository}
+func NewAuthentication(con *datastore.Connection) *Authentication {
+	return &Authentication{
+		Authentications:     rep.NewAuthenticationsRepository(con),
+		Organizations:       rep.NewOrganizationsRepository(con),
+		OrganizationMembers: rep.NewOrganizationMembersRepository(con),
+	}
 }
 
 func (it *Authentication) Store(organizationId int, identify, token string) (bool, error) {
-	return it.repository.Authentications.Store(organizationId, identify, token)
+	return it.Authentications.Store(organizationId, identify, token)
 }
 
 func (it *Authentication) StoreOAuth2Info(identify, accessToken, refreshToken string, expiry time.Time) (bool, error) {
-	return it.repository.Authentications.StoreOAuth2Info(identify, accessToken, refreshToken, expiry)
+	return it.Authentications.StoreOAuth2Info(identify, accessToken, refreshToken, expiry)
 }
 
 func (it *Authentication) AuthOAuth(identify, token string) (int, error) {
-	id, dbToken, err := it.repository.Authentications.FindToken(-1, identify)
+	id, dbToken, err := it.Authentications.FindToken(-1, identify)
 	if err != nil {
 		return -1, err
 	}
 	if token != dbToken {
-		err = it.repository.Authentications.UpdateToken(id, token)
+		err = it.Authentications.UpdateToken(id, token)
 		if err != nil {
 			return id, err
 		}
@@ -56,11 +54,11 @@ func (it *Authentication) AuthOAuth(identify, token string) (int, error) {
 }
 
 func (it *Authentication) Auth(organization, identify, password string) (int, int, error) {
-	org, err := it.repository.Organizations.FindByName(organization)
+	org, err := it.Organizations.FindByName(organization)
 	if err != nil {
 		return -1, -1, err
 	}
-	id, token, err := it.repository.Authentications.FindToken(org.Id, identify)
+	id, token, err := it.Authentications.FindToken(org.Id, identify)
 	if err != nil {
 		return -1, -1, err
 	}
@@ -69,9 +67,9 @@ func (it *Authentication) Auth(organization, identify, password string) (int, in
 		return -1, -1, err
 	}
 
-	organizationMembers, err := it.repository.OrganizationMembers.IndividualsAssigned(&[]entity.Individual{*entity.NewIndividual(id, &entity.User{}, &entity.Profile{}, identify)})
+	organizationMembers, err := it.OrganizationMembers.IndividualsAssigned(&[]entity.Individual{*entity.NewIndividual(id, &entity.User{}, &entity.Profile{}, identify)})
 	for _, ob := range *organizationMembers {
-		o, _ := it.repository.Organizations.Find(ob.Organization.Id)
+		o, _ := it.Organizations.Find(ob.Organization.Id)
 		if o.Name == organization {
 			return id, o.Id, nil
 		}

@@ -5,7 +5,6 @@ import (
 	"github.com/yukitaka/longlong/server/admin/internal/interface/server/jwt"
 	"github.com/yukitaka/longlong/server/core/pkg/domain/usecase"
 	"github.com/yukitaka/longlong/server/core/pkg/interface/datastore"
-	"github.com/yukitaka/longlong/server/core/pkg/interface/repository"
 	"github.com/yukitaka/longlong/server/core/pkg/util"
 	"net/http"
 )
@@ -23,12 +22,9 @@ func Login(c echo.Context) error {
 	}
 
 	con := c.Get("datastore").(*datastore.Connection)
+	itr := usecase.NewAuthentication(con)
+	defer itr.Close()
 
-	rep := usecase.NewAuthenticationRepository(
-		repository.NewAuthenticationsRepository(con),
-		repository.NewOrganizationsRepository(con),
-		repository.NewOrganizationMembersRepository(con))
-	itr := usecase.NewAuthentication(rep)
 	individualId, organizationId, err := itr.Auth(l.Organization, l.Id, l.Password)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err)

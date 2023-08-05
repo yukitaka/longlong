@@ -49,8 +49,8 @@ func AddMembers(c echo.Context) error {
 	}
 
 	con := c.Get("datastore").(*datastore.Connection)
-	rep := usecase.NewAuthenticationRepository(repository.NewAuthenticationsRepository(con), repository.NewOrganizationsRepository(con), repository.NewOrganizationMembersRepository(con))
-	itr := usecase.NewAuthentication(rep)
+	itr := usecase.NewAuthentication(con)
+	defer itr.Close()
 
 	pass, err := authentication.Encrypt(m.Password)
 	if err != nil {
