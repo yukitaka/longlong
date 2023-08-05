@@ -16,12 +16,6 @@ type Authentication struct {
 	repository.OrganizationMembers
 }
 
-func (it *Authentication) Close() {
-	it.Authentications.Close()
-	it.Organizations.Close()
-	it.OrganizationMembers.Close()
-}
-
 func NewAuthentication(con *datastore.Connection) *Authentication {
 	return &Authentication{
 		Authentications:     rep.NewAuthenticationsRepository(con),

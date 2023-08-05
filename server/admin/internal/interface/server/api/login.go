@@ -23,7 +23,6 @@ func Login(c echo.Context) error {
 
 	con := c.Get("datastore").(*datastore.Connection)
 	itr := usecase.NewAuthentication(con)
-	defer itr.Close()
 
 	individualId, organizationId, err := itr.Auth(l.Organization, l.Id, l.Password)
 	if err != nil {

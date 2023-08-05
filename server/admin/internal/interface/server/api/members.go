@@ -50,7 +50,6 @@ func AddMembers(c echo.Context) error {
 
 	con := c.Get("datastore").(*datastore.Connection)
 	itr := usecase.NewAuthentication(con)
-	defer itr.Close()
 
 	pass, err := authentication.Encrypt(m.Password)
 	if err != nil {

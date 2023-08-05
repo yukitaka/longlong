@@ -145,7 +145,6 @@ L:
 
 func (o *OAuth) storeDB(con *datastore.Connection, login string) (int, error) {
 	itr := usecase.NewAuthentication(con)
-	defer itr.Close()
 
 	if ok, err := itr.StoreOAuth2Info(login, o.AccessToken, o.RefreshToken, o.Expiry); !ok {
 		return -1, err
