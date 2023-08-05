@@ -9,5 +9,4 @@ type Authentications interface {
 	UpdateToken(id int, token string) error
 	Store(organizationId int, identify, token string) (bool, error)
 	StoreOAuth2Info(identify, accessToken, refreshToken string, expiry time.Time) (bool, error)
-	Close()
 }

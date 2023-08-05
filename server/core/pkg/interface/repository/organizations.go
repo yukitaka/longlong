@@ -25,10 +25,6 @@ func NewOrganizationsRepository(con *datastore.Connection) rep.Organizations {
 	}
 }
 
-func (rep *Organizations) Close() {
-	rep.Connection.Close()
-}
-
 func (rep *Organizations) Create(name string, individual entity.Individual) (int, error) {
 	query := "select max(id) from organizations"
 	row := rep.DB.QueryRowx(query)

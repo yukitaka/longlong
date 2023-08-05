@@ -21,10 +21,6 @@ func NewAuthenticationsRepository(con *datastore.Connection) rep.Authentications
 	}
 }
 
-func (rep *Authentications) Close() {
-	rep.Connection.Close()
-}
-
 func (rep *Authentications) Create(organizationId int, identify, token string) (int, error) {
 	query := "select max(id) from authentications"
 	row := rep.DB.QueryRowx(query)

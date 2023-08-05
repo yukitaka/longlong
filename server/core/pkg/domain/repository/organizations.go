@@ -11,5 +11,4 @@ type Organizations interface {
 	FindByName(name string) (*entity.Organization, error)
 	FindAll(ids []interface{}) (*[]entity.Organization, error)
 	List() (*[]entity.Organization, error)
-	Close()
 }

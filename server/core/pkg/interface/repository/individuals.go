@@ -19,10 +19,6 @@ func NewIndividualsRepository(con *datastore.Connection) rep.Individuals {
 	}
 }
 
-func (rep *Individuals) Close() {
-	rep.Connection.Close()
-}
-
 func (rep *Individuals) Create(name string, userId, profileId int) (int, error) {
 	query := "select max(id) from individuals"
 	row := rep.DB.QueryRowx(query)

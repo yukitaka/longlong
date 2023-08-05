@@ -5,31 +5,23 @@ import (
 	"github.com/yukitaka/longlong/server/core/pkg/domain/entity"
 	"github.com/yukitaka/longlong/server/core/pkg/domain/repository"
 	"github.com/yukitaka/longlong/server/core/pkg/domain/value_object"
+	"github.com/yukitaka/longlong/server/core/pkg/interface/datastore"
+	rep "github.com/yukitaka/longlong/server/core/pkg/interface/repository"
 	"strings"
 )
 
-type UserCreatorRepository struct {
+type UserCreator struct {
 	repository.Users
 	repository.Individuals
 	repository.OrganizationMembers
 }
 
-func NewUserCreatorRepository(users repository.Users, individuals repository.Individuals, members repository.OrganizationMembers) *UserCreatorRepository {
-	return &UserCreatorRepository{users, individuals, members}
-}
-
-func (rep *UserCreatorRepository) Close() {
-	rep.Users.Close()
-	rep.Individuals.Close()
-	rep.OrganizationMembers.Close()
-}
-
-type UserCreator struct {
-	repository *UserCreatorRepository
-}
-
-func NewUserCreator(repository *UserCreatorRepository) *UserCreator {
-	return &UserCreator{repository}
+func NewUserCreator(con *datastore.Connection) *UserCreator {
+	return &UserCreator{
+		Users:               rep.NewUsersRepository(con),
+		Individuals:         rep.NewIndividualsRepository(con),
+		OrganizationMembers: rep.NewOrganizationMembersRepository(con),
+	}
 }
 
 func (it *UserCreator) New(operator *entity.OrganizationMember, name string, role string) (int, error) {
@@ -41,15 +33,15 @@ func (it *UserCreator) New(operator *entity.OrganizationMember, name string, rol
 		return -1, fmt.Errorf("New user role isn't permitted.\n")
 	}
 
-	userId, err := it.repository.Users.Create(name)
+	userId, err := it.Users.Create(name)
 	if err != nil {
 		return -1, err
 	}
-	id, err := it.repository.Individuals.Create(name, userId, -1)
+	id, err := it.Individuals.Create(name, userId, -1)
 	if err != nil {
 		return 0, err
 	}
-	err = it.repository.OrganizationMembers.Entry(operator.Organization.Id, id, roleType)
+	err = it.OrganizationMembers.Entry(operator.Organization.Id, id, roleType)
 
 	return id, nil
 }

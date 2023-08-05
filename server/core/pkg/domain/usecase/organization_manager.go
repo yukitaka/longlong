@@ -5,39 +5,32 @@ import (
 	"github.com/yukitaka/longlong/server/core/pkg/domain/entity"
 	"github.com/yukitaka/longlong/server/core/pkg/domain/repository"
 	"github.com/yukitaka/longlong/server/core/pkg/domain/value_object"
+	"github.com/yukitaka/longlong/server/core/pkg/interface/datastore"
+	rep "github.com/yukitaka/longlong/server/core/pkg/interface/repository"
 )
 
-type OrganizationManagerRepository struct {
+type OrganizationManager struct {
+	organization *entity.Organization
 	repository.Organizations
 	repository.OrganizationMembers
 	repository.Individuals
 }
 
-func NewOrganizationManagerRepository(organizations repository.Organizations, organizationMembers repository.OrganizationMembers, individuals repository.Individuals) *OrganizationManagerRepository {
-	return &OrganizationManagerRepository{organizations, organizationMembers, individuals}
-}
-
-func (rep *OrganizationManagerRepository) Close() {
-	rep.Organizations.Close()
-	rep.OrganizationMembers.Close()
-	rep.Individuals.Close()
-}
-
-type OrganizationManager struct {
-	organization *entity.Organization
-	repository   *OrganizationManagerRepository
-}
-
-func NewOrganizationManager(organization *entity.Organization, repository *OrganizationManagerRepository) *OrganizationManager {
-	return &OrganizationManager{organization, repository}
+func NewOrganizationManager(org *entity.Organization, con *datastore.Connection) *OrganizationManager {
+	return &OrganizationManager{
+		organization:        org,
+		Organizations:       rep.NewOrganizationsRepository(con),
+		OrganizationMembers: rep.NewOrganizationMembersRepository(con),
+		Individuals:         rep.NewIndividualsRepository(con),
+	}
 }
 
 func (it *OrganizationManager) AssignIndividual(individualId int) error {
-	return it.repository.OrganizationMembers.Entry(it.organization.Id, individualId, value_object.MEMBER)
+	return it.OrganizationMembers.Entry(it.organization.Id, individualId, value_object.MEMBER)
 }
 
 func (it *OrganizationManager) QuitIndividual(operator *entity.OrganizationMember, individualId int, reason string) error {
-	target, err := it.repository.OrganizationMembers.Find(it.organization.Id, individualId)
+	target, err := it.OrganizationMembers.Find(it.organization.Id, individualId)
 	if err != nil {
 		return err
 	}
@@ -45,9 +38,9 @@ func (it *OrganizationManager) QuitIndividual(operator *entity.OrganizationMembe
 		return fmt.Errorf("error: you don't have permission to quit this organization")
 	}
 
-	return it.repository.OrganizationMembers.Leave(it.organization.Id, individualId, reason)
+	return it.OrganizationMembers.Leave(it.organization.Id, individualId, reason)
 }
 
 func (it *OrganizationManager) Members() (*[]entity.OrganizationMember, error) {
-	return it.repository.OrganizationMembers.Members(it.organization, it.repository.Individuals)
+	return it.OrganizationMembers.Members(it.organization, it.Individuals)
 }

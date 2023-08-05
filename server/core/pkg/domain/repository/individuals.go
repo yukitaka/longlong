@@ -9,5 +9,4 @@ type Individuals interface {
 	Create(name string, userId, profileId int) (int, error)
 	Find(id int) (*entity.Individual, error)
 	FindByUserId(userId int) (*[]entity.Individual, error)
-	Close()
 }
