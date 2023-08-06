@@ -7,6 +7,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/yukitaka/longlong/server/admin/internal/interface/server/api"
 	serverjwt "github.com/yukitaka/longlong/server/admin/internal/interface/server/jwt"
+	util2 "github.com/yukitaka/longlong/server/admin/internal/interface/server/util"
 	"github.com/yukitaka/longlong/server/core/pkg/interface/datastore"
 	"github.com/yukitaka/longlong/server/core/pkg/util"
 	"strconv"
@@ -43,16 +44,7 @@ func NewServer() *Server {
 }
 
 func (s *Server) Run(port int, con *datastore.Connection) {
-	s.Echo.Use(datastoreMiddleware(con))
+	s.Echo.Use(util2.DatastoreMiddleware(con))
 
 	s.Logger.Fatal(s.Start(":" + strconv.Itoa(port)))
-}
-
-func datastoreMiddleware(con *datastore.Connection) echo.MiddlewareFunc {
-	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			c.Set("datastore", con)
-			return next(c)
-		}
-	}
 }
