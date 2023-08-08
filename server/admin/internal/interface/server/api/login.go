@@ -3,8 +3,8 @@ package api
 import (
 	"github.com/labstack/echo/v4"
 	"github.com/yukitaka/longlong/server/admin/internal/interface/server/jwt"
+	serverutil "github.com/yukitaka/longlong/server/admin/internal/interface/server/util"
 	"github.com/yukitaka/longlong/server/core/pkg/domain/usecase"
-	"github.com/yukitaka/longlong/server/core/pkg/interface/datastore"
 	"github.com/yukitaka/longlong/server/core/pkg/util"
 	"net/http"
 )
@@ -21,8 +21,7 @@ func Login(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, "bad request")
 	}
 
-	con := c.Get("datastore").(*datastore.Connection)
-	itr := usecase.NewAuthentication(con)
+	itr := usecase.NewAuthentication(serverutil.DatastoreConnection(c))
 
 	individualId, organizationId, err := itr.Auth(l.Organization, l.Id, l.Password)
 	if err != nil {

@@ -13,3 +13,7 @@ func DatastoreMiddleware(con *datastore.Connection) echo.MiddlewareFunc {
 		}
 	}
 }
+
+func DatastoreConnection(c echo.Context) *datastore.Connection {
+	return c.Get("datastore").(*datastore.Connection)
+}

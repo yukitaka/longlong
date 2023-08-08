@@ -6,7 +6,6 @@ import (
 	serverutil "github.com/yukitaka/longlong/server/admin/internal/interface/server/util"
 	"github.com/yukitaka/longlong/server/core/pkg/domain/usecase"
 	"github.com/yukitaka/longlong/server/core/pkg/interface/authentication"
-	"github.com/yukitaka/longlong/server/core/pkg/interface/datastore"
 	"net/http"
 )
 
@@ -21,8 +20,7 @@ func Members(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 
-	con := c.Get("datastore").(*datastore.Connection)
-	itr := usecase.NewOrganizationManager(org, con)
+	itr := usecase.NewOrganizationManager(org, serverutil.DatastoreConnection(c))
 	members, err := itr.Members()
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
@@ -42,8 +40,7 @@ func AddMembers(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, "bad request")
 	}
 
-	con := c.Get("datastore").(*datastore.Connection)
-	itr := usecase.NewAuthentication(con)
+	itr := usecase.NewAuthentication(serverutil.DatastoreConnection(c))
 
 	pass, err := authentication.Encrypt(m.Password)
 	if err != nil {

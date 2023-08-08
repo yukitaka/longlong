@@ -6,7 +6,6 @@ import (
 	serverjwt "github.com/yukitaka/longlong/server/admin/internal/interface/server/jwt"
 	"github.com/yukitaka/longlong/server/core/pkg/domain/entity"
 	"github.com/yukitaka/longlong/server/core/pkg/domain/usecase"
-	"github.com/yukitaka/longlong/server/core/pkg/interface/datastore"
 )
 
 func UserData(c echo.Context) (individualId, organizationId int) {
@@ -18,8 +17,7 @@ func UserData(c echo.Context) (individualId, organizationId int) {
 
 func Operator(c echo.Context) *entity.OrganizationMember {
 	individualId, organizationId := UserData(c)
-	con := c.Get("datastore").(*datastore.Connection)
-	member, err := usecase.NewOrganizationMemberFinder(con).FindById(organizationId, individualId)
+	member, err := usecase.NewOrganizationMemberFinder(DatastoreConnection(c)).FindById(organizationId, individualId)
 	if err != nil {
 		panic("Can't Find a operator")
 	}
