@@ -2,6 +2,10 @@
 
 ## Usage
 ### Development execution
+#### Prepared
+```
+docker compose up -d
+```
 ```
 go run cmd/llctl/llctl.go help
 ```
