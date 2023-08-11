@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/yukitaka/longlong/server/core/pkg/domain/entity"
 	rep "github.com/yukitaka/longlong/server/core/pkg/domain/repository"
 	"github.com/yukitaka/longlong/server/core/pkg/interface/datastore"
 	"time"
@@ -44,29 +45,38 @@ func (rep *Authentications) Create(organizationId int, identify, token string) (
 	return id, nil
 }
 
+func (rep *Authentications) Find(organizationId int, identify string) (*entity.Authentication, error) {
+	stmt, err := rep.DB.Preparex("select individual_id, token from authentications where organization_id=$1 and identify=$2")
+	if err != nil {
+		return nil, err
+	}
+	defer func(stmt *sqlx.Stmt) {
+		err := stmt.Close()
+		if err != nil {
+			fmt.Printf("Error: %v\n", err)
+		}
+	}(stmt)
+	var id int
+	var token string
+	err = stmt.QueryRowx(organizationId, identify).Scan(&id, &token)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, errors.New(fmt.Sprintf("authentication identify %s is nothing", identify))
+		} else {
+			return nil, err
+		}
+	}
+	return entity.NewAuthentication(id, organizationId, identify, token), nil
+}
+
 func (rep *Authentications) FindToken(organizationId int, identify string) (int, string, error) {
 	if organizationId > 0 {
-		stmt, err := rep.DB.Preparex("select individual_id, token from authentications where organization_id=$1 and identify=$2")
+		auth, err := rep.Find(organizationId, identify)
 		if err != nil {
 			return -1, "", err
 		}
-		defer func(stmt *sqlx.Stmt) {
-			err := stmt.Close()
-			if err != nil {
-				fmt.Printf("Error: %v\n", err)
-			}
-		}(stmt)
-		var id int
-		var token string
-		err = stmt.QueryRowx(organizationId, identify).Scan(&id, &token)
-		if err != nil {
-			if errors.Is(err, sql.ErrNoRows) {
-				return -1, "", errors.New(fmt.Sprintf("authentication identify %s is nothing", identify))
-			} else {
-				return -1, "", err
-			}
-		}
-		return id, token, nil
+
+		return auth.Id, auth.Token, nil
 	} else {
 		stmt, err := rep.DB.Preparex("select individual_id, token from authentications where identify=$1")
 		if err != nil {
