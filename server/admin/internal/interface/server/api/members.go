@@ -41,6 +41,9 @@ func AddMembers(c echo.Context) error {
 	}
 
 	itr := usecase.NewAuthentication(serverutil.DatastoreConnection(c))
+	if exists, err := itr.FindById(org.Id, m.Id); err == nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"message": fmt.Sprintf("%s is already exists", exists.Identify)})
+	}
 
 	pass, err := authentication.Encrypt(m.Password)
 	if err != nil {
