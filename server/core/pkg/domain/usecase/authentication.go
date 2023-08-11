@@ -24,6 +24,10 @@ func NewAuthentication(con *datastore.Connection) *Authentication {
 	}
 }
 
+func (it *Authentication) FindById(organizationId int, identify string) (*entity.Authentication, error) {
+	return it.Authentications.Find(organizationId, identify)
+}
+
 func (it *Authentication) Store(organizationId int, identify, token string) (bool, error) {
 	return it.Authentications.Store(organizationId, identify, token)
 }
