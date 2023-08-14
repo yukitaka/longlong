@@ -73,5 +73,5 @@ func (it *Authentication) Auth(organization, identify, password string) (int, in
 		}
 	}
 
-	return -1, -1, fmt.Errorf("Error: organization %s not allowed", organization)
+	return -1, -1, fmt.Errorf("Error: organization %s not allowed.", organization)
 }

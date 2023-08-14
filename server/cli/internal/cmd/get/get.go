@@ -154,7 +154,7 @@ func (o *Options) User(cmd *cobra.Command, args []string) error {
 				for _, m := range ms {
 					rows = append(rows, table.Row{
 						n,
-						strconv.Itoa(int(m.Individual.Id)),
+						strconv.Itoa(m.Individual.Id),
 						m.Individual.Name,
 						m.Role.String(),
 					})
