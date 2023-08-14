@@ -67,7 +67,7 @@ func (rep *Habits) Create(name, timer string) (*entity.Habit, error) {
 	return &entity.Habit{Id: id, Name: name, Timer: *t}, nil
 }
 
-func (rep *Habits) timer(habit_id int) (*entity.Timer, error) {
+func (rep *Habits) timer(habitId int) (*entity.Timer, error) {
 	query := "select t.id, duration_type, number, interval, reference_at from timers t join habits_timers t1 on t.id=t1.timer_id where t.id=$1"
 	type s struct {
 		Id           int       `db:"id"`
@@ -78,7 +78,7 @@ func (rep *Habits) timer(habit_id int) (*entity.Timer, error) {
 	}
 	var ss []s
 
-	err := rep.DB.Select(&ss, query, habit_id)
+	err := rep.DB.Select(&ss, query, habitId)
 	if err != nil {
 		return nil, err
 	}
